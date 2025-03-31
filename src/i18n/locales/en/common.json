@@ -1,0 +1,17 @@
+{
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "loading": "Loading data...",
+  "error": "Error: {{message}}",
+  "selectDay": "Select day:",
+  "footer": {
+    "text": "Pool Occupancy Dashboard • Data based on one week of data collection • All times are in local time"
+  }
+}

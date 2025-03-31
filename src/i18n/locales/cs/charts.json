@@ -1,0 +1,18 @@
+{
+  "title": "Analýza obsazenosti bazénu",
+  "description": "Graf níže ukazuje průměrnou obsazenost pro každou hodinu v porovnání s maximální kapacitou, která se během dne mění podle rezervovaných drah pro specifické aktivity.",
+  "axis": {
+    "hour": "Hodina dne",
+    "occupancy": "Obsazenost"
+  },
+  "legend": {
+    "maximum": "Maximální kapacita",
+    "average": "Průměrná obsazenost"
+  },
+  "stats": {
+    "averageOccupancy": "Průměrná obsazenost",
+    "maximumOccupancy": "Maximální kapacita",
+    "utilizationRate": "Míra využití",
+    "availableSpots": "Volná místa"
+  }
+}

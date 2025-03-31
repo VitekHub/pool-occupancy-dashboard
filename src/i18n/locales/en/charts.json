@@ -1,0 +1,18 @@
+{
+  "title": "Pool Occupancy Analysis",
+  "description": "The chart below shows the average occupancy for each hour compared to the maximum occupancy that varies throughout the day as lanes may be reserved for specific activities.",
+  "axis": {
+    "hour": "Hour of Day",
+    "occupancy": "Occupancy"
+  },
+  "legend": {
+    "maximum": "Maximum Occupancy",
+    "average": "Average Occupancy"
+  },
+  "stats": {
+    "averageOccupancy": "Average occupancy",
+    "maximumOccupancy": "Maximum occupancy",
+    "utilizationRate": "Utilization rate",
+    "availableSpots": "Available spots"
+  }
+}

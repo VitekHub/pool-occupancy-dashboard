@@ -1,0 +1,9 @@
+{
+  "title": "Panel obsazenosti bazénu Kraví hora",
+  "tabs": {
+    "chart": "Graf obsazenosti",
+    "table": "Tabulka dat",
+    "heatmap": "Týdenní mapa",
+    "absolute": "Týdenní počty"
+  }
+}

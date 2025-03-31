@@ -1,0 +1,16 @@
+{
+  "title": "Pool Occupancy Data",
+  "description": "This table provides the detailed hourly occupancy statistics for each day of the week, showing average occupancy whithin the hour and maximum occupancy that varies throughout the day as lanes may be reserved for specific activities.",
+  "columns": {
+    "hour": "Hour",
+    "averageOccupancy": "Average Occupancy",
+    "maximumOccupancy": "Maximum Occupancy",
+    "utilizationRate": "Utilization Rate",
+    "remainingCapacity": "Remaining Capacity"
+  },
+  "downloads": {
+    "title": "Download Data",
+    "occupancy": "Download occupancy data (CSV)",
+    "capacity": "Download capacity data (CSV)"
+  }
+}

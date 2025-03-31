@@ -1,0 +1,34 @@
+{
+  "occupancy": {
+    "title": "Weekly Occupancy Heatmap",
+    "description": "This heatmap shows how full the pool is relative to its maximum capacity. The maximum varies throughout the day as lanes may be reserved for specific activities.",
+    "tooltip": "{{day}} at {{hour}}:00 - {{utilization}}% occupied",
+    "legend": {
+      "title": "Occupancy Rate",
+      "labels": {
+        "empty": "0%",
+        "veryLow": "<25%",
+        "low": "<33%",
+        "medium": "<42%",
+        "high": "<52%",
+        "veryHigh": "52%+"
+      }
+    }
+  },
+  "raw": {
+    "title": "Weekly Raw Occupancy",
+    "description": "This heatmap shows the actual (min-max) number of people in the pool for each hour, helping you visualize the raw occupancy numbers throughout the week.",
+    "tooltip": "{{day}} at {{hour}}:00 - {{min}} to {{max}} people",
+    "legend": {
+      "title": "Number of People",
+      "labels": {
+        "empty": "0",
+        "veryLow": "<25",
+        "low": "<33",
+        "medium": "<42",
+        "high": "<52",
+        "veryHigh": "52+"
+      }
+    }
+  }
+}

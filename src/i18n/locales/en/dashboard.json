@@ -1,0 +1,9 @@
+{
+  "title": "Kraví hora Swimming Pool Occupancy Dashboard",
+  "tabs": {
+    "chart": "Occupancy Chart",
+    "table": "Data Table",
+    "heatmap": "Weekly Heatmap",
+    "absolute": "Weekly Raw"
+  }
+}

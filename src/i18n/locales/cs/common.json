@@ -1,0 +1,17 @@
+{
+  "days": {
+    "monday": "Pondělí",
+    "tuesday": "Úterý",
+    "wednesday": "Středa",
+    "thursday": "Čtvrtek",
+    "friday": "Pátek",
+    "saturday": "Sobota",
+    "sunday": "Neděle"
+  },
+  "loading": "Načítání dat...",
+  "error": "Chyba: {{message}}",
+  "selectDay": "Vyberte den:",
+  "footer": {
+    "text": "Panel obsazenosti bazénu • Data jsou založena na jednorázovém sběru dat • Všechny časy jsou v místním čase"
+  }
+}
