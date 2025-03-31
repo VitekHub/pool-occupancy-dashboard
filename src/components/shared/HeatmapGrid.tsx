@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface CellData {
   color: string;
@@ -13,6 +14,8 @@ interface HeatmapGridProps {
 }
 
 const HeatmapGrid: React.FC<HeatmapGridProps> = ({ days, hours, getCellData }) => {
+  const { t } = useTranslation('common');
+
   return (
     <div className="overflow-x-auto">
       <div className="min-w-max">
@@ -29,7 +32,9 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({ days, hours, getCellData }) =
         {/* Days rows */}
         {days.map(day => (
           <div key={day} className="flex">
-            <div className="w-24 py-2 flex-shrink-0 font-medium text-gray-700">{day}</div>
+            <div className="w-24 py-2 flex-shrink-0 font-medium text-gray-700">
+              {t(`days.${day.toLowerCase()}`)}
+            </div>
             {hours.map(hour => {
               const { color, displayText, title } = getCellData(day, hour);
               return (
