@@ -1,7 +1,7 @@
 {
-  "title": "Kraví hora Swimming Pool Occupancy Dashboard",
+  "title": "Kraví hora Pool - Open Lane Occupancy",
   "tabs": {
-    "overall": "Overall Patterns",
+    "overall": "Average Occupancy",
     "chart": "Occupancy Chart",
     "table": "Data Table",
     "heatmap": "Weekly Heatmap",

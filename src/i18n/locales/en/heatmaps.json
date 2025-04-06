@@ -1,7 +1,7 @@
 {
   "overall": {
-    "title": "Overall Occupancy Pattern",
-    "description": "This heatmap shows the average pool occupancy across all weeks. It displays typical occupancy patterns for each day of the week and helps identify the best times to visit.",
+    "title": "Average Occupancy",
+    "description": "This heatmap shows the average pool occupancy over recent weeks. It displays typical occupancy patterns for each day of the week taking into account closed lanes.",
     "tooltip": "{{day}} at {{hour}}:00 - average {{utilization}}% occupied",
     "legend": {
       "title": "Occupancy Rate",
