@@ -51,6 +51,10 @@ A modern, responsive React application that visualizes swimming pool occupancy d
 ## Getting Started
 
 1. Clone the repository
+2. Create a `.env` file based on `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
 2. Install dependencies:
    ```bash
    npm install
@@ -74,7 +78,17 @@ The application works with two CSV data files:
    Day,Hour,Maximum Occupancy
    ```
 
-The data is based on one week of data collection.
+The data is continuously updated with real-time measurements.
+
+## Environment Variables
+
+The application uses the following environment variables:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `VITE_POOL_OCCUPANCY_CSV_URL` | URL to fetch pool occupancy CSV data | `https://raw.githubusercontent.com/VitekBrno/kravihora-brno/main/data/pool_occupancy.csv` |
+
+Create a `.env` file in the project root and configure these variables before starting the application.
 
 ## Operating Hours
 

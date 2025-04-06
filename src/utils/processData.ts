@@ -184,7 +184,7 @@ export const usePoolData = (selectedWeekId: string) => {
     const fetchData = async () => {
       try {
         // Fetch occupancy data
-        const occupancyResponse = await fetch('/pool_occupancy.csv');
+        const occupancyResponse = await fetch(import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL);
         const occupancyText = await occupancyResponse.text();
         
         // Fetch capacity data
@@ -218,7 +218,7 @@ export const usePoolData = (selectedWeekId: string) => {
         
         setLoading(false);
       } catch (err) {
-        setError('Failed to load data');
+        setError('Failed to load pool occupancy data');
         setLoading(false);
         console.error('Error loading data:', err);
       }
