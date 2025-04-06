@@ -68,7 +68,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabType>('overall');
   const [selectedWeekId, setSelectedWeekId] = useState<string>('');
   
-  const { availableWeeks, loading, currentOccupancy } = usePoolData(selectedWeekId);
+  const { availableWeeks, loading, currentOccupancy, capacityData } = usePoolData(selectedWeekId);
   
   // Set initial week when available
   useEffect(() => {
@@ -89,7 +89,10 @@ function App() {
               <h1 className="text-3xl font-bold">{t('dashboard:title')}</h1>
             </div>
             <div className="flex items-center gap-4">
-              <CurrentOccupancy currentOccupancy={currentOccupancy} />
+              <CurrentOccupancy 
+                currentOccupancy={currentOccupancy} 
+                capacityData={capacityData} 
+              />
               <LanguageSwitcher />
             </div>
           </div>
