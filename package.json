@@ -1,6 +1,7 @@
 {
   "name": "vite-react-typescript-starter",
   "private": true,
+  "homepage": "https://vitekbrno.github.io/kravihora-brno-capacity",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -12,7 +13,7 @@
   "dependencies": {
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1", 
+    "react-dom": "^18.3.1",
     "i18next": "^23.10.1",
     "react-i18next": "^14.1.0",
     "i18next-browser-languagedetector": "^7.2.0",
