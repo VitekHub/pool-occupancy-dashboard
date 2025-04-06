@@ -5,6 +5,10 @@ import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
 
+interface RawHeatmapProps {
+  selectedWeekId: string;
+}
+
 const getColorForOccupancy = (range: { min: number; max: number }): string => {
   if (range.max === 0) return 'bg-gray-100';
   if (range.max < 25) return 'bg-green-100';
@@ -14,9 +18,9 @@ const getColorForOccupancy = (range: { min: number; max: number }): string => {
   return 'bg-red-500';
 };
 
-const RawHeatmap: React.FC = () => {
+const RawHeatmap: React.FC<RawHeatmapProps> = ({ selectedWeekId }) => {
   const { t } = useTranslation(['heatmaps', 'common']);
-  const { hourlySummary, loading, error } = usePoolData();
+  const { hourlySummary, loading, error } = usePoolData(selectedWeekId);
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;

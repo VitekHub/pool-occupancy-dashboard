@@ -6,9 +6,13 @@ import Table from '@/components/ui/Table';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
 
-const PoolOccupancyTable: React.FC = () => {
+interface PoolOccupancyTableProps {
+  selectedWeekId: string;
+}
+
+const PoolOccupancyTable: React.FC<PoolOccupancyTableProps> = ({ selectedWeekId }) => {
   const { t } = useTranslation(['tables', 'common']);
-  const { hourlySummary, loading, error } = usePoolData();
+  const { hourlySummary, loading, error } = usePoolData(selectedWeekId);
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
   const validHours = getValidHours(selectedDay);
 
@@ -69,7 +73,7 @@ const PoolOccupancyTable: React.FC = () => {
       {/* Download section */}
       <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-700 mb-2">{t('tables:downloads.title')}</h3>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <a
             href="/pool_occupancy.csv"
             target="_blank"

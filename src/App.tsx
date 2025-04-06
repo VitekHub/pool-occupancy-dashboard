@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BarChart, Activity, Table, Calendar, Users } from 'lucide-react';
 import TabButton from '@/components/ui/TabButton';
 import ContentCard from '@/components/ui/ContentCard';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import WeekNavigator from '@/components/ui/WeekNavigator';
 import PoolOccupancyChart from '@/components/charts/PoolOccupancyChart';
 import PoolOccupancyTable from '@/components/tables/PoolOccupancyTable';
 import OccupancyHeatmap from '@/components/heatmaps/OccupancyHeatmap';
 import RawHeatmap from '@/components/heatmaps/RawHeatmap';
+import { usePoolData } from '@/utils/processData';
 
 type TabType = 'chart' | 'table' | 'heatmap' | 'absolute';
 
@@ -49,6 +51,17 @@ const TAB_CONFIG = [
 function App() {
   const { t } = useTranslation(['dashboard', 'common']);
   const [activeTab, setActiveTab] = useState<TabType>('heatmap');
+  const [selectedWeekId, setSelectedWeekId] = useState<string>('');
+  
+  const { availableWeeks, loading } = usePoolData(selectedWeekId);
+  
+  // Set initial week when available
+  useEffect(() => {
+    if (availableWeeks.length > 0 && !selectedWeekId) {
+      setSelectedWeekId(availableWeeks[0].id);
+    }
+  }, [availableWeeks, selectedWeekId]);
+  
   const activeConfig = TAB_CONFIG.find(tab => tab.id === activeTab)!;
   const TabComponent = activeConfig.component;
 
@@ -56,18 +69,20 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <header className="bg-blue-600 text-white shadow-lg">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex justify-between items-start">
-            <div>
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+            <div className="mb-4 md:mb-0">
               <h1 className="text-3xl font-bold">{t('dashboard:title')}</h1>
             </div>
-            <LanguageSwitcher />
+            <div>
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       </header>
       
       <main className="container mx-auto px-4 py-8">
         {/* Tab navigation */}
-        <div className="flex border-b border-gray-200 mb-6">
+        <div className="flex overflow-x-auto border-b border-gray-200 mb-6">
           {TAB_CONFIG.map(tab => (
             <TabButton
               key={tab.id}
@@ -85,8 +100,17 @@ function App() {
             icon={activeConfig.icon}
             title={t(activeConfig.titleKey)}
             description={t(activeConfig.descriptionKey)}
+            weekSelector={
+              !loading && (
+                <WeekNavigator 
+                  weeks={availableWeeks}
+                  selectedWeekId={selectedWeekId}
+                  onWeekChange={setSelectedWeekId}
+                />
+              )
+            }
           >
-            <TabComponent />
+            <TabComponent selectedWeekId={selectedWeekId} />
           </ContentCard>
         </div>
       </main>

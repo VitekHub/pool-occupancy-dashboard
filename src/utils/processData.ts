@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
+import { format, parse, startOfWeek, endOfWeek, isWithinInterval, addDays } from 'date-fns';
+import { cs, enUS } from 'date-fns/locale';
 
 export interface OccupancyRecord {
+  date: Date;
   day: string;
   time: string;
   occupancy: number;
@@ -8,6 +11,7 @@ export interface OccupancyRecord {
 }
 
 export interface CapacityRecord {
+  date: Date;
   day: string;
   hour: string;
   maximumOccupancy: number;
@@ -22,9 +26,63 @@ export interface HourlyOccupancySummary {
   maximumOccupancy: number;
   utilizationRate: number;
   remainingCapacity: number;
+  date: Date;
 }
 
-// Parse time string like "08:45" to get the hour as a number (8)
+export interface WeekInfo {
+  id: string;
+  startDate: Date;
+  endDate: Date;
+  displayText: string;
+}
+
+// Parse date string in format "DD.MM.YYYY" to Date object
+export const parseDate = (dateStr: string): Date => {
+  return parse(dateStr, 'dd.MM.yyyy', new Date());
+};
+
+// Format week range for display based on locale
+export const formatWeekRange = (startDate: Date, endDate: Date, locale: string = 'cs'): string => {
+  const dateLocale = locale === 'cs' ? cs : enUS;
+  const start = format(startDate, 'd. MMMM', { locale: dateLocale });
+  const end = format(endDate, 'd. MMMM yyyy', { locale: dateLocale });
+  return `${start} - ${end}`;
+};
+
+// Generate a unique ID for a week based on its start date
+export const getWeekId = (date: Date): string => {
+  const weekStart = startOfWeek(date, { weekStartsOn: 1 }); // Week starts on Monday
+  return format(weekStart, 'yyyy-MM-dd');
+};
+
+// Group dates into weeks and generate week info
+export const getAvailableWeeks = (dates: Date[]): WeekInfo[] => {
+  // Map to store unique weeks
+  const weeksMap = new Map<string, WeekInfo>();
+  
+  // Process each date
+  dates.forEach(date => {
+    const weekStart = startOfWeek(date, { weekStartsOn: 1 }); // Week starts on Monday
+    const weekEnd = endOfWeek(date, { weekStartsOn: 1 });
+    const weekId = getWeekId(date);
+    
+    if (!weeksMap.has(weekId)) {
+      weeksMap.set(weekId, {
+        id: weekId,
+        startDate: weekStart,
+        endDate: weekEnd,
+        displayText: formatWeekRange(weekStart, weekEnd)
+      });
+    }
+  });
+  
+  // Convert map to array and sort by date (newest first)
+  return Array.from(weeksMap.values()).sort((a, b) => 
+    b.startDate.getTime() - a.startDate.getTime()
+  );
+};
+
+// Parse time string like "08:45:00" or "08:45" to get the hour as a number (8)
 const getHourFromTime = (timeStr: string): number => {
   const hourStr = timeStr.split(':')[0];
   return parseInt(hourStr, 10);
@@ -33,26 +91,39 @@ const getHourFromTime = (timeStr: string): number => {
 // Process the occupancy data to group by day and hour
 export const processOccupancyData = (
   occupancyData: OccupancyRecord[],
-  capacityData: CapacityRecord[]
+  capacityData: CapacityRecord[],
+  selectedWeekId: string
 ): HourlyOccupancySummary[] => {
+  // Filter data for the selected week
+  const weekStart = parse(selectedWeekId, 'yyyy-MM-dd', new Date());
+  const weekEnd = addDays(weekStart, 6);
+  
+  const filteredOccupancyData = occupancyData.filter(record => 
+    isWithinInterval(record.date, { start: weekStart, end: weekEnd })
+  );
+  
+  const filteredCapacityData = capacityData.filter(record => 
+    isWithinInterval(record.date, { start: weekStart, end: weekEnd })
+  );
+  
   // Group occupancy records by day and hour
-  const groupedByDayAndHour: Record<string, Record<number, number[]>> = {};
+  const groupedByDayAndHour: Record<string, Record<number, { values: number[], date: Date }>> = {};
 
   // Initialize the grouping structure
-  occupancyData.forEach((record) => {
+  filteredOccupancyData.forEach((record) => {
     const hour = getHourFromTime(record.time);
     if (!groupedByDayAndHour[record.day]) {
       groupedByDayAndHour[record.day] = {};
     }
     if (!groupedByDayAndHour[record.day][hour]) {
-      groupedByDayAndHour[record.day][hour] = [];
+      groupedByDayAndHour[record.day][hour] = { values: [], date: record.date };
     }
-    groupedByDayAndHour[record.day][hour].push(record.occupancy);
+    groupedByDayAndHour[record.day][hour].values.push(record.occupancy);
   });
 
   // Create capacity lookup map
   const capacityMap: Record<string, Record<number, number>> = {};
-  capacityData.forEach((record) => {
+  filteredCapacityData.forEach((record) => {
     if (!capacityMap[record.day]) {
       capacityMap[record.day] = {};
     }
@@ -65,7 +136,7 @@ export const processOccupancyData = (
   Object.keys(groupedByDayAndHour).forEach((day) => {
     Object.keys(groupedByDayAndHour[day]).forEach((hourStr) => {
       const hour = parseInt(hourStr);
-      const occupancyValues = groupedByDayAndHour[day][hour];
+      const { values: occupancyValues, date } = groupedByDayAndHour[day][hour];
       
       // Only process if we have occupancy data for this hour
       if (occupancyValues.length > 0) {
@@ -91,7 +162,8 @@ export const processOccupancyData = (
           averageOccupancy,
           maximumOccupancy,
           utilizationRate,
-          remainingCapacity
+          remainingCapacity,
+          date
         });
       }
     });
@@ -100,10 +172,11 @@ export const processOccupancyData = (
   return hourlyOccupancySummary;
 };
 
-export const usePoolData = () => {
+export const usePoolData = (selectedWeekId: string) => {
   const [occupancyData, setOccupancyData] = useState<OccupancyRecord[]>([]);
   const [capacityData, setCapacityData] = useState<CapacityRecord[]>([]);
   const [hourlySummary, setHourlySummary] = useState<HourlyOccupancySummary[]>([]);
+  const [availableWeeks, setAvailableWeeks] = useState<WeekInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -125,8 +198,22 @@ export const usePoolData = () => {
         setOccupancyData(parsedOccupancy);
         setCapacityData(parsedCapacity);
         
+        // Extract dates for week detection
+        const allDates = [
+          ...parsedOccupancy.map(record => record.date),
+          ...parsedCapacity.map(record => record.date),
+        ];
+        
+        // Get available weeks
+        const weeks = getAvailableWeeks(allDates);
+        setAvailableWeeks(weeks);
+        
         // Process data to get hourly summaries
-        const summary = processOccupancyData(parsedOccupancy, parsedCapacity);
+        const summary = processOccupancyData(
+          parsedOccupancy, 
+          parsedCapacity, 
+          selectedWeekId || weeks[0]?.id || ''
+        );
         setHourlySummary(summary);
         
         setLoading(false);
@@ -138,9 +225,16 @@ export const usePoolData = () => {
     };
     
     fetchData();
-  }, []);
+  }, [selectedWeekId]);
 
-  return { occupancyData, capacityData, hourlySummary, loading, error };
+  useEffect(() => {
+    if (occupancyData.length > 0 && capacityData.length > 0) {
+      const summary = processOccupancyData(occupancyData, capacityData, selectedWeekId);
+      setHourlySummary(summary);
+    }
+  }, [selectedWeekId, occupancyData, capacityData]);
+
+  return { occupancyData, capacityData, hourlySummary, availableWeeks, loading, error };
 };
 
 // Parse the CSV text into OccupancyRecord objects
@@ -150,11 +244,13 @@ const parseOccupancyCSV = (csvText: string): OccupancyRecord[] => {
   
   return lines.slice(1).map(line => {
     const values = line.split(',');
+    const date = parseDate(values[0]);
     return {
-      day: values[0],
-      time: values[1],
-      occupancy: parseInt(values[2], 10),
-      hour: getHourFromTime(values[1])
+      date,
+      day: values[1],
+      time: values[2],
+      occupancy: parseInt(values[3], 10),
+      hour: getHourFromTime(values[2])
     };
   });
 };
@@ -166,10 +262,12 @@ const parseCapacityCSV = (csvText: string): CapacityRecord[] => {
   
   return lines.slice(1).map(line => {
     const values = line.split(',');
+    const date = parseDate(values[0]);
     return {
-      day: values[0],
-      hour: values[1],
-      maximumOccupancy: parseInt(values[2], 10)
+      date,
+      day: values[1],
+      hour: values[2],
+      maximumOccupancy: parseInt(values[3], 10)
     };
   });
 };

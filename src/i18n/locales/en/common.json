@@ -11,6 +11,8 @@
   "loading": "Loading data...",
   "error": "Error: {{message}}",
   "selectDay": "Select day:",
+  "previousWeek": "Previous week",
+  "nextWeek": "Next week",
   "footer": {
     "text": "Pool Occupancy Dashboard • Data based on one week of data collection • All times are in local time"
   }

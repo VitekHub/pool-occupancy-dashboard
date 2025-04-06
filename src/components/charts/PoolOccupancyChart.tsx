@@ -5,9 +5,13 @@ import { usePoolData, HourlyOccupancySummary } from '@/utils/processData';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
 
-const PoolOccupancyChart: React.FC = () => {
+interface PoolOccupancyChartProps {
+  selectedWeekId: string;
+}
+
+const PoolOccupancyChart: React.FC<PoolOccupancyChartProps> = ({ selectedWeekId }) => {
   const { t } = useTranslation(['charts', 'common']);
-  const { hourlySummary, loading, error } = usePoolData();
+  const { hourlySummary, loading, error } = usePoolData(selectedWeekId);
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
   const validHours = getValidHours(selectedDay);
 
@@ -30,7 +34,8 @@ const PoolOccupancyChart: React.FC = () => {
       averageOccupancy: 0,
       maximumOccupancy: 0,
       utilizationRate: 0,
-      remainingCapacity: 0
+      remainingCapacity: 0,
+      date: new Date()
     };
   });
   
