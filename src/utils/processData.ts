@@ -57,6 +57,7 @@ export const getWeekId = (date: Date): string => {
 
 // Group dates into weeks and generate week info
 export const getAvailableWeeks = (dates: Date[]): WeekInfo[] => {
+  const today = new Date();
   // Map to store unique weeks
   const weeksMap = new Map<string, WeekInfo>();
   
@@ -76,8 +77,10 @@ export const getAvailableWeeks = (dates: Date[]): WeekInfo[] => {
     }
   });
   
-  // Convert map to array and sort by date (newest first)
-  return Array.from(weeksMap.values()).sort((a, b) => 
+  // Convert map to array, filter out future weeks, and sort by date (newest first)
+  return Array.from(weeksMap.values())
+    .filter(week => week.startDate <= today)
+    .sort((a, b) => 
     b.startDate.getTime() - a.startDate.getTime()
   );
 };
@@ -288,7 +291,7 @@ export const usePoolData = (selectedWeekId?: string) => {
         const occupancyText = await occupancyResponse.text();
         
         // Fetch capacity data
-        const capacityResponse = await fetch('/capacity.csv');
+        const capacityResponse = await fetch(import.meta.env.VITE_MAX_CAPACITY_CSV_URL || '');
         if (!capacityResponse.ok) {
           throw new Error('Failed to load capacity data');
         }
