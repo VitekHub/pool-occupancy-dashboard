@@ -13,6 +13,8 @@
   "selectDay": "Select day:",
   "previousWeek": "Previous week",
   "nextWeek": "Next week",
+  "currentOccupancy": "Current Occupancy",
+  "people": "people",
   "footer": {
     "text": "Pool Occupancy Dashboard • Data is continuously updated • All times are in local time"
   }

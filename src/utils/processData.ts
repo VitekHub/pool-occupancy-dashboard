@@ -274,6 +274,7 @@ export const usePoolData = (selectedWeekId?: string) => {
   const [overallHourlySummary, setOverallHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [availableWeeks, setAvailableWeeks] = useState<WeekInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentOccupancy, setCurrentOccupancy] = useState<OccupancyRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -296,6 +297,11 @@ export const usePoolData = (selectedWeekId?: string) => {
         // Parse CSV data
         const parsedOccupancy = parseOccupancyCSV(occupancyText);
         const parsedCapacity = parseCapacityCSV(capacityText);
+        
+        // Set current occupancy (last entry)
+        if (parsedOccupancy.length > 0) {
+          setCurrentOccupancy(parsedOccupancy[parsedOccupancy.length - 1]);
+        }
         
         setOccupancyData(parsedOccupancy);
         setCapacityData(parsedCapacity);
@@ -343,6 +349,41 @@ export const usePoolData = (selectedWeekId?: string) => {
     fetchData();
   }, []);
 
+  // Set up auto-refresh every 10 minutes
+  useEffect(() => {
+    const refreshInterval = setInterval(async () => {
+      try {
+        const response = await fetch(import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL || '');
+        if (!response.ok) {
+          throw new Error('Failed to refresh occupancy data');
+        }
+        const text = await response.text();
+        const parsedData = parseOccupancyCSV(text);
+        
+        // Update current occupancy
+        if (parsedData.length > 0) {
+          setCurrentOccupancy(parsedData[parsedData.length - 1]);
+        }
+        
+        // Update occupancy data
+        setOccupancyData(parsedData);
+        
+        // Recalculate summaries if needed
+        if (selectedWeekId) {
+          const summary = processOccupancyData(parsedData, capacityData, selectedWeekId);
+          setHourlySummary(summary);
+        }
+        
+        const overallSummary = processOverallOccupancyData(parsedData, capacityData);
+        setOverallHourlySummary(overallSummary);
+      } catch (err) {
+        console.error('Error refreshing data:', err);
+      }
+    }, 10 * 60 * 1000); // 10 minutes
+    
+    return () => clearInterval(refreshInterval);
+  }, [selectedWeekId, capacityData, setCurrentOccupancy, setOccupancyData, setHourlySummary, setOverallHourlySummary]);
+
   useEffect(() => {
     if (occupancyData.length > 0 && capacityData.length > 0 && selectedWeekId) {
       const summary = processOccupancyData(occupancyData, capacityData, selectedWeekId);
@@ -350,7 +391,16 @@ export const usePoolData = (selectedWeekId?: string) => {
     }
   }, [selectedWeekId, occupancyData, capacityData]);
 
-  return { occupancyData, capacityData, hourlySummary, overallHourlySummary, availableWeeks, loading, error };
+  return { 
+    occupancyData, 
+    capacityData, 
+    hourlySummary, 
+    overallHourlySummary, 
+    availableWeeks, 
+    currentOccupancy,
+    loading, 
+    error 
+  };
 };
 
 // Parse the CSV text into OccupancyRecord objects

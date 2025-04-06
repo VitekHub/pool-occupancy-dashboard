@@ -13,6 +13,8 @@
   "selectDay": "Vyberte den:",
   "previousWeek": "Předchozí týden",
   "nextWeek": "Další týden",
+  "currentOccupancy": "Aktuální obsazenost",
+  "people": "lidí",
   "footer": {
     "text": "Panel obsazenosti bazénu • Data jsou průběžně aktualizována • Všechny časy jsou v místním čase"
   }

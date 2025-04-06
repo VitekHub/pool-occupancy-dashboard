@@ -10,6 +10,7 @@ import PoolOccupancyTable from '@/components/tables/PoolOccupancyTable';
 import OccupancyHeatmap from '@/components/heatmaps/OccupancyHeatmap';
 import RawHeatmap from '@/components/heatmaps/RawHeatmap';
 import OverallOccupancyHeatmap from '@/components/heatmaps/OverallOccupancyHeatmap';
+import CurrentOccupancy from '@/components/ui/CurrentOccupancy';
 import { usePoolData } from '@/utils/processData';
 
 type TabType = 'chart' | 'table' | 'heatmap' | 'absolute' | 'overall';
@@ -67,7 +68,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabType>('overall');
   const [selectedWeekId, setSelectedWeekId] = useState<string>('');
   
-  const { availableWeeks, loading } = usePoolData(selectedWeekId);
+  const { availableWeeks, loading, currentOccupancy } = usePoolData(selectedWeekId);
   
   // Set initial week when available
   useEffect(() => {
@@ -83,11 +84,12 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <header className="bg-blue-600 text-white shadow-lg">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div className="mb-4 md:mb-0">
               <h1 className="text-3xl font-bold">{t('dashboard:title')}</h1>
             </div>
-            <div>
+            <div className="flex items-center gap-4">
+              <CurrentOccupancy currentOccupancy={currentOccupancy} />
               <LanguageSwitcher />
             </div>
           </div>
