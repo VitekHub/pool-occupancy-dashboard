@@ -1,4 +1,20 @@
 {
+  "overall": {
+    "title": "Celkový přehled obsazenosti",
+    "description": "Tato mapa ukazuje průměrnou obsazenost bazénu napříč všemi týdny. Zobrazuje typické vzory obsazenosti pro každý den v týdnu a pomáhá identifikovat nejlepší časy pro návštěvu.",
+    "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno",
+    "legend": {
+      "title": "Míra obsazenosti",
+      "labels": {
+        "empty": "0%",
+        "veryLow": "<25%",
+        "low": "<33%",
+        "medium": "<42%",
+        "high": "<52%",
+        "veryHigh": "52%+"
+      }
+    }
+  },
   "occupancy": {
     "title": "Týdenní mapa obsazenosti",
     "description": "Tato mapa ukazuje, jak je bazén zaplněn vzhledem k jeho maximální kapacitě. Maximum se během dne mění podle rezervovaných drah pro specifické aktivity.",

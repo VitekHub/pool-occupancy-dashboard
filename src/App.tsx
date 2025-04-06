@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BarChart, Activity, Table, Calendar, Users } from 'lucide-react';
+import { BarChart, Activity, Table, Calendar, Users, TrendingUp } from 'lucide-react';
 import TabButton from '@/components/ui/TabButton';
 import ContentCard from '@/components/ui/ContentCard';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
@@ -9,18 +9,29 @@ import PoolOccupancyChart from '@/components/charts/PoolOccupancyChart';
 import PoolOccupancyTable from '@/components/tables/PoolOccupancyTable';
 import OccupancyHeatmap from '@/components/heatmaps/OccupancyHeatmap';
 import RawHeatmap from '@/components/heatmaps/RawHeatmap';
+import OverallOccupancyHeatmap from '@/components/heatmaps/OverallOccupancyHeatmap';
 import { usePoolData } from '@/utils/processData';
 
-type TabType = 'chart' | 'table' | 'heatmap' | 'absolute';
+type TabType = 'chart' | 'table' | 'heatmap' | 'absolute' | 'overall';
 
 const TAB_CONFIG = [
+  {
+    id: 'overall' as TabType,
+    icon: TrendingUp,
+    labelKey: 'dashboard:tabs.overall',
+    component: OverallOccupancyHeatmap,
+    titleKey: 'heatmaps:overall.title',
+    descriptionKey: 'heatmaps:overall.description',
+    showWeekSelector: false
+  },
   {
     id: 'heatmap' as TabType,
     icon: Calendar,
     labelKey: 'dashboard:tabs.heatmap',
     component: OccupancyHeatmap,
     titleKey: 'heatmaps:occupancy.title',
-    descriptionKey: 'heatmaps:occupancy.description'
+    descriptionKey: 'heatmaps:occupancy.description',
+    showWeekSelector: true
   },
   {
     id: 'absolute' as TabType,
@@ -28,7 +39,8 @@ const TAB_CONFIG = [
     labelKey: 'dashboard:tabs.absolute',
     component: RawHeatmap,
     titleKey: 'heatmaps:raw.title',
-    descriptionKey: 'heatmaps:raw.description'
+    descriptionKey: 'heatmaps:raw.description',
+    showWeekSelector: true
   },
   {
     id: 'chart' as TabType,
@@ -36,7 +48,8 @@ const TAB_CONFIG = [
     labelKey: 'dashboard:tabs.chart',
     component: PoolOccupancyChart,
     titleKey: 'charts:title',
-    descriptionKey: 'charts:description'
+    descriptionKey: 'charts:description',
+    showWeekSelector: true
   },
   {
     id: 'table' as TabType,
@@ -44,13 +57,14 @@ const TAB_CONFIG = [
     labelKey: 'dashboard:tabs.table',
     component: PoolOccupancyTable,
     titleKey: 'tables:title',
-    descriptionKey: 'tables:description'
+    descriptionKey: 'tables:description',
+    showWeekSelector: true
   }
 ];
 
 function App() {
   const { t } = useTranslation(['dashboard', 'common']);
-  const [activeTab, setActiveTab] = useState<TabType>('heatmap');
+  const [activeTab, setActiveTab] = useState<TabType>('overall');
   const [selectedWeekId, setSelectedWeekId] = useState<string>('');
   
   const { availableWeeks, loading } = usePoolData(selectedWeekId);
@@ -101,16 +115,20 @@ function App() {
             title={t(activeConfig.titleKey)}
             description={t(activeConfig.descriptionKey)}
             weekSelector={
-              !loading && (
+              activeConfig.showWeekSelector && !loading ? (
                 <WeekNavigator 
                   weeks={availableWeeks}
                   selectedWeekId={selectedWeekId}
                   onWeekChange={setSelectedWeekId}
                 />
-              )
+              ) : null
             }
           >
-            <TabComponent selectedWeekId={selectedWeekId} />
+            {activeConfig.showWeekSelector ? (
+              <TabComponent selectedWeekId={selectedWeekId} />
+            ) : (
+              <TabComponent />
+            )}
           </ContentCard>
         </div>
       </main>

@@ -172,10 +172,106 @@ export const processOccupancyData = (
   return hourlyOccupancySummary;
 };
 
-export const usePoolData = (selectedWeekId: string) => {
+// Process all occupancy data to get overall patterns
+export const processOverallOccupancyData = (
+  occupancyData: OccupancyRecord[],
+  capacityData: CapacityRecord[]
+): HourlyOccupancySummary[] => {
+  // Group occupancy records by day and hour across all weeks
+  const groupedByDayAndHour: Record<string, Record<number, { values: number[], dates: Date[] }>> = {};
+
+  // Initialize the grouping structure
+  occupancyData.forEach((record) => {
+    const hour = getHourFromTime(record.time);
+    if (!groupedByDayAndHour[record.day]) {
+      groupedByDayAndHour[record.day] = {};
+    }
+    if (!groupedByDayAndHour[record.day][hour]) {
+      groupedByDayAndHour[record.day][hour] = { values: [], dates: [] };
+    }
+    groupedByDayAndHour[record.day][hour].values.push(record.occupancy);
+    groupedByDayAndHour[record.day][hour].dates.push(record.date);
+  });
+
+  // Create capacity lookup map - use average capacity for each day and hour
+  const capacityMap: Record<string, Record<number, number>> = {};
+  
+  capacityData.forEach((record) => {
+    const day = record.day;
+    const hour = parseInt(record.hour);
+    
+    if (!capacityMap[day]) {
+      capacityMap[day] = {};
+    }
+    
+    if (!capacityMap[day][hour]) {
+      capacityMap[day][hour] = { sum: 0, count: 0 };
+    }
+    
+    capacityMap[day][hour].sum += record.maximumOccupancy;
+    capacityMap[day][hour].count += 1;
+  });
+  
+  // Calculate average maximum capacity
+  const averageCapacityMap: Record<string, Record<number, number>> = {};
+  
+  Object.keys(capacityMap).forEach(day => {
+    averageCapacityMap[day] = {};
+    
+    Object.keys(capacityMap[day]).forEach(hourStr => {
+      const hour = parseInt(hourStr);
+      const { sum, count } = capacityMap[day][hour];
+      averageCapacityMap[day][hour] = Math.round(sum / count);
+    });
+  });
+
+  // Calculate average occupancy for each day and hour
+  const hourlyOccupancySummary: HourlyOccupancySummary[] = [];
+
+  Object.keys(groupedByDayAndHour).forEach((day) => {
+    Object.keys(groupedByDayAndHour[day]).forEach((hourStr) => {
+      const hour = parseInt(hourStr);
+      const { values: occupancyValues, dates } = groupedByDayAndHour[day][hour];
+      
+      // Only process if we have occupancy data for this hour
+      if (occupancyValues.length > 0) {
+        const sum = occupancyValues.reduce((acc, val) => acc + val, 0);
+        const averageOccupancy = Math.round(sum / occupancyValues.length);
+        const minOccupancy = Math.min(...occupancyValues);
+        const maxOccupancy = Math.max(...occupancyValues);
+        
+        // Get average maximum occupancy for this day and hour
+        const maximumOccupancy = averageCapacityMap[day]?.[hour] || 135; // Default to 135 if not found
+        
+        // Calculate utilization rate as a percentage
+        const utilizationRate = Math.round((averageOccupancy / maximumOccupancy) * 100);
+        
+        // Calculate remaining capacity
+        const remainingCapacity = maximumOccupancy - averageOccupancy;
+        
+        hourlyOccupancySummary.push({
+          day,
+          hour,
+          minOccupancy,
+          maxOccupancy,
+          averageOccupancy,
+          maximumOccupancy,
+          utilizationRate,
+          remainingCapacity,
+          date: dates[0] // Just use the first date as a reference
+        });
+      }
+    });
+  });
+
+  return hourlyOccupancySummary;
+};
+
+export const usePoolData = (selectedWeekId?: string) => {
   const [occupancyData, setOccupancyData] = useState<OccupancyRecord[]>([]);
   const [capacityData, setCapacityData] = useState<CapacityRecord[]>([]);
   const [hourlySummary, setHourlySummary] = useState<HourlyOccupancySummary[]>([]);
+  const [overallHourlySummary, setOverallHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [availableWeeks, setAvailableWeeks] = useState<WeekInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -184,11 +280,17 @@ export const usePoolData = (selectedWeekId: string) => {
     const fetchData = async () => {
       try {
         // Fetch occupancy data
-        const occupancyResponse = await fetch(import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL);
+        const occupancyResponse = await fetch(import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL || '');
+        if (!occupancyResponse.ok) {
+          throw new Error('Failed to load pool occupancy data');
+        }
         const occupancyText = await occupancyResponse.text();
         
         // Fetch capacity data
         const capacityResponse = await fetch('/capacity.csv');
+        if (!capacityResponse.ok) {
+          throw new Error('Failed to load capacity data');
+        }
         const capacityText = await capacityResponse.text();
         
         // Parse CSV data
@@ -208,13 +310,27 @@ export const usePoolData = (selectedWeekId: string) => {
         const weeks = getAvailableWeeks(allDates);
         setAvailableWeeks(weeks);
         
-        // Process data to get hourly summaries
-        const summary = processOccupancyData(
-          parsedOccupancy, 
-          parsedCapacity, 
-          selectedWeekId || weeks[0]?.id || ''
-        );
-        setHourlySummary(summary);
+        // Process data for the overall pattern (across all weeks)
+        const overallSummary = processOverallOccupancyData(parsedOccupancy, parsedCapacity);
+        setOverallHourlySummary(overallSummary);
+        
+        // If a specific week is selected, process data for that week
+        if (selectedWeekId) {
+          const weeklySummary = processOccupancyData(
+            parsedOccupancy, 
+            parsedCapacity, 
+            selectedWeekId
+          );
+          setHourlySummary(weeklySummary);
+        } else if (weeks.length > 0) {
+          // Default to the most recent week if no week is selected
+          const weeklySummary = processOccupancyData(
+            parsedOccupancy, 
+            parsedCapacity, 
+            weeks[0].id
+          );
+          setHourlySummary(weeklySummary);
+        }
         
         setLoading(false);
       } catch (err) {
@@ -225,16 +341,16 @@ export const usePoolData = (selectedWeekId: string) => {
     };
     
     fetchData();
-  }, [selectedWeekId]);
+  }, []);
 
   useEffect(() => {
-    if (occupancyData.length > 0 && capacityData.length > 0) {
+    if (occupancyData.length > 0 && capacityData.length > 0 && selectedWeekId) {
       const summary = processOccupancyData(occupancyData, capacityData, selectedWeekId);
       setHourlySummary(summary);
     }
   }, [selectedWeekId, occupancyData, capacityData]);
 
-  return { occupancyData, capacityData, hourlySummary, availableWeeks, loading, error };
+  return { occupancyData, capacityData, hourlySummary, overallHourlySummary, availableWeeks, loading, error };
 };
 
 // Parse the CSV text into OccupancyRecord objects
