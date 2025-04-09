@@ -11,7 +11,7 @@ import OccupancyHeatmap from '@/components/heatmaps/OccupancyHeatmap';
 import RawHeatmap from '@/components/heatmaps/RawHeatmap';
 import OverallOccupancyHeatmap from '@/components/heatmaps/OverallOccupancyHeatmap';
 import CurrentOccupancy from '@/components/ui/CurrentOccupancy';
-import { usePoolData } from '@/utils/processData';
+import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 
 type TabType = 'chart' | 'table' | 'heatmap' | 'absolute' | 'overall';
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from './types/poolData';
-import { getAvailableWeeks } from './date/dateUtils';
-import { parseOccupancyCSV, parseCapacityCSV, getHourFromTime } from './data/csvParser';
-import { processOccupancyData, processOverallOccupancyData } from './data/dataProcessing';
+import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from '../types/poolData';
+import { getAvailableWeeks } from '../date/dateUtils';
+import { parseOccupancyCSV, parseCapacityCSV, getHourFromTime } from '../data/csvParser';
+import { processOccupancyData, processOverallOccupancyData } from '../data/dataProcessing';
 
 export const usePoolData = (selectedWeekId?: string) => {
   const [occupancyData, setOccupancyData] = useState<OccupancyRecord[]>([]);

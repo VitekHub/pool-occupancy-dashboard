@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePoolData } from '@/utils/processData';
+import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePoolData } from '@/utils/processData';
+import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 
 const OverallOccupancyHeatmap: React.FC = () => {

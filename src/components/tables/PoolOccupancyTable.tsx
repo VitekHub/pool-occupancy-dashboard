@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download } from 'lucide-react';
-import { usePoolData } from '@/utils/processData';
+import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 import Table from '@/components/ui/Table';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
