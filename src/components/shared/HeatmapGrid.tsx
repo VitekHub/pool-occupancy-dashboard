@@ -35,7 +35,18 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
 
   return (
     <div className="overflow-x-auto">
-      <div className="min-w-max">        
+      <div className="min-w-max">
+        {/* Hours header row */}
+        <div className="flex">
+          <div className="w-24 flex-shrink-0" />
+          {hours.map(hour => (
+            <div key={hour} className="w-12 text-center text-xs font-medium text-gray-600">
+              {hour}:00
+            </div>
+          ))}
+          {hasExtraRow && <div className="w-48 flex-shrink-0" />}
+        </div>
+
         {/* Days rows */}
         {days.map((day) => (
           <div key={day} className={`flex`}>
@@ -47,7 +58,7 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
               const { color, displayText, title, extraRow } = getCellData(day, hour);
               return (
                 <div key={`${day}-${hour}`} className="w-12">
-                  { (hasExtraRow || days.indexOf(day) === 0) && 
+                  { (hasExtraRow && days.indexOf(day) > 0) && 
                     (<div className="w-12 text-center text-xs font-medium text-gray-600">
                       {hour}:00
                     </div>
@@ -74,7 +85,7 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
               );
             })}
             {hasExtraRow && (
-              <div className="w-58 flex-shrink-0 font-normal text-gray-500 pl-4 mt-4">
+              <div className="w-58 flex-shrink-0 font-normal text-gray-500 pl-4 mt-2">
                 <div className="h-12 flex items-center">{subtitles[0]}</div>
                 <div className="h-12 flex items-center">{subtitles[1]}</div>
               </div>
