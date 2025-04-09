@@ -137,7 +137,7 @@ const calculateAverageUtilization = (
   hour: number,
   weeklyUtilization: Record<string, Record<string, Record<number, number>>>,
   weeks: { id: string }[]
-): number | null => {
+): number => {
   const rates: number[] = [];
   
   weeks.forEach(week => {
@@ -147,7 +147,8 @@ const calculateAverageUtilization = (
     }
   });
   
-  if (rates.length === 0) return null;
+  // If no data is available, return 0 to indicate no utilization
+  if (rates.length === 0) return 0;
   
   return Math.round(rates.reduce((sum, rate) => sum + rate, 0) / rates.length);
 };
@@ -184,20 +185,31 @@ export const processOverallOccupancyData = (
   DAYS.forEach(day => {
     HOURS.forEach(hour => {
       const averageUtilization = calculateAverageUtilization(day, hour, weeklyUtilization, weeks);
+      const recentWeekData = processOccupancyData(
+        occupancyData,
+        capacityData,
+        weeks[0].id
+      ).find(data => data.day === day && data.hour === hour);
       
-      if (averageUtilization !== null) {
-        const recentWeekData = processOccupancyData(
-          occupancyData,
-          capacityData,
-          weeks[0].id
-        ).find(data => data.day === day && data.hour === hour);
-
-        if (recentWeekData) {
-          hourlyOccupancySummary.push({
-            ...recentWeekData,
-            utilizationRate: averageUtilization
-          });
-        }
+      // Create a summary entry even if we don't have recent week data
+      const summary: HourlyOccupancySummary = recentWeekData ? {
+        ...recentWeekData,
+        utilizationRate: averageUtilization
+      } : {
+        day,
+        hour,
+        minOccupancy: 0,
+        maxOccupancy: 0,
+        averageOccupancy: 0,
+        maximumOccupancy: 135, // Default maximum occupancy
+        utilizationRate: averageUtilization,
+        remainingCapacity: 135, // Full capacity remaining when no data
+        date: new Date() // Current date as fallback
+      };
+      
+      // Only add to summary if we have any utilization data
+      if (averageUtilization > 0 || recentWeekData) {
+        hourlyOccupancySummary.push(summary);
       }
     });
   });
