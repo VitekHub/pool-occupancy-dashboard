@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { WeekInfo, formatWeekRange } from '@/utils/processData';
+import type { WeekInfo } from '@/utils/types/poolData';
+import { formatWeekRange } from '@/utils/date/dateUtils';
 
 interface WeekNavigatorProps {
   weeks: WeekInfo[];

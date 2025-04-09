@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { usePoolData, HourlyOccupancySummary } from '@/utils/processData';
+import { usePoolData } from '@/utils/processData';
+import type { HourlyOccupancySummary } from '@/utils/types/poolData';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
-import { OccupancyRecord, CapacityRecord } from '@/utils/processData';
+import type { OccupancyRecord, CapacityRecord } from '@/utils/types/poolData';
 
 interface CurrentOccupancyProps {
   currentOccupancy: OccupancyRecord | null;
