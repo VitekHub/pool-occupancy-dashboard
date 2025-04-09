@@ -68,7 +68,6 @@ const PoolOccupancyTable: React.FC<PoolOccupancyTableProps> = ({ selectedWeekId 
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">{t('tables:title')}</h2>
       
       {/* Download section */}
       <div className="mb-6">

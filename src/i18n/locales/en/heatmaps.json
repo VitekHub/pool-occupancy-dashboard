@@ -1,10 +1,10 @@
 {
   "todayTomorrow": {
     "title": "Today and Tomorrow",
-    "description": "This heatmap shows the average pool occupancy for today and tomorrow, helping you plan your visit in the immediate future.",
+    "description": "This heatmap displays historical average pool occupancy and current number of opened lanes for today and tomorrow, helping you plan your visit.",
     "daySubtitle": {
-      "occupancy": "Average Occupancy",
-      "lanes": "Opened Lanes"
+      "occupancy": "Historical Average Occupancy",
+      "lanes": "Currently Opened Lanes"
     },
     "tooltip": "{{day}} at {{hour}}:00 - average {{utilization}}% occupied",
     "legend": {

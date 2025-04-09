@@ -52,7 +52,6 @@ const PoolOccupancyChart: React.FC<PoolOccupancyChartProps> = ({ selectedWeekId 
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">{t('charts:title')}</h2>
       
       {/* Day selector */}
       <DaySelector

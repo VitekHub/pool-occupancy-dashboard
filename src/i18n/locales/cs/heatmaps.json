@@ -1,10 +1,10 @@
 {
   "todayTomorrow": {
     "title": "Dnes a zítra",
-    "description": "Tato mapa ukazuje průměrnou obsazenost bazénu pro dnešek a zítřek, což vám pomůže naplánovat vaši návštěvu v nejbližší době.",
+    "description": "Tato mapa zobrazuje historickou průměrnou obsazenost bazénu a aktuální počet otevřených drah pro dnešek a zítřek.",
     "daySubtitle": {
-      "occupancy": "Průměrná obsazenost",
-      "lanes": "Otevřené dráhy"
+      "occupancy": "Historická průměrná obsazenost",
+      "lanes": "Aktuálně otevřené dráhy"
     },
     "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno",
     "legend": {

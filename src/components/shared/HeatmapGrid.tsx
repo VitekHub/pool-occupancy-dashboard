@@ -49,7 +49,7 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({ days, hours, getCellData, has
             {hours.map(hour => {
               const { color, displayText, title, extraRow } = getCellData(day, hour);
               return (
-                <div key={`${day}-${hour}`} className="w-12 mb-8">
+                <div key={`${day}-${hour}`} className="w-12">
                   <div
                     className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
@@ -57,7 +57,7 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({ days, hours, getCellData, has
                     <span className="text-xs font-medium text-gray-700">{displayText}</span>
                   </div>
                   {extraRow && (
-                    <div className="h-12 border border-gray-200 relative flex items-center justify-center mb-4">
+                    <div className="h-12 border border-gray-200 relative flex items-center justify-center mb-8">
                       <div 
                         className="absolute bottom-0 bg-blue-400"
                         style={{ 
@@ -72,7 +72,7 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({ days, hours, getCellData, has
               );
             })}
             {hasExtraRow && (
-              <div className="w-48 flex-shrink-0 font-normal text-gray-500 pl-4">
+              <div className="w-58 flex-shrink-0 font-normal text-gray-500 pl-4">
                 <div className="h-12 flex items-center">{subtitles[0]}</div>
                 <div className="h-12 flex items-center">{subtitles[1]}</div>
               </div>
