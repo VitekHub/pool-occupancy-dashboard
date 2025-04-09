@@ -108,7 +108,6 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
   
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      
       <HeatmapGrid
         days={days}
         hours={HOURS}

@@ -1,39 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 import { format, addDays } from 'date-fns';
 import { DAYS, getValidHours } from '@/constants/time';
-import { parseCapacityCSV } from '@/utils/data/csvParser';
 import type { CapacityRecord } from '@/utils/types/poolData';
 
 const TodayTomorrowHeatmap: React.FC = () => {
-  const { overallHourlySummary, capacityData, loading, error } = usePoolData();
-  const [weekCapacityData, setWeekCapacityData] = useState<CapacityRecord[]>([]);
-  const [weekCapacityError, setWeekCapacityError] = useState<string | null>(null);
+  const { t } = useTranslation('heatmaps');
+  const { 
+    overallHourlySummary, 
+    weekCapacityData, 
+    loading, 
+    error,
+    weekCapacityError 
+  } = usePoolData();
+  const [showFullWeek, setShowFullWeek] = useState(false);
 
-  useEffect(() => {
-    const fetchWeekCapacity = async () => {
-      try {
-        const response = await fetch(import.meta.env.VITE_WEEK_CAPACITY_CSV_URL);
-        if (!response.ok) {
-          throw new Error('Failed to load week capacity data');
-        }
-        const text = await response.text();
-        const parsedData = parseCapacityCSV(text);
-        setWeekCapacityData(parsedData);
-      } catch (err) {
-        setWeekCapacityError('Failed to load week capacity data');
-        console.error('Error loading week capacity data:', err);
-      }
-    };
-
-    fetchWeekCapacity();
-  }, []);
-  
   // Get today's day name
   const today = new Date();
   const todayName = format(today, 'EEEE');
-  const tomorrowName = format(addDays(today, 1), 'EEEE');
+  
+  // Get future days starting from tomorrow
+  const futureDays = DAYS.slice(DAYS.indexOf(todayName) + 1);
   
   // Calculate lanes from maximum occupancy
   const calculateLanes = (maxOccupancy: number): number => {
@@ -42,9 +32,14 @@ const TodayTomorrowHeatmap: React.FC = () => {
   
   // Filter data for today and tomorrow only
   const filteredData = overallHourlySummary.filter(item => {
-    if (item.day === todayName) return true;
-    if (item.day === tomorrowName && DAYS.indexOf(todayName) !== DAYS.length - 1) return true;
-    return false;
+    const dayIndex = DAYS.indexOf(item.day);
+    const todayIndex = DAYS.indexOf(todayName);
+    
+    if (showFullWeek) {
+      return dayIndex >= todayIndex;
+    } else {
+      return dayIndex === todayIndex || (dayIndex === todayIndex + 1 && todayIndex < DAYS.length - 1);
+    }
   });
   
   // Add ratio data
@@ -63,9 +58,8 @@ const TodayTomorrowHeatmap: React.FC = () => {
     // Calculate fill ratio (current/total)
     const fillRatio = currentLanes / totalLanes;
     
-    // Show ratio for all hours of today and tomorrow
-    const showRatio = 
-      item.day === todayName || item.day === tomorrowName;
+    // Show ratio for all future days
+    const showRatio = DAYS.indexOf(item.day) >= DAYS.indexOf(todayName);
     
     return {
       ...item,
@@ -77,16 +71,35 @@ const TodayTomorrowHeatmap: React.FC = () => {
     };
   });
 
+  // Get the days to display
+  const displayDays = showFullWeek 
+    ? [todayName, ...futureDays]
+    : [todayName, ...(futureDays.length > 0 ? [futureDays[0]] : [])];
+
+  const showMoreButton = futureDays.length > 1 && (
+    <button
+      onClick={() => setShowFullWeek(!showFullWeek)}
+      className="mt-2 flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+    >
+      {showFullWeek ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      {t(showFullWeek ? 'todayTomorrow.showLess' : 'todayTomorrow.showMore')}
+    </button>
+  );
+
   return (
-    <BaseOccupancyHeatmap
-      data={dataWithRatios}
-      titleTranslationKey="heatmaps:todayTomorrow.title"
-      tooltipTranslationKey="heatmaps:todayTomorrow.tooltip"
-      legendTitleTranslationKey="heatmaps:todayTomorrow.legend.title"
-      loading={loading || weekCapacityData.length === 0}
-      error={error}
-      days={[todayName, ...(DAYS.indexOf(todayName) !== DAYS.length - 1 ? [tomorrowName] : [])]}
-    />
+    <div>
+      {showMoreButton}
+      
+      <BaseOccupancyHeatmap
+        data={dataWithRatios}
+        titleTranslationKey="heatmaps:todayTomorrow.title"
+        tooltipTranslationKey="heatmaps:todayTomorrow.tooltip"
+        legendTitleTranslationKey="heatmaps:todayTomorrow.legend.title"
+        loading={loading || weekCapacityData.length === 0}
+        error={error}
+        days={displayDays}
+      />
+    </div>
   );
 };
 
