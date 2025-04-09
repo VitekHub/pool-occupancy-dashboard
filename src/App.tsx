@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BarChart, Activity, Table, Calendar, Users, TrendingUp } from 'lucide-react';
+import { BarChart, Activity, Table, Calendar, Users, TrendingUp, Clock } from 'lucide-react';
 import TabButton from '@/components/ui/TabButton';
 import ContentCard from '@/components/ui/ContentCard';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
@@ -10,12 +10,22 @@ import PoolOccupancyTable from '@/components/tables/PoolOccupancyTable';
 import OccupancyHeatmap from '@/components/heatmaps/OccupancyHeatmap';
 import RawHeatmap from '@/components/heatmaps/RawHeatmap';
 import OverallOccupancyHeatmap from '@/components/heatmaps/OverallOccupancyHeatmap';
+import TodayTomorrowHeatmap from '@/components/heatmaps/TodayTomorrowHeatmap';
 import CurrentOccupancy from '@/components/ui/CurrentOccupancy';
 import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 
-type TabType = 'chart' | 'table' | 'heatmap' | 'absolute' | 'overall';
+type TabType = 'chart' | 'table' | 'heatmap' | 'absolute' | 'overall' | 'todayTomorrow';
 
 const TAB_CONFIG = [
+  {
+    id: 'todayTomorrow' as TabType,
+    icon: Clock,
+    labelKey: 'dashboard:tabs.todayTomorrow',
+    component: TodayTomorrowHeatmap,
+    titleKey: 'heatmaps:todayTomorrow.title',
+    descriptionKey: 'heatmaps:todayTomorrow.description',
+    showWeekSelector: false
+  },
   {
     id: 'overall' as TabType,
     icon: TrendingUp,
@@ -65,7 +75,7 @@ const TAB_CONFIG = [
 
 function App() {
   const { t } = useTranslation(['dashboard', 'common']);
-  const [activeTab, setActiveTab] = useState<TabType>('overall');
+  const [activeTab, setActiveTab] = useState<TabType>(TAB_CONFIG[0].id);
   const [selectedWeekId, setSelectedWeekId] = useState<string>('');
   
   const { availableWeeks, loading, currentOccupancy, capacityData } = usePoolData(selectedWeekId);

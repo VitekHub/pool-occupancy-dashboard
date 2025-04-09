@@ -1,4 +1,24 @@
 {
+  "todayTomorrow": {
+    "title": "Today and Tomorrow",
+    "description": "This heatmap shows the average pool occupancy for today and tomorrow, helping you plan your visit in the immediate future.",
+    "daySubtitle": {
+      "occupancy": "Average Occupancy",
+      "lanes": "Opened Lanes"
+    },
+    "tooltip": "{{day}} at {{hour}}:00 - average {{utilization}}% occupied",
+    "legend": {
+      "title": "Occupancy Rate",
+      "labels": {
+        "empty": "0%",
+        "veryLow": "<25%",
+        "low": "<33%",
+        "medium": "<42%",
+        "high": "<52%",
+        "veryHigh": "52%+"
+      }
+    }
+  },
   "overall": {
     "title": "Average Occupancy",
     "description": "This heatmap shows the average pool occupancy over recent weeks. It displays typical occupancy patterns for each day of the week taking into account closed lanes.",

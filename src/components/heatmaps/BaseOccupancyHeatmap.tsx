@@ -5,13 +5,22 @@ import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
 
+interface HourlyDataWithRatio extends HourlyOccupancySummary {
+  ratio?: {
+    current: number;
+    total: number;
+    fillRatio: number;
+  };
+}
+
 interface BaseOccupancyHeatmapProps {
-  data: HourlyOccupancySummary[];
+  data: HourlyDataWithRatio[];
   titleTranslationKey: string;
   tooltipTranslationKey: string;
   legendTitleTranslationKey?: string;
   loading: boolean;
   error: string | null;
+  days?: string[];
 }
 
 const getColorForUtilization = (rate: number): string => {
@@ -29,7 +38,8 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
   tooltipTranslationKey,
   legendTitleTranslationKey = 'heatmaps:occupancy.legend.title',
   loading,
-  error
+  error,
+  days = DAYS
 }) => {
   const { t } = useTranslation(['heatmaps', 'common']);
 
@@ -52,12 +62,15 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
 
   // Create a map for quick lookup of utilization rates
   const utilizationMap: Record<string, Record<number, number>> = {};
+  const ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>> = {};
   
   // Initialize with empty data
-  DAYS.forEach(day => {
+  days.forEach(day => {
     utilizationMap[day] = {};
+    ratioMap[day] = {};
     HOURS.forEach(hour => {
       utilizationMap[day][hour] = 0;
+      ratioMap[day][hour] = undefined;
     });
   });
   
@@ -65,11 +78,14 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
   data.forEach(item => {
     if (utilizationMap[item.day] && HOURS.includes(item.hour)) {
       utilizationMap[item.day][item.hour] = item.utilizationRate;
+      ratioMap[item.day][item.hour] = item.ratio;
     }
   });
   
   const getCellData = (day: string, hour: number) => {
     const utilization = utilizationMap[day][hour];
+    const ratio = ratioMap[day][hour];
+    
     return {
       color: getColorForUtilization(utilization),
       displayText: utilization > 0 ? `${utilization}%` : '',
@@ -77,18 +93,28 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
         day: t(`common:days.${day.toLowerCase()}`),
         hour,
         utilization
+      }),
+      ...(ratio && {
+        extraRow: {
+          text: `${ratio.current}/${ratio.total}`,
+          fillRatio: ratio.fillRatio
+        }
       })
     };
   };
+
+  // Check if any data point has a ratio property
+  const hasRatioData = data.some(item => item.ratio !== undefined);
   
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6">{t(titleTranslationKey)}</h2>
       
       <HeatmapGrid
-        days={DAYS}
+        days={days}
         hours={HOURS}
         getCellData={getCellData}
+        hasExtraRow={hasRatioData}
       />
       
       <HeatmapLegend

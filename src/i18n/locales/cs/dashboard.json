@@ -1,6 +1,7 @@
 {
   "title": "Bazén Kraví hora - Obsazenost otevřených drah",
   "tabs": {
+    "todayTomorrow": "Dnes/Zítra",
     "overall": "Průměrná obsazenost",
     "chart": "Graf obsazenosti",
     "table": "Tabulka dat",

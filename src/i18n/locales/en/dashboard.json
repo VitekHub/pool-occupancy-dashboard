@@ -1,6 +1,7 @@
 {
   "title": "Kraví hora Pool - Open Lane Occupancy",
   "tabs": {
+    "todayTomorrow": "Today/Tomorrow",
     "overall": "Average Occupancy",
     "chart": "Occupancy Chart",
     "table": "Data Table",
