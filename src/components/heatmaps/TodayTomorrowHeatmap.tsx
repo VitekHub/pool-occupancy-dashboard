@@ -22,8 +22,20 @@ const TodayTomorrowHeatmap: React.FC = () => {
   const today = new Date();
   const todayName = format(today, 'EEEE');
   
-  // Get future days starting from tomorrow
-  const futureDays = DAYS.slice(DAYS.indexOf(todayName) + 1);
+  // Get days in circular order starting from today
+  const todayIndex = DAYS.indexOf(todayName);
+  const futureDays = [
+    ...DAYS.slice(todayIndex + 1),
+    ...DAYS.slice(0, todayIndex)
+  ];
+
+  // Create day labels with dates
+  const dayLabels: Record<string, string> = {};
+  let currentDate = today;
+  [todayName, ...futureDays].forEach(day => {
+    dayLabels[day] = format(currentDate, 'd.M.');
+    currentDate = addDays(currentDate, 1);
+  });
   
   // Calculate lanes from maximum occupancy
   const calculateLanes = (maxOccupancy: number): number => {
@@ -36,9 +48,9 @@ const TodayTomorrowHeatmap: React.FC = () => {
     const todayIndex = DAYS.indexOf(todayName);
     
     if (showFullWeek) {
-      return dayIndex >= todayIndex;
+      return true
     } else {
-      return dayIndex === todayIndex || (dayIndex === todayIndex + 1 && todayIndex < DAYS.length - 1);
+      return dayIndex === todayIndex || (dayIndex === todayIndex + 1);
     }
   });
   
@@ -58,12 +70,9 @@ const TodayTomorrowHeatmap: React.FC = () => {
     // Calculate fill ratio (current/total)
     const fillRatio = currentLanes / totalLanes;
     
-    // Show ratio for all future days
-    const showRatio = DAYS.indexOf(item.day) >= DAYS.indexOf(todayName);
-    
     return {
       ...item,
-      ratio: showRatio && !weekCapacityError ? {
+      ratio: !weekCapacityError ? {
         current: currentLanes,
         total: totalLanes,
         fillRatio
@@ -98,7 +107,10 @@ const TodayTomorrowHeatmap: React.FC = () => {
         loading={loading || weekCapacityData.length === 0}
         error={error}
         days={displayDays}
+        dayLabels={dayLabels}
       />
+
+      {showMoreButton}
     </div>
   );
 };

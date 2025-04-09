@@ -1,5 +1,6 @@
 {
   "title": "Kraví hora Pool - Open Lane Occupancy",
+  "weeklySchedule": "Weekly Schedule",
   "tabs": {
     "todayTomorrow": "Today/Tomorrow",
     "overall": "Average Occupancy",

@@ -21,6 +21,7 @@ interface BaseOccupancyHeatmapProps {
   loading: boolean;
   error: string | null;
   days?: string[];
+  dayLabels?: Record<string, string>;
 }
 
 const getColorForUtilization = (rate: number): string => {
@@ -39,7 +40,8 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
   legendTitleTranslationKey = 'heatmaps:occupancy.legend.title',
   loading,
   error,
-  days = DAYS
+  days = DAYS,
+  dayLabels
 }) => {
   const { t } = useTranslation(['heatmaps', 'common']);
 
@@ -113,6 +115,7 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
         hours={HOURS}
         getCellData={getCellData}
         hasExtraRow={hasRatioData}
+        dayLabels={dayLabels}
       />
       
       <HeatmapLegend
