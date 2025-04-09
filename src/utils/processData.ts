@@ -86,7 +86,7 @@ export const usePoolData = (selectedWeekId?: string) => {
     fetchData();
   }, []);
 
-  // Set up auto-refresh every 10 minutes
+  // Set up auto-refresh every 2 minutes
   useEffect(() => {
     const refreshInterval = setInterval(async () => {
       try {
@@ -116,7 +116,7 @@ export const usePoolData = (selectedWeekId?: string) => {
       } catch (err) {
         console.error('Error refreshing data:', err);
       }
-    }, 10 * 60 * 1000); // 10 minutes
+    }, 2 * 60 * 1000); // 2 minutes
     
     return () => clearInterval(refreshInterval);
   }, [selectedWeekId, capacityData, setCurrentOccupancy, setOccupancyData, setHourlySummary, setOverallHourlySummary]);

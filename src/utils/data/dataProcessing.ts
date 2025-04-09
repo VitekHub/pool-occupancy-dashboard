@@ -4,103 +4,113 @@ import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary } from '..
 import { getWeekId, getAvailableWeeks } from '../date/dateUtils';
 import { getHourFromTime } from './csvParser';
 
-// Process the occupancy data to group by day and hour
-export const processOccupancyData = (
-  occupancyData: OccupancyRecord[],
-  capacityData: CapacityRecord[],
-  selectedWeekId: string
-): HourlyOccupancySummary[] => {
-  // Filter data for the selected week
-  const weekStart = parse(selectedWeekId, 'yyyy-MM-dd', new Date());
-  const weekEnd = addDays(weekStart, 6);
-  
-  const filteredOccupancyData = occupancyData.filter(record => 
+// Filter data for a specific week
+const filterDataForWeek = (
+  data: (OccupancyRecord | CapacityRecord)[],
+  weekStart: Date,
+  weekEnd: Date
+) => {
+  return data.filter(record => 
     isWithinInterval(record.date, { start: weekStart, end: weekEnd })
   );
-  
-  const filteredCapacityData = capacityData.filter(record => 
-    isWithinInterval(record.date, { start: weekStart, end: weekEnd })
-  );
-  
-  // Group occupancy records by day and hour
-  const groupedByDayAndHour: Record<string, Record<number, { values: number[], date: Date }>> = {};
+};
 
-  // Initialize the grouping structure
-  filteredOccupancyData.forEach((record) => {
+// Group occupancy records by day and hour
+const groupOccupancyByDayAndHour = (
+  occupancyData: OccupancyRecord[]
+): Record<string, Record<number, { values: number[], date: Date }>> => {
+  const grouped: Record<string, Record<number, { values: number[], date: Date }>> = {};
+
+  occupancyData.forEach((record) => {
     const hour = getHourFromTime(record.time);
-    if (!groupedByDayAndHour[record.day]) {
-      groupedByDayAndHour[record.day] = {};
+    
+    if (!grouped[record.day]) {
+      grouped[record.day] = {};
     }
-    if (!groupedByDayAndHour[record.day][hour]) {
-      groupedByDayAndHour[record.day][hour] = { values: [], date: record.date };
+    if (!grouped[record.day][hour]) {
+      grouped[record.day][hour] = { values: [], date: record.date };
     }
-    groupedByDayAndHour[record.day][hour].values.push(record.occupancy);
+    
+    grouped[record.day][hour].values.push(record.occupancy);
   });
 
-  // Create capacity lookup map
+  return grouped;
+};
+
+// Create a lookup map for capacity data
+const createCapacityMap = (
+  capacityData: CapacityRecord[]
+): Record<string, Record<number, number>> => {
   const capacityMap: Record<string, Record<number, number>> = {};
-  filteredCapacityData.forEach((record) => {
+  
+  capacityData.forEach((record) => {
     if (!capacityMap[record.day]) {
       capacityMap[record.day] = {};
     }
     capacityMap[record.day][parseInt(record.hour)] = record.maximumOccupancy;
   });
 
-  // Calculate average occupancy for each day and hour
-  const hourlyOccupancySummary: HourlyOccupancySummary[] = [];
+  return capacityMap;
+};
 
-  Object.keys(groupedByDayAndHour).forEach((day) => {
-    Object.keys(groupedByDayAndHour[day]).forEach((hourStr) => {
+// Calculate statistics for a single time slot
+const calculateTimeSlotStats = (
+  occupancyValues: number[],
+  maximumOccupancy: number,
+  day: string,
+  hour: number,
+  date: Date
+): HourlyOccupancySummary => {
+  const sum = occupancyValues.reduce((acc, val) => acc + val, 0);
+  const averageOccupancy = Math.round(sum / occupancyValues.length);
+  const minOccupancy = Math.min(...occupancyValues);
+  const maxOccupancy = Math.max(...occupancyValues);
+  const utilizationRate = Math.round((averageOccupancy / maximumOccupancy) * 100);
+  const remainingCapacity = maximumOccupancy - averageOccupancy;
+
+  return {
+    day,
+    hour,
+    minOccupancy,
+    maxOccupancy,
+    averageOccupancy,
+    maximumOccupancy,
+    utilizationRate,
+    remainingCapacity,
+    date
+  };
+};
+
+// Calculate hourly summary for grouped data
+const calculateHourlySummary = (
+  groupedData: Record<string, Record<number, { values: number[], date: Date }>>,
+  capacityMap: Record<string, Record<number, number>>
+): HourlyOccupancySummary[] => {
+  const summary: HourlyOccupancySummary[] = [];
+
+  Object.entries(groupedData).forEach(([day, hourData]) => {
+    Object.entries(hourData).forEach(([hourStr, { values, date }]) => {
       const hour = parseInt(hourStr);
-      const { values: occupancyValues, date } = groupedByDayAndHour[day][hour];
       
-      // Only process if we have occupancy data for this hour
-      if (occupancyValues.length > 0) {
-        const sum = occupancyValues.reduce((acc, val) => acc + val, 0);
-        const averageOccupancy = Math.round(sum / occupancyValues.length);
-        const minOccupancy = Math.min(...occupancyValues);
-        const maxOccupancy = Math.max(...occupancyValues);
-        
-        // Get maximum occupancy for this day and hour
-        const maximumOccupancy = capacityMap[day]?.[hour] || 135; // Default to 135 if not found
-        
-        // Calculate utilization rate as a percentage
-        const utilizationRate = Math.round((averageOccupancy / maximumOccupancy) * 100);
-        
-        // Calculate remaining capacity
-        const remainingCapacity = maximumOccupancy - averageOccupancy;
-        
-        hourlyOccupancySummary.push({
-          day,
-          hour,
-          minOccupancy,
-          maxOccupancy,
-          averageOccupancy,
-          maximumOccupancy,
-          utilizationRate,
-          remainingCapacity,
-          date
-        });
+      if (values.length > 0) {
+        const maximumOccupancy = capacityMap[day]?.[hour] || 135;
+        const stats = calculateTimeSlotStats(values, maximumOccupancy, day, hour, date);
+        summary.push(stats);
       }
     });
   });
 
-  return hourlyOccupancySummary;
+  return summary;
 };
 
-// Process all occupancy data to get overall patterns
-export const processOverallOccupancyData = (
+// Calculate weekly utilization rates
+const calculateWeeklyUtilization = (
   occupancyData: OccupancyRecord[],
   capacityData: CapacityRecord[],
-): HourlyOccupancySummary[] => {
-  // First, calculate weekly utilization rates
+  weeks: { id: string }[]
+): Record<string, Record<string, Record<number, number>>> => {
   const weeklyUtilization: Record<string, Record<string, Record<number, number>>> = {};
 
-  // Group data by weeks
-  const allDates = occupancyData.map(record => record.date);
-  const weeks = getAvailableWeeks(allDates);
-
-  // Calculate utilization rates for each week
   weeks.forEach(week => {
     const weekId = week.id;
     const weeklyData = processOccupancyData(occupancyData, capacityData, weekId);
@@ -118,28 +128,64 @@ export const processOverallOccupancyData = (
     });
   });
 
-  // Calculate average utilization rates across weeks
+  return weeklyUtilization;
+};
+
+// Calculate average utilization for a specific time slot across weeks
+const calculateAverageUtilization = (
+  day: string,
+  hour: number,
+  weeklyUtilization: Record<string, Record<string, Record<number, number>>>,
+  weeks: { id: string }[]
+): number | null => {
+  const rates: number[] = [];
+  
+  weeks.forEach(week => {
+    const rate = weeklyUtilization[week.id]?.[day]?.[hour];
+    if (typeof rate === 'number') {
+      rates.push(rate);
+    }
+  });
+  
+  if (rates.length === 0) return null;
+  
+  return Math.round(rates.reduce((sum, rate) => sum + rate, 0) / rates.length);
+};
+
+// Process the occupancy data to group by day and hour
+export const processOccupancyData = (
+  occupancyData: OccupancyRecord[],
+  capacityData: CapacityRecord[],
+  selectedWeekId: string
+): HourlyOccupancySummary[] => {
+  const weekStart = parse(selectedWeekId, 'yyyy-MM-dd', new Date());
+  const weekEnd = addDays(weekStart, 6);
+  
+  const filteredOccupancyData = filterDataForWeek(occupancyData, weekStart, weekEnd);
+  const filteredCapacityData = filterDataForWeek(capacityData, weekStart, weekEnd);
+  
+  const groupedData = groupOccupancyByDayAndHour(filteredOccupancyData as OccupancyRecord[]);
+  const capacityMap = createCapacityMap(filteredCapacityData as CapacityRecord[]);
+  
+  return calculateHourlySummary(groupedData, capacityMap);
+};
+
+// Process all occupancy data to get overall patterns
+export const processOverallOccupancyData = (
+  occupancyData: OccupancyRecord[],
+  capacityData: CapacityRecord[],
+): HourlyOccupancySummary[] => {
+  const allDates = occupancyData.map(record => record.date);
+  const weeks = getAvailableWeeks(allDates);
+  
+  const weeklyUtilization = calculateWeeklyUtilization(occupancyData, capacityData, weeks);
   const hourlyOccupancySummary: HourlyOccupancySummary[] = [];
 
   DAYS.forEach(day => {
     HOURS.forEach(hour => {
-      // Collect utilization rates for this day and hour across all weeks
-      const rates: number[] = [];
+      const averageUtilization = calculateAverageUtilization(day, hour, weeklyUtilization, weeks);
       
-      weeks.forEach(week => {
-        const rate = weeklyUtilization[week.id]?.[day]?.[hour];
-        if (typeof rate === 'number') {
-          rates.push(rate);
-        }
-      });
-      
-      // Only add summary if we have data for this slot
-      if (rates.length > 0) {
-        const averageUtilization = Math.round(
-          rates.reduce((sum, rate) => sum + rate, 0) / rates.length
-        );
-
-        // Use the most recent week's data for other metrics
+      if (averageUtilization !== null) {
         const recentWeekData = processOccupancyData(
           occupancyData,
           capacityData,
@@ -147,26 +193,9 @@ export const processOverallOccupancyData = (
         ).find(data => data.day === day && data.hour === hour);
 
         if (recentWeekData) {
-          const {
-            minOccupancy,
-            maxOccupancy,
-            maximumOccupancy,
-            averageOccupancy,
-            remainingCapacity,
-            date
-          } = recentWeekData;
-
-          // Create summary with average utilization rate
           hourlyOccupancySummary.push({
-            day,
-            hour,
-            minOccupancy,
-            maxOccupancy,
-            averageOccupancy,
-            maximumOccupancy,
-            utilizationRate: averageUtilization,
-            remainingCapacity,
-            date
+            ...recentWeekData,
+            utilizationRate: averageUtilization
           });
         }
       }
