@@ -18,6 +18,7 @@ const CurrentOccupancy: React.FC<CurrentOccupancyProps> = ({ currentOccupancy, c
   // Find the maximum occupancy for the current hour
   const currentMaxOccupancy = capacityData.find(
     record => 
+      record.date.getTime() === currentOccupancy.date.getTime() &&
       record.day === currentOccupancy.day && 
       parseInt(record.hour) === currentOccupancy.hour
   )?.maximumOccupancy || 135; // Default to 135 if not found
