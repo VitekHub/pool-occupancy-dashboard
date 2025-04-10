@@ -29,8 +29,8 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
   const { t } = useTranslation('common');
   
   const subtitles = [
-    t('heatmaps:todayTomorrow.daySubtitle.occupancy'),
-    t('heatmaps:todayTomorrow.daySubtitle.lanes')
+    t('heatmaps:todayTomorrow.daySubtitle.lanes'),
+    t('heatmaps:todayTomorrow.daySubtitle.occupancy')
   ];
 
   return (
@@ -63,14 +63,8 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                       {hour}:00
                     </div>
                   )}
-                  <div
-                    className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
-                    title={title}
-                  >
-                    <span className="text-xs font-medium text-gray-700">{displayText}</span>
-                  </div>
                   {extraRow && (
-                    <div className="h-12 border border-gray-200 relative flex items-center justify-center mb-8">
+                    <div className="h-12 border border-gray-200 relative flex items-center justify-center">
                       <div 
                         className="absolute bottom-0 bg-blue-400"
                         style={{ 
@@ -80,6 +74,15 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                       />
                       <span className="text-xs font-medium text-gray-700 z-10">{extraRow.text}</span>
                     </div>
+                  )}
+                  <div
+                    className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
+                    title={title}
+                  >
+                    <span className="text-xs font-medium text-gray-700">{displayText}</span>
+                  </div>
+                  {extraRow && (
+                    <div className="mb-8"></div>
                   )}
                 </div>
               );
