@@ -39,7 +39,9 @@ const TodayTomorrowHeatmap: React.FC = () => {
   
   // Calculate lanes from maximum occupancy
   const calculateLanes = (maxOccupancy: number): number => {
-    return Math.round(maxOccupancy / 22.5); // 135 max = 6 lanes, so one lane is 22.5
+    // If maxOccupancy is 0, return 0 to indicate pool is closed
+    if (maxOccupancy === 0) return 0;
+    return Math.round(maxOccupancy / 22.5);
   };
   
   // Filter data for today and tomorrow only
@@ -59,7 +61,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
     // Get the current week's capacity for this time slot
     const weekCapacity = weekCapacityData.find(
       cap => cap.day === item.day && parseInt(cap.hour) === item.hour
-    )?.maximumOccupancy || 135;
+    )?.maximumOccupancy ?? 135; // Use nullish coalescing to handle 0 values correctly
     
     // Calculate current number of lanes based on week capacity
     const currentLanes = calculateLanes(weekCapacity);
