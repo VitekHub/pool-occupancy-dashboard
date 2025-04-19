@@ -4,24 +4,23 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 import { format, addDays } from 'date-fns';
-import { DAYS, getValidHours } from '@/constants/time';
-import type { CapacityRecord } from '@/utils/types/poolData';
+import { DAYS } from '@/constants/time';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation('heatmaps');
-  const { 
-    overallHourlySummary, 
-    weekCapacityData, 
-    loading, 
+  const {
+    overallHourlySummary,
+    weekCapacityData,
+    loading,
     error,
-    weekCapacityError 
+    weekCapacityError
   } = usePoolData();
   const [showFullWeek, setShowFullWeek] = useState(false);
 
   // Get today's day name
   const today = new Date();
   const todayName = format(today, 'EEEE');
-  
+
   // Get days in circular order starting from today
   const todayIndex = DAYS.indexOf(todayName);
   const futureDays = [
@@ -36,54 +35,52 @@ const TodayTomorrowHeatmap: React.FC = () => {
     dayLabels[day] = format(currentDate, 'd.M.');
     currentDate = addDays(currentDate, 1);
   });
-  
-  // Calculate lanes from maximum occupancy
-  const calculateLanes = (maxOccupancy: number): number => {
-    // If maxOccupancy is 0, return 0 to indicate pool is closed
-    if (maxOccupancy === 0) return 0;
-    return Math.round(maxOccupancy / 22.5);
-  };
-  
+
   // Filter data for today and tomorrow only
   const filteredData = overallHourlySummary.filter(item => {
     const dayIndex = DAYS.indexOf(item.day);
     const todayIndex = DAYS.indexOf(todayName);
-    
+
     if (showFullWeek) {
       return true
     } else {
       return dayIndex === todayIndex || (dayIndex === todayIndex + 1);
     }
   });
-  
+
   // Add ratio data
   const dataWithRatios = filteredData.map(item => {
     // Get the current week's capacity for this time slot
-    const weekCapacity = weekCapacityData.find(
+    const capacityRecord = weekCapacityData.find(
       cap => cap.day === item.day && parseInt(cap.hour) === item.hour
-    )?.maximumOccupancy ?? 135; // Use nullish coalescing to handle 0 values correctly
-    
-    // Calculate current number of lanes based on week capacity
-    const currentLanes = calculateLanes(weekCapacity);
-    
-    // Total lanes is always 6
+    );
+
+    // If no capacity record exists for this hour, skip this time slot
+    if (!capacityRecord) {
+      return null;
+    }
+
+    const totalMaxOccupancy = 135;
     const totalLanes = 6;
-    
-    // Calculate fill ratio (current/total)
-    const fillRatio = currentLanes / totalLanes;
-    
+
+    // Calculate current number of lanes based on week capacity
+    const currentLanes = Math.round(capacityRecord.maximumOccupancy / (totalMaxOccupancy / totalLanes));
+
     return {
       ...item,
       ratio: !weekCapacityError ? {
         current: currentLanes,
         total: totalLanes,
-        fillRatio
+        fillRatio: currentLanes / totalLanes
       } : undefined
     };
   });
 
+  // Filter out null entries (hours with no capacity data)
+  const validDataWithRatios = dataWithRatios.filter(item => item !== null);
+
   // Get the days to display
-  const displayDays = showFullWeek 
+  const displayDays = showFullWeek
     ? [todayName, ...futureDays]
     : [todayName, ...(futureDays.length > 0 ? [futureDays[0]] : [])];
 
@@ -100,9 +97,9 @@ const TodayTomorrowHeatmap: React.FC = () => {
   return (
     <div>
       {showMoreButton}
-      
+
       <BaseOccupancyHeatmap
-        data={dataWithRatios}
+        data={validDataWithRatios}
         titleTranslationKey="heatmaps:todayTomorrow.title"
         tooltipTranslationKey="heatmaps:todayTomorrow.tooltip"
         legendTitleTranslationKey="heatmaps:todayTomorrow.legend.title"
