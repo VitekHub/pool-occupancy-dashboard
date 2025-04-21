@@ -10,7 +10,7 @@ const filterDataForWeek = (
   weekStart: Date,
   weekEnd: Date
 ) => {
-  return data.filter(record => 
+  return data.filter(record =>
     isWithinInterval(record.date, { start: weekStart, end: weekEnd })
   );
 };
@@ -23,14 +23,14 @@ const groupOccupancyByDayAndHour = (
 
   occupancyData.forEach((record) => {
     const hour = getHourFromTime(record.time);
-    
+
     if (!grouped[record.day]) {
       grouped[record.day] = {};
     }
     if (!grouped[record.day][hour]) {
       grouped[record.day][hour] = { values: [], date: record.date };
     }
-    
+
     grouped[record.day][hour].values.push(record.occupancy);
   });
 
@@ -42,7 +42,7 @@ const createCapacityMap = (
   capacityData: CapacityRecord[]
 ): Record<string, Record<number, number>> => {
   const capacityMap: Record<string, Record<number, number>> = {};
-  
+
   capacityData.forEach((record) => {
     if (!capacityMap[record.day]) {
       capacityMap[record.day] = {};
@@ -61,8 +61,27 @@ const calculateTimeSlotStats = (
   hour: number,
   date: Date
 ): HourlyOccupancySummary => {
-  const sum = occupancyValues.reduce((acc, val) => acc + val, 0);
-  const averageOccupancy = Math.round(sum / occupancyValues.length);
+  // Filter out zero values that indicate pool closure
+  const activeOccupancyValues = occupancyValues.filter(val => val > 0);
+
+  // If all values are zero, return zeros to indicate closure
+  if (activeOccupancyValues.length === 0) {
+    return {
+      day,
+      hour,
+      minOccupancy: 0,
+      maxOccupancy: 0,
+      averageOccupancy: 0,
+      maximumOccupancy,
+      utilizationRate: 0,
+      remainingCapacity: maximumOccupancy,
+      date
+    };
+  }
+
+  // Calculate average using only non-zero values
+  const sum = activeOccupancyValues.reduce((acc, val) => acc + val, 0);
+  const averageOccupancy = Math.round(sum / activeOccupancyValues.length);
   const minOccupancy = Math.min(...occupancyValues);
   const maxOccupancy = Math.max(...occupancyValues);
   const utilizationRate = Math.round((averageOccupancy / maximumOccupancy) * 100);
@@ -91,7 +110,7 @@ const calculateHourlySummary = (
   Object.entries(groupedData).forEach(([day, hourData]) => {
     Object.entries(hourData).forEach(([hourStr, { values, date }]) => {
       const hour = parseInt(hourStr);
-      
+
       if (values.length > 0) {
         const maximumOccupancy = capacityMap[day]?.[hour] || 135;
         const stats = calculateTimeSlotStats(values, maximumOccupancy, day, hour, date);
@@ -114,10 +133,10 @@ const calculateWeeklyUtilization = (
   weeks.forEach(week => {
     const weekId = week.id;
     const weeklyData = processOccupancyData(occupancyData, capacityData, weekId);
-    
+
     weeklyData.forEach(hourData => {
       const { day, hour, utilizationRate } = hourData;
-      
+
       if (!weeklyUtilization[weekId]) {
         weeklyUtilization[weekId] = {};
       }
@@ -138,19 +157,19 @@ const calculateAverageUtilization = (
   weeklyUtilization: Record<string, Record<string, Record<number, number>>>,
   weeks: { id: string }[]
 ): number => {
-  const rates: number[] = [];
-  
+  const nonZeroRates: number[] = [];
+
   weeks.forEach(week => {
     const rate = weeklyUtilization[week.id]?.[day]?.[hour];
-    if (typeof rate === 'number') {
-      rates.push(rate);
+    if (typeof rate === 'number' && rate > 0) {
+      nonZeroRates.push(rate);
     }
   });
-  
+
   // If no data is available, return 0 to indicate no utilization
-  if (rates.length === 0) return 0;
-  
-  return Math.round(rates.reduce((sum, rate) => sum + rate, 0) / rates.length);
+  if (nonZeroRates.length === 0) return 0;
+
+  return Math.round(nonZeroRates.reduce((sum, rate) => sum + rate, 0) / nonZeroRates.length);
 };
 
 // Process the occupancy data to group by day and hour
@@ -161,13 +180,13 @@ export const processOccupancyData = (
 ): HourlyOccupancySummary[] => {
   const weekStart = parse(selectedWeekId, 'yyyy-MM-dd', new Date());
   const weekEnd = addDays(weekStart, 6);
-  
+
   const filteredOccupancyData = filterDataForWeek(occupancyData, weekStart, weekEnd);
   const filteredCapacityData = filterDataForWeek(capacityData, weekStart, weekEnd);
-  
+
   const groupedData = groupOccupancyByDayAndHour(filteredOccupancyData as OccupancyRecord[]);
   const capacityMap = createCapacityMap(filteredCapacityData as CapacityRecord[]);
-  
+
   return calculateHourlySummary(groupedData, capacityMap);
 };
 
@@ -178,7 +197,7 @@ export const processOverallOccupancyData = (
 ): HourlyOccupancySummary[] => {
   const allDates = occupancyData.map(record => record.date);
   const weeks = getAvailableWeeks(allDates);
-  
+
   const weeklyUtilization = calculateWeeklyUtilization(occupancyData, capacityData, weeks);
   const hourlyOccupancySummary: HourlyOccupancySummary[] = [];
 
@@ -190,7 +209,7 @@ export const processOverallOccupancyData = (
         capacityData,
         weeks[0].id
       ).find(data => data.day === day && data.hour === hour);
-      
+
       // Create a summary entry even if we don't have recent week data
       const summary: HourlyOccupancySummary = recentWeekData ? {
         ...recentWeekData,
@@ -206,7 +225,7 @@ export const processOverallOccupancyData = (
         remainingCapacity: 135, // Full capacity remaining when no data
         date: new Date() // Current date as fallback
       };
-      
+
       // Only add to summary if we have any utilization data
       if (averageUtilization > 0 || recentWeekData) {
         hourlyOccupancySummary.push(summary);
