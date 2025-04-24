@@ -5,6 +5,7 @@ import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 import { format, addDays } from 'date-fns';
 import { DAYS } from '@/constants/time';
+import { getDayLabels } from '@/utils/date/dateUtils';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation('heatmaps');
@@ -23,18 +24,14 @@ const TodayTomorrowHeatmap: React.FC = () => {
 
   // Get days in circular order starting from today
   const todayIndex = DAYS.indexOf(todayName);
-  const futureDays = [
+  const orderedDays = [
+    todayName,
     ...DAYS.slice(todayIndex + 1),
     ...DAYS.slice(0, todayIndex)
   ];
 
-  // Create day labels with dates
-  const dayLabels: Record<string, string> = {};
-  let currentDate = today;
-  [todayName, ...futureDays].forEach(day => {
-    dayLabels[day] = format(currentDate, 'd.M.');
-    currentDate = addDays(currentDate, 1);
-  });
+  // Get day labels starting from today
+  const dayLabels = getDayLabels(today, orderedDays);
 
   // Filter data for today and tomorrow only
   const filteredData = overallHourlySummary.filter(item => {
@@ -81,10 +78,10 @@ const TodayTomorrowHeatmap: React.FC = () => {
 
   // Get the days to display
   const displayDays = showFullWeek
-    ? [todayName, ...futureDays]
-    : [todayName, ...(futureDays.length > 0 ? [futureDays[0]] : [])];
+    ? orderedDays
+    : orderedDays.slice(0, 2);
 
-  const showMoreButton = futureDays.length > 1 && (
+  const showMoreButton = displayDays.length > 1 && (
     <button
       onClick={() => setShowFullWeek(!showFullWeek)}
       className="mt-2 flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"

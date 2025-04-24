@@ -24,6 +24,7 @@
   "overall": {
     "title": "Average Occupancy",
     "description": "This heatmap shows the average pool occupancy over recent weeks. It displays typical occupancy patterns for each day of the week taking into account closed lanes.",
+    "averageLabel": "average",
     "tooltip": "{{day}} at {{hour}}:00 - average {{utilization}}% occupied",
     "legend": {
       "title": "Occupancy Rate",

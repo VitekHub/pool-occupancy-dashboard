@@ -4,6 +4,7 @@ import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
+import { getDayLabels } from '@/utils/date/dateUtils';
 
 interface RawHeatmapProps {
   selectedWeekId: string;
@@ -21,6 +22,7 @@ const getColorForOccupancy = (range: { min: number; max: number }): string => {
 const RawHeatmap: React.FC<RawHeatmapProps> = ({ selectedWeekId }) => {
   const { t } = useTranslation(['heatmaps', 'common']);
   const { hourlySummary, loading, error } = usePoolData(selectedWeekId);
+  const dayLabels = getDayLabels(selectedWeekId);
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
@@ -85,6 +87,7 @@ const RawHeatmap: React.FC<RawHeatmapProps> = ({ selectedWeekId }) => {
         days={DAYS}
         hours={HOURS}
         getCellData={getCellData}
+        dayLabels={dayLabels}
       />
       
       <HeatmapLegend

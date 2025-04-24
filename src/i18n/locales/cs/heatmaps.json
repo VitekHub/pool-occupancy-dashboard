@@ -24,6 +24,7 @@
   "overall": {
     "title": "Průměrná obsazenost",
     "description": "Tato mapa ukazuje průměrnou obsazenost bazénu za poslední týdny. Zobrazuje typické vzory obsazenosti pro každý den v týdnu s ohledem na uzavřené dráhy.",
+    "averageLabel": "průměr",
     "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno",
     "legend": {
       "title": "Míra obsazenosti",

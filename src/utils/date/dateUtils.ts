@@ -1,5 +1,6 @@
-import { format, parse, startOfWeek, endOfWeek } from 'date-fns';
+import { format, parse, startOfWeek, endOfWeek, addDays } from 'date-fns';
 import { cs, enUS } from 'date-fns/locale';
+import { DAYS } from '@/constants/time';
 import type { WeekInfo } from '../types/poolData';
 
 // Parse date string in format "DD.MM.YYYY" to Date object
@@ -49,4 +50,13 @@ export const getAvailableWeeks = (dates: Date[]): WeekInfo[] => {
     .sort((a, b) => 
       b.startDate.getTime() - a.startDate.getTime()
     );
+};
+
+// Generate day labels with dates for a given week
+export const getDayLabels = (firstDate: string | Date, days: string[] = DAYS): Record<string, string> => {
+  return days.reduce((labels, day, index) => {
+    const date = addDays(firstDate, index);
+    labels[day] = format(date, 'd.M.');
+    return labels;
+  }, {} as Record<string, string>);
 };
