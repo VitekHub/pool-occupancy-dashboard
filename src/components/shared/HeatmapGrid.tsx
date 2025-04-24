@@ -1,37 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { BaseHeatmapGridProps } from '@/utils/types/heatmapTypes';
 
-interface CellData {
-  color: string;
-  displayText: string;
-  title: string;
-  extraRow?: {
-    text: string;
-    fillRatio: number;
-  };
-}
-
-interface HeatmapGridProps {
-  days: string[];
-  hours: number[];
-  getCellData: (day: string, hour: number) => CellData;
-  hasExtraRow?: boolean;
-  dayLabels?: Record<string, string>;
-}
-
-const HeatmapGrid: React.FC<HeatmapGridProps> = ({ 
+const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({ 
   days, 
   hours, 
   getCellData, 
-  hasExtraRow = false,
   dayLabels
 }) => {
   const { t } = useTranslation('common');
-  
-  const subtitles = [
-    t('heatmaps:todayTomorrow.daySubtitle.lanes'),
-    t('heatmaps:todayTomorrow.daySubtitle.occupancy')
-  ];
 
   return (
     <div className="overflow-x-auto">
@@ -44,7 +21,6 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
               {hour}:00
             </div>
           ))}
-          {hasExtraRow && <div className="w-48 flex-shrink-0" />}
         </div>
 
         {/* Days rows */}
@@ -55,44 +31,18 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
               {dayLabels && <div className="text-xs text-gray-500">{dayLabels[day]}</div>}
             </div>
             {hours.map(hour => {
-              const { color, displayText, title, extraRow } = getCellData(day, hour);
+              const { color, displayText, title } = getCellData(day, hour);
               return (
                 <div key={`${day}-${hour}`} className="w-12">
-                  { (hasExtraRow && days.indexOf(day) > 0) && 
-                    (<div className="w-12 text-center text-xs font-medium text-gray-600">
-                      {hour}:00
-                    </div>
-                  )}
-                  {extraRow && (
-                    <div className="h-12 border border-gray-200 relative flex items-center justify-center">
-                      <div 
-                        className="absolute bottom-0 bg-blue-400"
-                        style={{ 
-                          height: `${extraRow.fillRatio * 100}%`,
-                          width: '100%'
-                        }}
-                      />
-                      <span className="text-xs font-medium text-gray-700 z-10">{extraRow.text}</span>
-                    </div>
-                  )}
                   <div
                     className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
                   >
                     <span className="text-xs font-medium text-gray-700">{displayText}</span>
                   </div>
-                  {extraRow && (
-                    <div className="mb-8"></div>
-                  )}
                 </div>
               );
             })}
-            {hasExtraRow && (
-              <div className="w-58 flex-shrink-0 font-normal text-gray-500 pl-4 mt-2">
-                <div className="h-12 flex items-center">{subtitles[0]}</div>
-                <div className="h-12 flex items-center">{subtitles[1]}</div>
-              </div>
-            )}
           </div>
         ))}
       </div>

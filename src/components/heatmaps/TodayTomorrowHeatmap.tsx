@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import TodayTomorrowHeatmapGrid from '@/components/shared/TodayTomorrowHeatmapGrid';
+import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { usePoolData } from '@/utils/hooks/usePoolDataHook';
-import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 import { format, addDays } from 'date-fns';
-import { DAYS } from '@/constants/time';
+import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
+import { processHeatmapData, getCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
 
 const TodayTomorrowHeatmap: React.FC = () => {
-  const { t } = useTranslation('heatmaps');
+  const { t } = useTranslation(['heatmaps', 'common']);
   const {
     overallHourlySummary,
     weekCapacityData,
@@ -91,20 +93,47 @@ const TodayTomorrowHeatmap: React.FC = () => {
     </button>
   );
 
+  if (loading || weekCapacityData.length === 0) {
+    return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">{t('common:error', { message: error })}</div>;
+  }
+
+  const { utilizationMap, ratioMap } = processHeatmapData(validDataWithRatios, displayDays);
+  
+  const getCellDataWithTranslation = (day: string, hour: number) => 
+    getCellData(
+      day, 
+      hour, 
+      utilizationMap, 
+      ratioMap, 
+      'heatmaps:todayTomorrow.tooltip',
+      t
+    );
+
+  // Check if any data point has a ratio property
+  const hasRatioData = validDataWithRatios.some(item => item.ratio !== undefined);
+
   return (
     <div>
       {showMoreButton}
 
-      <BaseOccupancyHeatmap
-        data={validDataWithRatios}
-        titleTranslationKey="heatmaps:todayTomorrow.title"
-        tooltipTranslationKey="heatmaps:todayTomorrow.tooltip"
-        legendTitleTranslationKey="heatmaps:todayTomorrow.legend.title"
-        loading={loading || weekCapacityData.length === 0}
-        error={error}
-        days={displayDays}
-        dayLabels={dayLabels}
-      />
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <TodayTomorrowHeatmapGrid
+          days={displayDays}
+          hours={HOURS}
+          getCellData={getCellDataWithTranslation}
+          hasExtraRow={hasRatioData}
+          dayLabels={dayLabels}
+        />
+        
+        <HeatmapLegend
+          title={t('heatmaps:todayTomorrow.legend.title')}
+          items={getLegendItems(t)}
+        />
+      </div>
 
       {showMoreButton}
     </div>

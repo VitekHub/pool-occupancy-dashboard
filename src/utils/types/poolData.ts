@@ -31,3 +31,11 @@ export interface WeekInfo {
   endDate: Date;
   displayText: string;
 }
+
+export interface HourlyDataWithRatio extends HourlyOccupancySummary {
+  ratio?: {
+    current: number;
+    total: number;
+    fillRatio: number;
+  };
+}
