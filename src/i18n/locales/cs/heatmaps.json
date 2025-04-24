@@ -1,10 +1,11 @@
 {
   "todayTomorrow": {
     "title": "Dnes a zítra",
-    "description": "Tato mapa zobrazuje historickou průměrnou obsazenost otevřených drah a aktuální počet otevřených drah pro dnešek a zítřek.",
+    "description": "Tato mapa zobrazuje aktuální obsazenost, počet otevřených drah a historickou průměrnou obsazenost pro dnešek a zítřek.",
     "showMore": "Zobrazit celý týden",
     "showLess": "Zobrazit pouze dnes a zítra",
     "daySubtitle": {
+      "raw": "Aktuální obsazenost (počet lidí)",
       "occupancy": "Historická obsazenost otevřených drah",
       "lanes": "Aktuálně otevřené dráhy"
     },

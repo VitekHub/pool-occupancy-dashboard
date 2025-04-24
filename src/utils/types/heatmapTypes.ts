@@ -12,10 +12,12 @@ export interface BaseHeatmapGridProps {
 }
 
 export interface ExtendedCellData extends BaseCellData {
-  extraRow?: {
+  openedLanes?: {
     text: string;
     fillRatio: number;
   };
+  rawOccupancyColor: string;
+  rawOccupancyDisplayText: string;
 }
 
 export interface ExtendedHeatmapGridProps extends BaseHeatmapGridProps {

@@ -1,10 +1,11 @@
 {
   "todayTomorrow": {
     "title": "Today and Tomorrow",
-    "description": "This heatmap displays historical average occupancy of opened lanes and current number of opened lanes for today and tomorrow, helping you plan your visit.",
+    "description": "This heatmap displays current occupancy, number of opened lanes and historical average occupancy for today and tomorrow, helping you plan your visit.",
     "showMore": "Show full week",
     "showLess": "Show today and tomorrow only",
     "daySubtitle": {
+      "raw": "Current occupancy (number of people)",
       "occupancy": "Historical Occupancy of Opened Lanes",
       "lanes": "Currently Opened Lanes"
     },

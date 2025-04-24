@@ -53,12 +53,10 @@ export const getCellData = (
   day: string,
   hour: number,
   utilizationMap: Record<string, Record<number, number>>,
-  ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>,
   tooltipTranslationKey: string,
   t: (key: string, options: any) => string
 ): HeatmapCellData => {
   const utilization = utilizationMap[day][hour];
-  const ratio = ratioMap[day][hour];
   
   return {
     color: getColorForUtilization(utilization),
@@ -67,9 +65,45 @@ export const getCellData = (
       day: t(`common:days.${day.toLowerCase()}`),
       hour,
       utilization
+    })
+  };
+};
+
+export const getTodayTomorrowCellData = (
+  day: string,
+  hour: number,
+  utilizationMap: Record<string, Record<number, number>>,
+  ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>,
+  data: HourlyDataWithRatio[],
+  tooltipTranslationKey: string,
+  t: (key: string, options: any) => string
+): ExtendedCellData => {
+  const utilization = utilizationMap[day][hour];
+  const ratio = ratioMap[day][hour];
+  const hourData = data.find(item => item.day === day && item.hour === hour);
+  const rawOccupancyColor = getColorForUtilization(hourData?.maxOccupancy || 0);
+  
+  let rawOccupancyDisplayText = '';
+  if (hourData) {
+    if (hourData.minOccupancy === hourData.maxOccupancy) {
+      rawOccupancyDisplayText = hourData.minOccupancy > 0 ? `${hourData.minOccupancy}` : '';
+    } else if (hourData.minOccupancy > 0 || hourData.maxOccupancy > 0) {
+      rawOccupancyDisplayText = `${hourData.minOccupancy}-${hourData.maxOccupancy}`;
+    }
+  }
+  
+  return {
+    color: getColorForUtilization(utilization),
+    displayText: utilization > 0 ? `${utilization}%` : '',
+    rawOccupancyColor,
+    rawOccupancyDisplayText,
+    title: t(tooltipTranslationKey, {
+      day: t(`common:days.${day.toLowerCase()}`),
+      hour,
+      utilization
     }),
     ...(ratio && {
-      extraRow: {
+      openedLanes: {
         text: `${ratio.current}/${ratio.total}`,
         fillRatio: ratio.fillRatio
       }

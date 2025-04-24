@@ -26,21 +26,17 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
     return <div className="text-red-500">{t('common:error', { message: error })}</div>;
   }
 
-  const { utilizationMap, ratioMap } = processHeatmapData(data, days);
+  const { utilizationMap } = processHeatmapData(data, days);
   
   const getCellDataWithTranslation = (day: string, hour: number) => 
-    getCellData(day, hour, utilizationMap, ratioMap, tooltipTranslationKey, t);
+    getCellData(day, hour, utilizationMap, tooltipTranslationKey, t);
 
-  // Check if any data point has a ratio property
-  const hasRatioData = data.some(item => item.ratio !== undefined);
-  
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <HeatmapGrid
         days={days}
         hours={HOURS}
         getCellData={getCellDataWithTranslation}
-        hasExtraRow={hasRatioData}
         dayLabels={dayLabels}
       />
       

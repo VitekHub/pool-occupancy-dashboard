@@ -7,7 +7,7 @@ import { usePoolData } from '@/utils/hooks/usePoolDataHook';
 import { format, addDays } from 'date-fns';
 import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
-import { processHeatmapData, getCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
+import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -104,17 +104,15 @@ const TodayTomorrowHeatmap: React.FC = () => {
   const { utilizationMap, ratioMap } = processHeatmapData(validDataWithRatios, displayDays);
   
   const getCellDataWithTranslation = (day: string, hour: number) => 
-    getCellData(
+    getTodayTomorrowCellData(
       day, 
       hour, 
       utilizationMap, 
       ratioMap, 
+      validDataWithRatios,
       'heatmaps:todayTomorrow.tooltip',
       t
     );
-
-  // Check if any data point has a ratio property
-  const hasRatioData = validDataWithRatios.some(item => item.ratio !== undefined);
 
   return (
     <div>
@@ -125,7 +123,6 @@ const TodayTomorrowHeatmap: React.FC = () => {
           days={displayDays}
           hours={HOURS}
           getCellData={getCellDataWithTranslation}
-          hasExtraRow={hasRatioData}
           dayLabels={dayLabels}
         />
         
