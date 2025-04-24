@@ -5,20 +5,29 @@ A modern, responsive React application that visualizes swimming pool occupancy d
 ## Features
 
 - 📊 **Multiple Visualization Types**
+  - Today/Tomorrow view with current occupancy and opened lanes
   - Weekly heatmap showing utilization percentages
   - Raw occupancy numbers visualization
   - Daily occupancy charts with maximum capacity comparison
   - Detailed data tables with CSV export options
+  - Average occupancy patterns across weeks
 
 - 🌐 **Bilingual Support**
   - Czech (default) and English interfaces
   - Easy language switching
   - Fully translated UI elements and descriptions
+  - Date and time formatting based on locale
 
 - 📱 **Responsive Design**
   - Works seamlessly on mobile, tablet, and desktop
   - Optimized layouts for different screen sizes
   - Touch-friendly interface
+
+- 🔄 **Real-time Updates**
+  - Current occupancy display
+  - Auto-refresh every 2 minutes
+  - Historical data analysis
+  - Week-by-week navigation
 
 ## Technology Stack
 
@@ -28,6 +37,7 @@ A modern, responsive React application that visualizes swimming pool occupancy d
 - **Charts**: Recharts
 - **Icons**: Lucide React
 - **Internationalization**: i18next with react-i18next
+- **Date Handling**: date-fns
 - **Data Format**: CSV
 
 ## Project Structure
@@ -35,17 +45,22 @@ A modern, responsive React application that visualizes swimming pool occupancy d
 ```
 /src
   /components
-    /charts        # Chart components
-    /heatmaps      # Heatmap visualizations
-    /tables        # Table components
+    /charts        # Chart visualizations
+    /heatmaps      # Heatmap components
+    /shared        # Shared components (grids, legends)
+    /tables        # Data table components
     /ui           # Reusable UI components
-    /shared       # Shared components
   /constants      # Constants and configuration
   /i18n          # Internationalization setup
     /locales      # Translation files
       /cs         # Czech translations
       /en         # English translations
   /utils         # Utility functions
+    /data        # Data processing utilities
+    /date        # Date handling utilities
+    /heatmaps    # Heatmap-specific utilities
+    /hooks       # Custom React hooks
+    /types       # TypeScript type definitions
 ```
 
 ## Getting Started
@@ -55,40 +70,43 @@ A modern, responsive React application that visualizes swimming pool occupancy d
    ```bash
    cp .env.example .env
    ```
-2. Install dependencies:
+3. Install dependencies:
    ```bash
    npm install
    ```
-3. Start the development server:
+4. Start the development server:
    ```bash
    npm run dev
    ```
 
 ## Data Sources
 
-The application works with two CSV data files:
+The application works with three CSV data files:
 
 1. `pool_occupancy.csv`: Contains actual occupancy measurements
    ```
-   Day,Time,Occupancy
+   Date,Day,Time,Occupancy
    ```
 
 2. `capacity.csv`: Contains maximum capacity data
    ```
-   Day,Hour,Maximum Occupancy
+   Date,Day,Hour,Maximum Occupancy
    ```
 
-The data is continuously updated with real-time measurements.
+3. `week_capacity.csv`: Contains weekly capacity data for lanes
+   ```
+   Date,Day,Hour,Maximum Occupancy
+   ```
 
 ## Environment Variables
 
 The application uses the following environment variables:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `VITE_POOL_OCCUPANCY_CSV_URL` | URL to fetch pool occupancy CSV data | `https://raw.githubusercontent.com/VitekBrno/kravihora-brno/main/data/pool_occupancy.csv` |
-
-Create a `.env` file in the project root and configure these variables before starting the application.
+| Variable | Description |
+|----------|-------------|
+| `VITE_POOL_OCCUPANCY_CSV_URL` | URL to fetch pool occupancy CSV data |
+| `VITE_MAX_CAPACITY_CSV_URL` | URL to fetch maximum capacity CSV data |
+| `VITE_WEEK_CAPACITY_CSV_URL` | URL to fetch weekly capacity CSV data |
 
 ## Operating Hours
 
