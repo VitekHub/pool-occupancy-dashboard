@@ -1,10 +1,21 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { BaseOccupancyHeatmapProps } from '@/utils/types/poolData';
+import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
 import { processHeatmapData, getCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
+
+interface BaseOccupancyHeatmapProps {
+  data: HourlyDataWithRatio[];
+  titleTranslationKey: string;
+  tooltipTranslationKey: string;
+  legendTitleTranslationKey?: string;
+  loading: boolean;
+  error: string | null;
+  days?: string[];
+  dayLabels?: Record<string, string>;
+}
 
 const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
   data,

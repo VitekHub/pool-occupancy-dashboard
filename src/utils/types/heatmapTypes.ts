@@ -1,7 +1,14 @@
+import { HourlyDataWithRatio } from './poolData';
+
 export interface BaseCellData {
   color: string;
   displayText: string;
   title: string;
+}
+
+export interface ProcessedHeatmapData {
+  utilizationMap: Record<string, Record<number, number>>;
+  ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>;
 }
 
 export interface BaseHeatmapGridProps {

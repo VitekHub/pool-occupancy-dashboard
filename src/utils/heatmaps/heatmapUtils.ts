@@ -1,4 +1,5 @@
-import { HourlyDataWithRatio, ProcessedHeatmapData, HeatmapCellData } from '@/utils/types/poolData';
+import { HourlyDataWithRatio } from '@/utils/types/poolData';
+import { ProcessedHeatmapData, BaseCellData } from '@/utils/types/heatmapTypes';
 import { DAYS, HOURS } from '@/constants/time';
 
 export const getLegendItems = (t: (key: string, options?: any) => string) => [
@@ -55,7 +56,7 @@ export const getCellData = (
   utilizationMap: Record<string, Record<number, number>>,
   tooltipTranslationKey: string,
   t: (key: string, options: any) => string
-): HeatmapCellData => {
+): BaseCellData => {
   const utilization = utilizationMap[day][hour];
   
   return {
