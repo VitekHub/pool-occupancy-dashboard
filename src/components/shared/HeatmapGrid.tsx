@@ -1,6 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseHeatmapGridProps } from '@/utils/types/heatmapTypes';
+import { isCzechHoliday } from '@/utils/date/czechHolidays';
+import HolidayWarning from './HolidayWarning';
 
 const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({ 
   days, 
@@ -28,7 +30,12 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
           <div key={day} className={`flex`}>
             <div className="w-24 py-2 flex-shrink-0 font-medium text-gray-700">
               <div>{t(`days.${day.toLowerCase()}`)}</div>
-              {dayLabels && <div className="text-xs text-gray-500">{dayLabels[day]}</div>}
+              {dayLabels && (
+                <div className="flex items-center gap-1">
+                  <div className="text-xs text-gray-500">{dayLabels[day]}</div>
+                  <HolidayWarning isHoliday={isCzechHoliday(dayLabels[day]).isHoliday} />
+                </div>
+              )}
             </div>
             {hours.map(hour => {
               const { color, displayText, title } = getCellData(day, hour);
