@@ -1,6 +1,19 @@
 import { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { ProcessedHeatmapData, BaseCellData } from '@/utils/types/heatmapTypes';
 import { DAYS, HOURS } from '@/constants/time';
+import { isCzechHoliday } from '@/utils/date/czechHolidays';
+
+const isClosedHour = (hour: number, day: string, date: string | undefined): boolean => {
+  // Weekend hours check
+  const isWeekend = day === 'Saturday' || day === 'Sunday';
+  const isEarlyHour = hour <= 7;
+  const isLateHour = hour >= 21;
+  
+  // Holiday check
+  const isHoliday = date ? isCzechHoliday(date).isHoliday : false;
+  
+  return (isWeekend || isHoliday) && (isEarlyHour || isLateHour);
+};
 
 export const getLegendItems = (t: (key: string, options?: any) => string) => [
   { color: 'bg-gray-100 border border-gray-300', label: t('heatmaps:occupancy.legend.labels.empty') },
@@ -77,10 +90,12 @@ export const getTodayTomorrowCellData = (
   ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>,
   data: HourlyDataWithRatio[],
   tooltipTranslationKey: string,
-  t: (key: string, options: any) => string
+  t: (key: string, options: any) => string,
+  dayLabels: Record<string, string>
 ): ExtendedCellData => {
   const utilization = utilizationMap[day][hour];
-  const ratio = ratioMap[day][hour];
+  const date = dayLabels[day];
+  const ratio = isClosedHour(hour, day, date) ? undefined : ratioMap[day][hour];
   const hourData = data.find(item => item.day === day && item.hour === hour);
   const rawOccupancyColor = getColorForUtilization(hourData?.maxOccupancy || 0);
   

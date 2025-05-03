@@ -111,7 +111,8 @@ const TodayTomorrowHeatmap: React.FC = () => {
       ratioMap, 
       validDataWithRatios,
       'heatmaps:todayTomorrow.tooltip',
-      t
+      t,
+      dayLabels
     );
 
   return (
