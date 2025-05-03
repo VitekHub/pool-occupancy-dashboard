@@ -41,7 +41,10 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
               {dayLabels && (
                 <div className="flex items-center gap-1">
                   <div className="text-xs text-gray-500">{dayLabels[day]}</div>
-                  <HolidayWarning isHoliday={isCzechHoliday(dayLabels[day]).isHoliday} />
+                  <HolidayWarning 
+                    isHoliday={isCzechHoliday(dayLabels[day]).isHoliday}
+                    showBelow={days.indexOf(day) === 0}
+                  />
                 </div>
               )}
             </div>
