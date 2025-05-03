@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Tooltip from './Tooltip';
 import type { WeekInfo } from '@/utils/types/poolData';
 import { formatWeekRange } from '@/utils/date/dateUtils';
 
@@ -47,33 +48,37 @@ const WeekNavigator: React.FC<WeekNavigatorProps> = ({
 
   return (
     <div className="flex items-center space-x-2 bg-blue-500 text-white py-2 px-3 rounded-lg">
-      <button
-        onClick={handlePreviousWeek}
-        disabled={currentIndex === weeks.length - 1}
-        className={`p-1 rounded-full ${
-          currentIndex === weeks.length - 1
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-blue-600'
-        }`}
-        aria-label={t('previousWeek')}
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
+      <Tooltip text={t('previousWeek')}>
+        <button
+          onClick={handlePreviousWeek}
+          disabled={currentIndex === weeks.length - 1}
+          className={`p-1 rounded-full ${
+            currentIndex === weeks.length - 1
+              ? 'opacity-50 cursor-not-allowed'
+              : 'hover:bg-blue-600'
+          }`}
+          aria-label={t('previousWeek')}
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      </Tooltip>
       
       <span className="font-medium">{dateRangeText}</span>
       
-      <button
-        onClick={handleNextWeek}
-        disabled={currentIndex === 0}
-        className={`p-1 rounded-full ${
-          currentIndex === 0
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-blue-600'
-        }`}
-        aria-label={t('nextWeek')}
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
+      <Tooltip text={t('nextWeek')}>
+        <button
+          onClick={handleNextWeek}
+          disabled={currentIndex === 0}
+          className={`p-1 rounded-full ${
+            currentIndex === 0
+              ? 'opacity-50 cursor-not-allowed'
+              : 'hover:bg-blue-600'
+          }`}
+          aria-label={t('nextWeek')}
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      </Tooltip>
     </div>
   );
 };
