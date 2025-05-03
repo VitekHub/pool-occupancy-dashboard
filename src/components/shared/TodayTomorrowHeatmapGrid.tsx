@@ -1,7 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Info } from 'lucide-react';
 import { ExtendedHeatmapGridProps } from '@/utils/types/heatmapTypes';
 import { getColorForUtilization } from '@/utils/heatmaps/heatmapUtils';
+import { isCzechHoliday } from '@/utils/date/czechHolidays';
 
 const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({ 
   days, 
@@ -36,7 +38,19 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
           <div key={day} className={`flex`}>
             <div className="w-24 py-2 flex-shrink-0 font-medium text-gray-700">
               <div>{t(`days.${day.toLowerCase()}`)}</div>
-              {dayLabels && <div className="text-xs text-gray-500">{dayLabels[day]}</div>}
+              {dayLabels && (
+                <div className="flex items-center gap-1">
+                  <div className="text-xs text-gray-500">{dayLabels[day]}</div>
+                  {isCzechHoliday(dayLabels[day]).isHoliday && (
+                    <div className="relative group">
+                      <Info className="w-4 h-4 text-orange-500" />
+                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg">
+                        {t('heatmaps:todayTomorrow.holidayWarning')}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             {hours.map(hour => {
               const { color, displayText, title, openedLanes, rawOccupancyColor, rawOccupancyDisplayText } = getCellData(day, hour);
