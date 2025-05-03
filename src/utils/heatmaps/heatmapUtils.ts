@@ -16,12 +16,12 @@ const isClosedHour = (hour: number, day: string, date: string | undefined): bool
 };
 
 export const getLegendItems = (t: (key: string, options?: any) => string) => [
-  { color: 'bg-gray-100 border border-gray-300', label: t('heatmaps:occupancy.legend.labels.empty') },
-  { color: 'bg-green-100', label: t('heatmaps:occupancy.legend.labels.veryLow') },
-  { color: 'bg-green-300', label: t('heatmaps:occupancy.legend.labels.low') },
-  { color: 'bg-yellow-300', label: t('heatmaps:occupancy.legend.labels.medium') },
-  { color: 'bg-orange-400', label: t('heatmaps:occupancy.legend.labels.high') },
-  { color: 'bg-red-500', label: t('heatmaps:occupancy.legend.labels.veryHigh') }
+  { color: 'bg-gray-100 border border-gray-300', label: t('heatmaps:common.legend.labels.empty') },
+  { color: 'bg-green-100', label: t('heatmaps:common.legend.labels.veryLow') },
+  { color: 'bg-green-300', label: t('heatmaps:common.legend.labels.low') },
+  { color: 'bg-yellow-300', label: t('heatmaps:common.legend.labels.medium') },
+  { color: 'bg-orange-400', label: t('heatmaps:common.legend.labels.high') },
+  { color: 'bg-red-500', label: t('heatmaps:common.legend.labels.veryHigh') }
 ];
 
 export const getColorForUtilization = (rate: number): string => {

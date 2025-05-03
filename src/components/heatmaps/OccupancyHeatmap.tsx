@@ -15,7 +15,7 @@ const OccupancyHeatmap: React.FC<OccupancyHeatmapProps> = ({ selectedWeekId }) =
     <BaseOccupancyHeatmap
       data={hourlySummary}
       titleTranslationKey="heatmaps:occupancy.title"
-      tooltipTranslationKey="heatmaps:occupancy.tooltip"
+      legendTitleTranslationKey="heatmaps:common.legend.title"
       loading={loading}
       error={error}
       dayLabels={dayLabels}

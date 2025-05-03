@@ -128,7 +128,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
         />
         
         <HeatmapLegend
-          title={t('heatmaps:todayTomorrow.legend.title')}
+          title={t('heatmaps:common.legend.title')}
           items={getLegendItems(t)}
         />
       </div>

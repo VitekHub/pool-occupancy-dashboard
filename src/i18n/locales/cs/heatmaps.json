@@ -1,67 +1,47 @@
 {
+  "common": {
+    "legend": {
+      "title": "Míra obsazenosti",
+      "labels": {
+        "empty": "0%",
+        "veryLow": "<25%",
+        "low": "<33%",
+        "medium": "<42%",
+        "high": "<52%",
+        "veryHigh": "52%+"
+      }
+    },
+    "holidayWarning": "Tento den je státní svátek. Obsazenost se může lišit od běžného dne."
+  },
   "todayTomorrow": {
     "title": "Dnes a zítra",
     "description": "Tato mapa zobrazuje aktuální obsazenost, počet otevřených drah a historickou průměrnou obsazenost pro dnešek a zítřek.",
     "showMore": "Zobrazit celý týden",
     "showLess": "Zobrazit pouze dnes a zítra",
-    "holidayWarning": "Tento den je státní svátek. Obsazenost se může lišit od běžného dne.",
     "daySubtitle": {
       "raw": "Aktuální obsazenost (počet lidí)",
       "occupancy": "Historická obsazenost otevřených drah",
       "lanes": "Aktuálně otevřené dráhy"
     },
-    "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno",
-    "legend": {
-      "title": "Míra obsazenosti",
-      "labels": {
-        "empty": "0%",
-        "veryLow": "<25%",
-        "low": "<33%",
-        "medium": "<42%",
-        "high": "<52%",
-        "veryHigh": "52%+"
-      }
-    }
+    "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno"
   },
   "overall": {
     "title": "Průměrná obsazenost",
     "description": "Tato mapa ukazuje průměrnou obsazenost bazénu za poslední týdny. Zobrazuje typické vzory obsazenosti pro každý den v týdnu s ohledem na uzavřené dráhy.",
     "averageLabel": "průměr",
-    "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno",
-    "legend": {
-      "title": "Míra obsazenosti",
-      "labels": {
-        "empty": "0%",
-        "veryLow": "<25%",
-        "low": "<33%",
-        "medium": "<42%",
-        "high": "<52%",
-        "veryHigh": "52%+"
-      }
-    }
+    "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno"
   },
   "occupancy": {
     "title": "Týdenní mapa obsazenosti",
     "description": "Tato mapa ukazuje, jak je bazén zaplněn vzhledem k jeho maximální kapacitě. Maximum se během dne mění podle rezervovaných drah pro specifické aktivity.",
-    "tooltip": "{{day}} v {{hour}}:00 - {{utilization}}% obsazeno",
-    "legend": {
-      "title": "Míra obsazenosti",
-      "labels": {
-        "empty": "0%",
-        "veryLow": "<25%",
-        "low": "<33%",
-        "medium": "<42%",
-        "high": "<52%",
-        "veryHigh": "52%+"
-      }
-    }
+    "tooltip": "{{day}} v {{hour}}:00 - {{utilization}}% obsazeno"
   },
   "raw": {
     "title": "Týdenní počty návštěvníků",
     "description": "Tato mapa ukazuje skutečný (min-max) počet lidí v bazénu pro každou hodinu, pomáhá vizualizovat absolutní čísla obsazenosti během týdne.",
     "tooltip": "{{day}} v {{hour}}:00 - {{min}} až {{max}} lidí",
     "legend": {
-      "title": "Počet lidí",
+      "title": "Počet návštěvníků",
       "labels": {
         "empty": "0",
         "veryLow": "<25",
