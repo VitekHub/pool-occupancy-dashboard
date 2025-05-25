@@ -4,9 +4,10 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import TodayTomorrowHeatmapGrid from '@/components/shared/TodayTomorrowHeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { usePoolData } from '@/utils/hooks/usePoolDataHook';
-import { format, addDays } from 'date-fns';
+import { format } from 'date-fns';
 import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
+import type { HourlyOccupancySummary, HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
 
 const TodayTomorrowHeatmap: React.FC = () => {
@@ -36,19 +37,20 @@ const TodayTomorrowHeatmap: React.FC = () => {
   const dayLabels = getDayLabels(today, orderedDays);
 
   // Filter data for today and tomorrow only
-  const filteredData = overallHourlySummary.filter(item => {
+  const filteredData = (overallHourlySummary as HourlyOccupancySummary[]).filter(item => {
     const dayIndex = DAYS.indexOf(item.day);
     const todayIndex = DAYS.indexOf(todayName);
+    const tomorrowIndex = (todayIndex + 1) % DAYS.length;
 
     if (showFullWeek) {
       return true
     } else {
-      return dayIndex === todayIndex || (dayIndex === todayIndex + 1);
+      return dayIndex === todayIndex || dayIndex === tomorrowIndex;
     }
   });
 
   // Add ratio data
-  const dataWithRatios = filteredData.map(item => {
+  const dataWithRatios: (HourlyDataWithRatio | null)[] = filteredData.map(item => {
     // Get the current week's capacity for this time slot
     const capacityRecord = weekCapacityData.find(
       cap => cap.day === item.day && parseInt(cap.hour) === item.hour
@@ -76,7 +78,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
   });
 
   // Filter out null entries (hours with no capacity data)
-  const validDataWithRatios = dataWithRatios.filter(item => item !== null);
+  const validDataWithRatios = dataWithRatios.filter((item): item is HourlyDataWithRatio => item !== null);
 
   // Get the days to display
   const displayDays = showFullWeek
