@@ -13,6 +13,8 @@
   "selectDay": "Select day:",
   "previousWeek": "Previous week",
   "nextWeek": "Next week",
+  "previous": "Previous",
+  "next": "Next",
   "currentWeek": "Jump to current week",
   "currentOccupancy": "Current Occupancy",
   "people": "people",

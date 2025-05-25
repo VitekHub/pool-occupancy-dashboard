@@ -6,6 +6,7 @@
     "overall": "Average Occupancy",
     "chart": "Occupancy Chart",
     "table": "Data Table",
+    "grouped": "Weekly Comparison",
     "heatmap": "Weekly Heatmap",
     "absolute": "Weekly Raw"
   }

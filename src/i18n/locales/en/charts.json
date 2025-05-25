@@ -14,5 +14,13 @@
     "maximumOccupancy": "Maximum occupancy",
     "utilizationRate": "Utilization rate",
     "availableSpots": "Available spots"
+  },
+  "groupedTitle": "Weekly Comparison Analysis",
+  "groupedDescription": "Compare utilization rates, raw occupancy, and opened lanes across the past four weeks for each hour of the selected day.",
+  "grouped": {
+    "week": "Week",
+    "lanes": "Lanes",
+    "utilizationRate": "Utilization Rate",
+    "showingHours": "Showing hours {{start}}:00 - {{end}}:00"
   }
 }

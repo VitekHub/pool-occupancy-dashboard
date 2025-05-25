@@ -1,6 +1,6 @@
 import { DivideIcon as LucideIcon } from 'lucide-react';
 
-export type TabType = 'chart' | 'table' | 'heatmap' | 'absolute' | 'overall' | 'todayTomorrow';
+export type TabType = 'chart' | 'table' | 'heatmap' | 'absolute' | 'overall' | 'todayTomorrow' | 'grouped';
 
 export interface TabConfig {
   id: TabType;

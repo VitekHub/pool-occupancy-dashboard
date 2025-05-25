@@ -5,6 +5,7 @@ import OverallOccupancyHeatmap from '@/components/heatmaps/OverallOccupancyHeatm
 import OccupancyHeatmap from '@/components/heatmaps/OccupancyHeatmap';
 import RawHeatmap from '@/components/heatmaps/RawHeatmap';
 import PoolOccupancyChart from '@/components/charts/PoolOccupancyChart';
+import GroupedBarChart from '@/components/charts/GroupedBarChart';
 import PoolOccupancyTable from '@/components/tables/PoolOccupancyTable';
 
 export const TAB_CONFIG: TabConfig[] = [
@@ -16,6 +17,15 @@ export const TAB_CONFIG: TabConfig[] = [
     titleKey: 'heatmaps:todayTomorrow.title',
     descriptionKey: 'heatmaps:todayTomorrow.description',
     showWeekSelector: false
+  },
+  {
+    id: 'grouped',
+    icon: BarChart,
+    labelKey: 'dashboard:tabs.grouped',
+    component: GroupedBarChart,
+    titleKey: 'charts:groupedTitle',
+    descriptionKey: 'charts:groupedDescription',
+    showWeekSelector: true
   },
   {
     id: 'overall',

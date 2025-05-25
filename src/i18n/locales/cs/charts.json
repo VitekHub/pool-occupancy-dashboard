@@ -14,5 +14,13 @@
     "maximumOccupancy": "Maximální kapacita",
     "utilizationRate": "Míra využití",
     "availableSpots": "Volná místa"
+  },
+  "groupedTitle": "Analýza týdenního porovnání",
+  "groupedDescription": "Porovnejte míru využití, obsazenost a otevřené dráhy za poslední čtyři týdny pro každou hodinu vybraného dne.",
+  "grouped": {
+    "week": "Týden",
+    "lanes": "Dráhy",
+    "utilizationRate": "Míra využití",
+    "showingHours": "Zobrazeny hodiny {{start}}:00 - {{end}}:00"
   }
 }
