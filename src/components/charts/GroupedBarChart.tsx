@@ -60,14 +60,18 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ selectedWeekId }) => 
           summary.day === selectedDay
       );
 
-      const weekCapacity = weekCapacityData.find(
-        cap => cap.day === selectedDay && parseInt(cap.hour) === hour
-      );
-      
       // Calculate the specific day's date by adding days based on the day of the week
       const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(selectedDay);
       const dayDate = new Date(week.startDate);
       dayDate.setDate(dayDate.getDate() + dayIndex);
+      
+      const weekCapacity = weekCapacityData.find(
+        cap => 
+          cap.day === selectedDay && 
+          parseInt(cap.hour) === hour &&
+          cap.date.getTime() === dayDate.getTime()
+      );
+      
       const weekLabel = format(dayDate, 'd.M.', { locale: dateLocale });
       const dayLabel = weekLabel;
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from '../types/poolData';
+import type { CapacityRecord, HourlyOccupancySummary, WeekInfo } from '../types/poolData';
 import { parseOccupancyCSV, parseCapacityCSV } from '../data/csvParser';
 import { processOccupancyData } from '../data/dataProcessing';
 import { getAvailableWeeks } from '../date/dateUtils';
@@ -26,10 +26,9 @@ export const useMultiWeekData = (): MultiWeekData => {
         setError(null);
 
         // Fetch all data in parallel
-        const [occupancyResponse, capacityResponse, weekCapacityResponse] = await Promise.all([
+        const [occupancyResponse, capacityResponse] = await Promise.all([
           fetch(import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL || ''),
-          fetch(import.meta.env.VITE_MAX_CAPACITY_CSV_URL || ''),
-          fetch(import.meta.env.VITE_WEEK_CAPACITY_CSV_URL || '')
+          fetch(import.meta.env.VITE_MAX_CAPACITY_CSV_URL || '')
         ]);
 
         // Check responses
@@ -39,21 +38,16 @@ export const useMultiWeekData = (): MultiWeekData => {
         if (!capacityResponse.ok) {
           throw new Error('Failed to load capacity data');
         }
-        if (!weekCapacityResponse.ok) {
-          throw new Error('Failed to load week capacity data');
-        }
 
         // Get text content in parallel
-        const [occupancyText, capacityText, weekCapacityText] = await Promise.all([
+        const [occupancyText, capacityText] = await Promise.all([
           occupancyResponse.text(),
-          capacityResponse.text(),
-          weekCapacityResponse.text()
+          capacityResponse.text()
         ]);
 
         // Parse CSV data
         const parsedOccupancy = parseOccupancyCSV(occupancyText);
         const parsedCapacity = parseCapacityCSV(capacityText);
-        const parsedWeekCapacity = parseCapacityCSV(weekCapacityText);
 
         // Get all dates for week detection
         const allDates = [
@@ -77,7 +71,7 @@ export const useMultiWeekData = (): MultiWeekData => {
         });
 
         setWeeklySummaries(summaries);
-        setWeekCapacityData(parsedWeekCapacity);
+        setWeekCapacityData(parsedCapacity);
         setLoading(false);
       } catch (err: any) {
         setError(err.message || 'Failed to load data');
