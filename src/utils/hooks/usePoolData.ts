@@ -47,6 +47,16 @@ export const usePoolData = () => {
     CAPACITY_CONFIG
   );
 
+  // Fetch week capacity data
+  const { data: weekCapacityData, error: weekCapacityError } = useSWR<CapacityRecord[]>(
+    import.meta.env.VITE_WEEK_CAPACITY_CSV_URL,
+    async (url) => {
+      const text = await fetcher(url);
+      return parseCapacityCSV(text);
+    },
+    CAPACITY_CONFIG
+  );
+
   // Calculate available weeks and current occupancy
   const availableWeeks = occupancyData
     ? getAvailableWeeks(occupancyData.map(record => record.date))
@@ -59,9 +69,10 @@ export const usePoolData = () => {
   return {
     occupancyData,
     capacityData,
+    weekCapacityData,
     availableWeeks,
     currentOccupancy,
-    loading: !occupancyData || !capacityData,
-    error: occupancyError || capacityError
+    loading: !occupancyData || !capacityData || !weekCapacityData,
+    error: occupancyError || capacityError || weekCapacityError
   };
 };

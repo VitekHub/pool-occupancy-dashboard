@@ -3,12 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import TodayTomorrowHeatmapGrid from '@/components/shared/TodayTomorrowHeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
-import { usePoolData } from '@/utils/hooks/usePoolDataHook';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import { format } from 'date-fns';
 import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
-import type { HourlyOccupancySummary, HourlyDataWithRatio } from '@/utils/types/poolData';
+import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
+
+const TOTAL_MAX_OCCUPANCY = 135;
+const TOTAL_LANES = 6;
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -16,9 +19,8 @@ const TodayTomorrowHeatmap: React.FC = () => {
     overallHourlySummary,
     weekCapacityData,
     loading,
-    error,
-    weekCapacityError
-  } = usePoolData();
+    error
+  } = usePoolDataContext();
   const [showFullWeek, setShowFullWeek] = useState(false);
 
   // Get today's day name
@@ -37,48 +39,34 @@ const TodayTomorrowHeatmap: React.FC = () => {
   const dayLabels = getDayLabels(today, orderedDays);
 
   // Filter data for today and tomorrow only
-  const filteredData = (overallHourlySummary as HourlyOccupancySummary[]).filter(item => {
+  const filteredData = overallHourlySummary.map(item => {
     const dayIndex = DAYS.indexOf(item.day);
     const todayIndex = DAYS.indexOf(todayName);
     const tomorrowIndex = (todayIndex + 1) % DAYS.length;
-
-    if (showFullWeek) {
-      return true
-    } else {
-      return dayIndex === todayIndex || dayIndex === tomorrowIndex;
-    }
-  });
-
-  // Add ratio data
-  const dataWithRatios: (HourlyDataWithRatio | null)[] = filteredData.map(item => {
-    // Get the current week's capacity for this time slot
-    const capacityRecord = weekCapacityData.find(
-      cap => cap.day === item.day && parseInt(cap.hour) === item.hour
+    
+    // Find matching capacity data
+    const capacity = weekCapacityData?.find(
+      cap => 
+        cap.day === item.day && 
+        parseInt(cap.hour) === item.hour
     );
+    
+    // Create new item with ratio data
+    const newItem: HourlyDataWithRatio = {
+      ...item,
+      ratio: capacity ? {
+        current: Math.round(capacity.maximumOccupancy / (TOTAL_MAX_OCCUPANCY / TOTAL_LANES)),
+        total: TOTAL_LANES,
+        fillRatio: capacity.maximumOccupancy / TOTAL_MAX_OCCUPANCY
+      } : undefined
+    };
 
-    // If no capacity record exists for this hour, skip this time slot
-    if (!capacityRecord) {
+    if (!showFullWeek && dayIndex !== todayIndex && dayIndex !== tomorrowIndex) {
       return null;
     }
 
-    const totalMaxOccupancy = 135;
-    const totalLanes = 6;
-
-    // Calculate current number of lanes based on week capacity
-    const currentLanes = Math.round(capacityRecord.maximumOccupancy / (totalMaxOccupancy / totalLanes));
-
-    return {
-      ...item,
-      ratio: !weekCapacityError ? {
-        current: currentLanes,
-        total: totalLanes,
-        fillRatio: currentLanes / totalLanes
-      } : undefined
-    };
-  });
-
-  // Filter out null entries (hours with no capacity data)
-  const validDataWithRatios = dataWithRatios.filter((item): item is HourlyDataWithRatio => item !== null);
+    return newItem;
+  }).filter((item): item is HourlyDataWithRatio => item !== null);
 
   // Get the days to display
   const displayDays = showFullWeek
@@ -95,15 +83,15 @@ const TodayTomorrowHeatmap: React.FC = () => {
     </button>
   );
 
-  if (loading || weekCapacityData.length === 0) {
+  if (loading) {
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
   }
 
-  if (error) {
-    return <div className="text-red-500">{t('common:error', { message: error })}</div>;
+  if (error?.message) {
+    return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
-  const { utilizationMap, ratioMap } = processHeatmapData(validDataWithRatios, displayDays);
+  const { utilizationMap, ratioMap } = processHeatmapData(filteredData, displayDays);
   
   const getCellDataWithTranslation = (day: string, hour: number) => 
     getTodayTomorrowCellData(
@@ -111,7 +99,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
       hour, 
       utilizationMap, 
       ratioMap, 
-      validDataWithRatios,
+      filteredData,
       'heatmaps:todayTomorrow.tooltip',
       t,
       dayLabels

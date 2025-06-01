@@ -6,6 +6,7 @@ import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo 
 interface PoolDataContextType {
   occupancyData: OccupancyRecord[] | undefined;
   capacityData: CapacityRecord[] | undefined;
+  weekCapacityData: CapacityRecord[] | undefined;
   hourlySummary: HourlyOccupancySummary[];
   overallHourlySummary: HourlyOccupancySummary[];
   availableWeeks: WeekInfo[];
@@ -34,6 +35,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const { 
     occupancyData, 
     capacityData, 
+    weekCapacityData,
     availableWeeks, 
     currentOccupancy, 
     loading, 
@@ -67,6 +69,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     <PoolDataContext.Provider value={{
       occupancyData,
       capacityData,
+      weekCapacityData,
       hourlySummary,
       overallHourlySummary,
       availableWeeks,
