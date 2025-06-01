@@ -1,14 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePoolData } from '@/utils/hooks/usePoolData';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
-
-interface RawHeatmapProps {
-  selectedWeekId: string;
-}
 
 const getColorForOccupancy = (range: { min: number; max: number }): string => {
   if (range.max === 0) return 'bg-gray-100';
@@ -19,9 +15,9 @@ const getColorForOccupancy = (range: { min: number; max: number }): string => {
   return 'bg-red-500';
 };
 
-const RawHeatmap: React.FC<RawHeatmapProps> = ({ selectedWeekId }) => {
+const RawHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
-  const { hourlySummary, loading, error } = usePoolData(selectedWeekId);
+  const { hourlySummary, loading, error, selectedWeekId } = usePoolDataContext();
   const dayLabels = getDayLabels(selectedWeekId);
 
   if (loading) {

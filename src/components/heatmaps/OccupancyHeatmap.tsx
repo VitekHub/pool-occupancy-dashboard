@@ -1,14 +1,10 @@
 import React from 'react';
-import { usePoolData } from '@/utils/hooks/usePoolData';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 import { getDayLabels } from '@/utils/date/dateUtils';
 
-interface OccupancyHeatmapProps {
-  selectedWeekId: string;
-}
-
-const OccupancyHeatmap: React.FC<OccupancyHeatmapProps> = ({ selectedWeekId }) => {
-  const { hourlySummary, loading, error } = usePoolData(selectedWeekId);
+const OccupancyHeatmap: React.FC = () => {
+  const { hourlySummary, loading, error, selectedWeekId } = usePoolDataContext();
   const dayLabels = getDayLabels(selectedWeekId);
 
   return (

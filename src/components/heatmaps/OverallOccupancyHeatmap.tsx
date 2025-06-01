@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePoolData } from '@/utils/hooks/usePoolData';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 import { DAYS } from '@/constants/time';
 
 const OverallOccupancyHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
-  const { overallHourlySummary, loading, error } = usePoolData();
+  const { overallHourlySummary, loading, error } = usePoolDataContext();
 
   // Create labels that show "average" for all days
   const dayLabels = DAYS.reduce((labels, day) => {
