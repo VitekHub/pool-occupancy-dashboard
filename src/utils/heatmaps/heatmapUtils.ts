@@ -15,7 +15,9 @@ const isClosedHour = (hour: number, day: string, date: string | undefined): bool
   return (isWeekend || isHoliday) && (isEarlyHour || isLateHour);
 };
 
-export const getLegendItems = (t: (key: string, options?: any) => string) => [
+type TranslationFunction = (key: string, options?: { [key: string]: string | number }) => string;
+
+export const getLegendItems = (t: TranslationFunction) => [
   { color: 'bg-gray-100 border border-gray-300', label: t('heatmaps:common.legend.labels.empty') },
   { color: 'bg-green-100', label: t('heatmaps:common.legend.labels.veryLow') },
   { color: 'bg-green-300', label: t('heatmaps:common.legend.labels.low') },
@@ -55,7 +57,7 @@ export const processHeatmapData = (
     if (utilizationMap[item.day] && HOURS.includes(item.hour)) {
       utilizationMap[item.day][item.hour] = item.utilizationRate;
       if ('ratio' in item) {
-        ratioMap[item.day][item.hour] = (item as any).ratio;
+        ratioMap[item.day][item.hour] = item.ratio;
       }
     }
   });
@@ -68,7 +70,7 @@ export const getCellData = (
   hour: number,
   utilizationMap: Record<string, Record<number, number>>,
   tooltipTranslationKey: string,
-  t: (key: string, options: any) => string
+  t: TranslationFunction
 ): BaseCellData => {
   const utilization = utilizationMap[day][hour];
   
@@ -90,7 +92,7 @@ export const getTodayTomorrowCellData = (
   ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>,
   data: HourlyDataWithRatio[],
   tooltipTranslationKey: string,
-  t: (key: string, options: any) => string,
+  t: TranslationFunction,
   dayLabels: Record<string, string>
 ): ExtendedCellData => {
   const utilization = utilizationMap[day][hour];

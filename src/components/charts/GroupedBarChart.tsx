@@ -17,6 +17,7 @@ import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
 import { format } from 'date-fns';
 import { cs, enUS } from 'date-fns/locale';
+import type { ChartDataItem } from '@/utils/types/poolData';
 
 interface GroupedBarChartProps {
   selectedWeekId: string;
@@ -48,7 +49,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ selectedWeekId }) => 
   
   // Prepare data for the chart
   const chartData = visibleHours.map(hour => {
-    const hourData: any = {
+    const hourData: ChartDataItem = {
       hour: `${hour}:00`,
     };
 
@@ -121,7 +122,6 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ selectedWeekId }) => 
             <BarChart
               data={chartData}
               margin={{ top: 40, right: 30, left: 20, bottom: 60 }}
-              margin={{ top: 40, right: 30, left: 20, bottom: 80 }}
               barSize={65}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -155,7 +155,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ selectedWeekId }) => 
                 />
               </YAxis>
               <Tooltip
-                formatter={function(value: number, name: string, props: any) {
+                formatter={function(value: number, name: string, props: { payload: ChartDataItem }) {
                   const weekIndex = parseInt(name.replace('week', ''));
                   const payload = props.payload;
                   const minOccupancy = payload[`minOccupancy${weekIndex}`];
@@ -178,10 +178,10 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ selectedWeekId }) => 
                   fill={`hsl(${200 + index * 30}, 80%, ${50 - index * 5}%)`}
                   shape={
                     <CustomBar
-                      minOccupancy={(data: any) => data[`minOccupancy${relevantWeeks.length - 1 - index}`]}
-                      maxOccupancy={(data: any) => data[`maxOccupancy${relevantWeeks.length - 1 - index}`]}
-                      openedLanes={(data: any) => data[`openedLanes${relevantWeeks.length - 1 - index}`]}
-                      dayLabel={(data: any) => data[`dayLabel${relevantWeeks.length - 1 - index}`]}
+                      minOccupancy={(data: CustomBarPayload) => data[`minOccupancy${relevantWeeks.length - 1 - index}`] as number}
+                      maxOccupancy={(data: CustomBarPayload) => data[`maxOccupancy${relevantWeeks.length - 1 - index}`] as number}
+                      openedLanes={(data: CustomBarPayload) => data[`openedLanes${relevantWeeks.length - 1 - index}`] as number}
+                      dayLabel={(data: CustomBarPayload) => data[`dayLabel${relevantWeeks.length - 1 - index}`] as string}
                     />
                   }
                 />

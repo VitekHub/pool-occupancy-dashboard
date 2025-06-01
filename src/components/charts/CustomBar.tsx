@@ -1,6 +1,8 @@
 import React from 'react';
 import { getColorForOccupancy } from '@/utils/charts/colorUtils';
 
+import type { CustomBarPayload } from '@/utils/types/poolData';
+
 interface CustomBarProps {
   fill: string;
   x: number;
@@ -8,11 +10,11 @@ interface CustomBarProps {
   width: number;
   height: number;
   value: number;
-  minOccupancy: (payload: any) => number;
-  maxOccupancy: (payload: any) => number;
-  openedLanes: (payload: any) => number;
-  dayLabel: (payload: any) => string;
-  payload: any;
+  minOccupancy: (payload: CustomBarPayload) => number;
+  maxOccupancy: (payload: CustomBarPayload) => number;
+  openedLanes: (payload: CustomBarPayload) => number;
+  dayLabel: (payload: CustomBarPayload) => string;
+  payload: CustomBarPayload;
 }
 
 const CustomBar: React.FC<CustomBarProps> = ({

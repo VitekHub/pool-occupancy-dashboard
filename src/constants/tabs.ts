@@ -1,4 +1,4 @@
-import { BarChart, Activity, Table, Calendar, Users, TrendingUp, Clock } from 'lucide-react';
+import { BarChart, Table, Calendar, Users, TrendingUp, Clock } from 'lucide-react';
 import type { TabConfig } from '@/utils/types/tabs';
 import TodayTomorrowHeatmap from '@/components/heatmaps/TodayTomorrowHeatmap';
 import OverallOccupancyHeatmap from '@/components/heatmaps/OverallOccupancyHeatmap';

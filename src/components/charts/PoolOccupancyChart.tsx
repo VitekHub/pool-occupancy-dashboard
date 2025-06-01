@@ -39,9 +39,6 @@ const PoolOccupancyChart: React.FC<PoolOccupancyChartProps> = ({ selectedWeekId 
       date: new Date()
     };
   });
-  
-  // Find the maximum value for scaling the bars
-  const maxValue = Math.max(...hourlyData.map(item => Math.max(item.averageOccupancy, item.maximumOccupancy)));
 
   // Format data for Recharts
   const chartData = hourlyData.map(item => ({

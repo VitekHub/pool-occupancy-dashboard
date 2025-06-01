@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExtendedHeatmapGridProps } from '@/utils/types/heatmapTypes';
-import { getColorForUtilization } from '@/utils/heatmaps/heatmapUtils';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
 import HolidayWarning from './HolidayWarning';
 
@@ -49,7 +48,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
               )}
             </div>
             {hours.map(hour => {
-              const { color, displayText, title, openedLanes, rawOccupancyColor, rawOccupancyDisplayText } = getCellData(day, hour);
+              const { color, displayText, title, openedLanes, rawOccupancyDisplayText } = getCellData(day, hour);
               return (
                 <div key={`${day}-${hour}`} className="w-12">
                   { days.indexOf(day) > 0 && 

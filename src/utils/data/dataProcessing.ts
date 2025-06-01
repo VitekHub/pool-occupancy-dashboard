@@ -1,7 +1,7 @@
 import { parse, isWithinInterval, addDays } from 'date-fns';
 import { DAYS, HOURS } from '../../constants/time';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary } from '../types/poolData';
-import { getWeekId, getAvailableWeeks } from '../date/dateUtils';
+import { getAvailableWeeks } from '../date/dateUtils';
 import { getHourFromTime } from './csvParser';
 
 // Filter data for a specific week

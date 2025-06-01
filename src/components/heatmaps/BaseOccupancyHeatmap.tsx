@@ -8,7 +8,6 @@ import { processHeatmapData, getCellData, getLegendItems } from '@/utils/heatmap
 
 interface BaseOccupancyHeatmapProps {
   data: HourlyDataWithRatio[];
-  titleTranslationKey: string;
   tooltipTranslationKey: string;
   legendTitleTranslationKey?: string;
   loading: boolean;
@@ -19,7 +18,6 @@ interface BaseOccupancyHeatmapProps {
 
 const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
   data,
-  titleTranslationKey,
   tooltipTranslationKey,
   legendTitleTranslationKey = 'heatmaps:occupancy.legend.title',
   loading,

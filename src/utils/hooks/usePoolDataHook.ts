@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from '../types/poolData';
 import { getAvailableWeeks } from '../date/dateUtils';
-import { parseOccupancyCSV, parseCapacityCSV, getHourFromTime } from '../data/csvParser';
+import { parseOccupancyCSV, parseCapacityCSV } from '../data/csvParser';
 import { processOccupancyData, processOverallOccupancyData } from '../data/dataProcessing';
 
 export const usePoolData = (selectedWeekId?: string) => {
@@ -91,7 +91,7 @@ export const usePoolData = (selectedWeekId?: string) => {
         setLoading(false);
       } catch (err) {
         setError('Failed to load pool occupancy data');
-        if (err.message.includes('week capacity')) {
+        if (err instanceof Error && err.message.includes('week capacity')) {
           setWeekCapacityError(err.message);
         }
         setLoading(false);
@@ -100,7 +100,7 @@ export const usePoolData = (selectedWeekId?: string) => {
     };
     
     fetchData();
-  }, []);
+  }, [selectedWeekId]);
 
   // Set up auto-refresh every 2 minutes
   useEffect(() => {

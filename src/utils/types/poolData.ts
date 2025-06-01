@@ -25,6 +25,20 @@ export interface HourlyOccupancySummary {
   date: Date;
 }
 
+export interface ChartDataItem {
+  hour: string;
+  [key: `week${number}`]: number;
+  [key: `minOccupancy${number}`]: number;
+  [key: `maxOccupancy${number}`]: number;
+  [key: `openedLanes${number}`]: number;
+  [key: `dayLabel${number}`]: string;
+}
+
+export interface CustomBarPayload {
+  hour: string;
+  [key: string]: number | string;
+}
+
 export interface WeekInfo {
   id: string;
   startDate: Date;

@@ -6,7 +6,7 @@ export interface TabConfig {
   id: TabType;
   icon: LucideIcon;
   labelKey: string;
-  component: React.ComponentType<any>;
+  component: React.ComponentType<{ selectedWeekId?: string }>;
   titleKey: string;
   descriptionKey: string;
   showWeekSelector: boolean;

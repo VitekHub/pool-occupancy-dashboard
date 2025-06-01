@@ -73,7 +73,7 @@ export const useMultiWeekData = (): MultiWeekData => {
         setWeeklySummaries(summaries);
         setWeekCapacityData(parsedCapacity);
         setLoading(false);
-      } catch (err: any) {
+      } catch (err) {
         setError(err.message || 'Failed to load data');
         setLoading(false);
         console.error('Error loading multi-week data:', err);

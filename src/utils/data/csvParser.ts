@@ -10,7 +10,6 @@ export const getHourFromTime = (timeStr: string): number => {
 // Parse the CSV text into OccupancyRecord objects
 export const parseOccupancyCSV = (csvText: string): OccupancyRecord[] => {
   const lines = csvText.trim().split('\n');
-  const headers = lines[0].split(',');
   
   return lines.slice(1).map(line => {
     const values = line.split(',');
@@ -28,7 +27,6 @@ export const parseOccupancyCSV = (csvText: string): OccupancyRecord[] => {
 // Parse the CSV text into CapacityRecord objects
 export const parseCapacityCSV = (csvText: string): CapacityRecord[] => {
   const lines = csvText.trim().split('\n');
-  const headers = lines[0].split(',');
   
   return lines.slice(1).map(line => {
     const values = line.split(',');
