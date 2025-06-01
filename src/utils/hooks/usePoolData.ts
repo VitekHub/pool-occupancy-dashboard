@@ -1,7 +1,8 @@
 import useSWR from 'swr';
 import { parseOccupancyCSV, parseCapacityCSV } from '../data/csvParser';
-import { processOccupancyData } from '../data/dataProcessing';
+import { processOccupancyData, processOverallOccupancyData } from '../data/dataProcessing';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary } from '../types/poolData';
+import { getAvailableWeeks } from '../date/dateUtils';
 
 const SWR_BASE_CONFIG = {
   revalidateOnMount: true,
@@ -47,16 +48,34 @@ export const usePoolData = (selectedWeekId?: string) => {
     CAPACITY_CONFIG
   );
 
-  // Process data if both are available
-  const hourlySummary: HourlyOccupancySummary[] = 
+  // Calculate available weeks and current occupancy
+  const availableWeeks = occupancyData
+    ? getAvailableWeeks(occupancyData.map(record => record.date))
+    : [];
+
+  const currentOccupancy = occupancyData?.length
+    ? occupancyData[occupancyData.length - 1]
+    : null;
+
+  // Process hourly summary if both data sources are available
+  const hourlySummary: HourlyOccupancySummary[] =
     occupancyData && capacityData && selectedWeekId
       ? processOccupancyData(occupancyData, capacityData, selectedWeekId)
+      : [];
+
+  // Process overall hourly summary
+  const overallHourlySummary: HourlyOccupancySummary[] =
+    occupancyData && capacityData
+      ? processOverallOccupancyData(occupancyData, capacityData)
       : [];
 
   return {
     occupancyData,
     capacityData,
     hourlySummary,
+    overallHourlySummary,
+    availableWeeks,
+    currentOccupancy,
     loading: !occupancyData || !capacityData,
     error: occupancyError || capacityError
   };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { usePoolData } from '@/utils/hooks/usePoolDataHook';
+import { usePoolData } from '@/utils/hooks/usePoolData';
 import type { HourlyOccupancySummary } from '@/utils/types/poolData';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
@@ -20,8 +20,8 @@ const PoolOccupancyChart: React.FC<PoolOccupancyChartProps> = ({ selectedWeekId 
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
   }
 
-  if (error) {
-    return <div className="text-red-500">{t('common:error', { message: error })}</div>;
+  if (error?.message) {
+    return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
   // Create a map of all hours with their data

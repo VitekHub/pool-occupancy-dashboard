@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePoolData } from '@/utils/hooks/usePoolDataHook';
+import { usePoolData } from '@/utils/hooks/usePoolData';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
@@ -28,8 +28,8 @@ const RawHeatmap: React.FC<RawHeatmapProps> = ({ selectedWeekId }) => {
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
   }
 
-  if (error) {
-    return <div className="text-red-500">{t('common:error', { message: error })}</div>;
+  if (error?.message) {
+    return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
   // Create a map for quick lookup of average occupancy
