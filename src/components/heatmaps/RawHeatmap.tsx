@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import { getColorForUtilization } from '@/utils/heatmaps/heatmapUtils';
+import { getDayLabels } from '@/utils/date/dateUtils';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';

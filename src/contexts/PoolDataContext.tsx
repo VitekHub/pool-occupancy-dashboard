@@ -10,6 +10,7 @@ interface PoolDataContextType {
   weekCapacityData: CapacityRecord[] | undefined;
   hourlySummary: HourlyOccupancySummary[];
   overallHourlySummary: HourlyOccupancySummary[];
+  weeklySummaries: Record<string, HourlyOccupancySummary[]>;
   availableWeeks: WeekInfo[];
   currentOccupancy: OccupancyRecord | null;
   loading: boolean;
@@ -32,17 +33,18 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [selectedWeekId, setSelectedWeekId] = useState<string>('');
   const [hourlySummary, setHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [overallHourlySummary, setOverallHourlySummary] = useState<HourlyOccupancySummary[]>([]);
-  
-  const { 
-    occupancyData, 
-    capacityData, 
+  const [weeklySummaries, setWeeklySummaries] = useState<Record<string, HourlyOccupancySummary[]>>({});
+
+  const {
+    occupancyData,
+    capacityData,
     weekCapacityData,
-    availableWeeks, 
-    currentOccupancy, 
-    loading, 
-    error 
+    availableWeeks,
+    currentOccupancy,
+    loading,
+    error
   } = usePoolData();
-  
+
   // Set initial week when available
   useEffect(() => {
     if (availableWeeks.length > 0 && !selectedWeekId) {
@@ -63,6 +65,14 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (occupancyData && capacityData) {
       const summary = processOverallOccupancyData(occupancyData, capacityData);
       setOverallHourlySummary(summary);
+
+      // Process data for all available weeks
+      const summaries: Record<string, HourlyOccupancySummary[]> = {};
+      availableWeeks.forEach(week => {
+        const weeklySummary = processOccupancyData(occupancyData, capacityData, week.id);
+        summaries[week.id] = weeklySummary;
+      });
+      setWeeklySummaries(summaries);
     }
   }, [occupancyData, capacityData]);
 
@@ -72,6 +82,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       capacityData,
       weekCapacityData,
       hourlySummary,
+      weeklySummaries,
       overallHourlySummary,
       availableWeeks,
       currentOccupancy,
