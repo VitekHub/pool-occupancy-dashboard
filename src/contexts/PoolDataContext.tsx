@@ -34,17 +34,17 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [hourlySummary, setHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [overallHourlySummary, setOverallHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [weeklySummaries, setWeeklySummaries] = useState<Record<string, HourlyOccupancySummary[]>>({});
-
-  const {
-    occupancyData,
-    capacityData,
+  
+  const { 
+    occupancyData, 
+    capacityData, 
     weekCapacityData,
-    availableWeeks,
-    currentOccupancy,
-    loading,
-    error
+    availableWeeks, 
+    currentOccupancy, 
+    loading, 
+    error 
   } = usePoolData();
-
+  
   // Set initial week when available
   useEffect(() => {
     if (availableWeeks.length > 0 && !selectedWeekId) {
@@ -74,7 +74,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       });
       setWeeklySummaries(summaries);
     }
-  }, [occupancyData, capacityData]);
+  }, [occupancyData, capacityData, availableWeeks]);
 
   return (
     <PoolDataContext.Provider value={{
