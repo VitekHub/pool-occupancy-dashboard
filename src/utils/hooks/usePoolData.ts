@@ -1,7 +1,6 @@
 import useSWR from 'swr';
 import { parseOccupancyCSV, parseCapacityCSV } from '../data/csvParser';
 import type { OccupancyRecord, CapacityRecord } from '../types/poolData';
-import { getAvailableWeeks } from '../date/dateUtils';
 
 const SWR_BASE_CONFIG = {
   revalidateOnMount: true,
@@ -57,21 +56,10 @@ export const usePoolData = () => {
     CAPACITY_CONFIG
   );
 
-  // Calculate available weeks and current occupancy
-  const availableWeeks = occupancyData
-    ? getAvailableWeeks(occupancyData.map(record => record.date))
-    : [];
-
-  const currentOccupancy = occupancyData?.length
-    ? occupancyData[occupancyData.length - 1]
-    : null;
-
   return {
     occupancyData,
     capacityData,
     weekCapacityData,
-    availableWeeks,
-    currentOccupancy,
     loading: !occupancyData || !capacityData || !weekCapacityData,
     error: occupancyError || capacityError || weekCapacityError
   };

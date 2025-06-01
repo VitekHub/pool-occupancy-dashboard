@@ -1,23 +1,19 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
-import type { OccupancyRecord, CapacityRecord } from '@/utils/types/poolData';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import { TOTAL_MAX_OCCUPANCY, UTILIZATION_THRESHOLDS } from '@/constants/pool';
 import { PROGRESS_COLORS } from '@/constants/colors';
 
-interface CurrentOccupancyProps {
-  currentOccupancy: OccupancyRecord | null;
-  capacityData: CapacityRecord[] | undefined;
-}
-
-const getUtilizationColor = (rate: number): string => {
+const getUtilizationColor = (rate: number) => {
   if (rate < UTILIZATION_THRESHOLDS.LOW) return PROGRESS_COLORS.LOW;
   if (rate < UTILIZATION_THRESHOLDS.HIGH) return PROGRESS_COLORS.MEDIUM;
   return PROGRESS_COLORS.HIGH;
 };
 
-const CurrentOccupancy: React.FC<CurrentOccupancyProps> = ({ currentOccupancy, capacityData }) => {
+const CurrentOccupancy: React.FC = () => {
   const { t } = useTranslation(['common']);
+  const { currentOccupancy, capacityData } = usePoolDataContext();
 
   if (!currentOccupancy || !capacityData?.length) {
     return null;

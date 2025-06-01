@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PoolDataProvider, usePoolDataContext } from '@/contexts/PoolDataContext';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import ContentCard from '@/components/ui/ContentCard';
 import WeekNavigator from '@/components/ui/WeekNavigator';
 import Header from '@/components/layout/Header';
@@ -9,24 +9,17 @@ import Footer from '@/components/layout/Footer';
 import { TAB_CONFIG } from '@/constants/tabs';
 import type { TabType } from '@/utils/types/tabs';
 
-const AppContent = () => {
+function App() {
   const { t } = useTranslation(['dashboard', 'common']);
   const [activeTab, setActiveTab] = useState<TabType>(TAB_CONFIG[0].id);
-  const { 
-    availableWeeks, 
-    loading, 
-    currentOccupancy, 
-    capacityData,
-    selectedWeekId,
-    setSelectedWeekId 
-  } = usePoolDataContext();
+  const { loading } = usePoolDataContext();
   
   const activeConfig = TAB_CONFIG.find(tab => tab.id === activeTab)!;
   const TabComponent = activeConfig.component;
 
   return (
-    <>
-      <Header currentOccupancy={currentOccupancy} capacityData={capacityData} />
+    <div className="min-h-screen bg-gray-100">
+      <Header />
       
       <main className="container mx-auto px-4 py-8">
         <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
@@ -39,16 +32,12 @@ const AppContent = () => {
             description={t(activeConfig.descriptionKey)}
             weekSelector={
               activeConfig.showWeekSelector && !loading ? (
-                <WeekNavigator 
-                  weeks={availableWeeks}
-                  selectedWeekId={selectedWeekId}
-                  onWeekChange={setSelectedWeekId}
-                />
+                <WeekNavigator />
               ) : null
             }
           >
             {activeConfig.showWeekSelector ? (
-              <TabComponent selectedWeekId={selectedWeekId} />
+              <TabComponent />
             ) : (
               <TabComponent />
             )}
@@ -57,18 +46,8 @@ const AppContent = () => {
       </main>
       
       <Footer />
-    </>
-  );
-};
-
-function App() {
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <PoolDataProvider>
-        <AppContent />
-      </PoolDataProvider>
     </div>
   );
-}
+};
 
 export default App;
