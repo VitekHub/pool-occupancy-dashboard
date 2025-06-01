@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download } from 'lucide-react';
-import { usePoolData } from '@/utils/hooks/usePoolDataHook';
+import { usePoolData } from '@/utils/hooks/usePoolData';
 import Table from '@/components/ui/Table';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
@@ -21,7 +21,7 @@ const PoolOccupancyTable: React.FC<PoolOccupancyTableProps> = ({ selectedWeekId 
   }
 
   if (error) {
-    return <div className="text-red-500">{t('common:error', { message: error })}</div>;
+    return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
   // Filter data for the selected day
