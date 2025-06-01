@@ -1,19 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { getColorForUtilization } from '@/utils/heatmaps/heatmapUtils';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
-import { getDayLabels } from '@/utils/date/dateUtils';
-
-const getColorForOccupancy = (range: { min: number; max: number }): string => {
-  if (range.max === 0) return 'bg-gray-100';
-  if (range.max < 25) return 'bg-green-100';
-  if (range.max < 33) return 'bg-green-300';
-  if (range.max < 42) return 'bg-yellow-300';
-  if (range.max < 52) return 'bg-orange-400';
-  return 'bg-red-500';
-};
 
 const RawHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -56,7 +47,7 @@ const RawHeatmap: React.FC = () => {
       `${range.min}-${range.max}`;
     
     return {
-      color: getColorForOccupancy(range),
+      color: getColorForUtilization(range.max),
       displayText,
       title: t('heatmaps:raw.tooltip', {
         day: t(`common:days.${day.toLowerCase()}`),

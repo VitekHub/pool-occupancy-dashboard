@@ -18,6 +18,7 @@ import { getValidHours } from '@/constants/time';
 import { format } from 'date-fns';
 import { cs, enUS } from 'date-fns/locale';
 import type { ChartDataItem } from '@/utils/types/poolData';
+import { TOTAL_MAX_OCCUPANCY, TOTAL_LANES } from '@/constants/pool';
 
 interface GroupedBarChartProps {
   selectedWeekId: string;
@@ -80,7 +81,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ selectedWeekId }) => 
       hourData[`minOccupancy${index}`] = weekData?.minOccupancy || 0;
       hourData[`maxOccupancy${index}`] = weekData?.maxOccupancy || 0;
       hourData[`openedLanes${index}`] = weekCapacity ? 
-        Math.round(weekCapacity.maximumOccupancy / (135 / 6)) : 
+        Math.round(weekCapacity.maximumOccupancy / (TOTAL_MAX_OCCUPANCY / TOTAL_LANES)) : 
         0;
       hourData[`dayLabel${index}`] = dayLabel;
     });

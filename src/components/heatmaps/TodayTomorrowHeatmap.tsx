@@ -9,9 +9,7 @@ import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
 import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
-
-const TOTAL_MAX_OCCUPANCY = 135;
-const TOTAL_LANES = 6;
+import { TOTAL_MAX_OCCUPANCY, TOTAL_LANES } from '@/constants/pool';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);

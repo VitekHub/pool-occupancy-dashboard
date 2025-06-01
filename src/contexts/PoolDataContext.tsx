@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePoolData } from '@/utils/hooks/usePoolData';
 import { processOccupancyData, processOverallOccupancyData } from '@/utils/data/dataProcessing';
