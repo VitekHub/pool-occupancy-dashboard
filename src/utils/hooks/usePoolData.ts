@@ -1,7 +1,6 @@
 import useSWR from 'swr';
 import { parseOccupancyCSV, parseCapacityCSV } from '../data/csvParser';
-import { processOccupancyData, processOverallOccupancyData } from '../data/dataProcessing';
-import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary } from '../types/poolData';
+import type { OccupancyRecord, CapacityRecord } from '../types/poolData';
 import { getAvailableWeeks } from '../date/dateUtils';
 
 const SWR_BASE_CONFIG = {
@@ -27,7 +26,7 @@ const fetcher = async (url: string) => {
   return text;
 };
 
-export const usePoolData = (selectedWeekId?: string) => {
+export const usePoolData = () => {
   // Fetch occupancy data
   const { data: occupancyData, error: occupancyError } = useSWR<OccupancyRecord[]>(
     import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL,
@@ -57,23 +56,9 @@ export const usePoolData = (selectedWeekId?: string) => {
     ? occupancyData[occupancyData.length - 1]
     : null;
 
-  // Process hourly summary if both data sources are available
-  const hourlySummary: HourlyOccupancySummary[] =
-    occupancyData && capacityData && selectedWeekId
-      ? processOccupancyData(occupancyData, capacityData, selectedWeekId)
-      : [];
-
-  // Process overall hourly summary
-  const overallHourlySummary: HourlyOccupancySummary[] =
-    occupancyData && capacityData
-      ? processOverallOccupancyData(occupancyData, capacityData)
-      : [];
-
   return {
     occupancyData,
     capacityData,
-    hourlySummary,
-    overallHourlySummary,
     availableWeeks,
     currentOccupancy,
     loading: !occupancyData || !capacityData,

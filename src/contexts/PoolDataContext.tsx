@@ -1,6 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePoolData } from '@/utils/hooks/usePoolData';
-import { useState, useEffect } from 'react';
+import { processOccupancyData, processOverallOccupancyData } from '@/utils/data/dataProcessing';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from '@/utils/types/poolData';
 
 interface PoolDataContextType {
@@ -28,18 +28,51 @@ export const usePoolDataContext = () => {
 
 export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedWeekId, setSelectedWeekId] = useState<string>('');
-  const poolData = usePoolData(selectedWeekId);
+  const [hourlySummary, setHourlySummary] = useState<HourlyOccupancySummary[]>([]);
+  const [overallHourlySummary, setOverallHourlySummary] = useState<HourlyOccupancySummary[]>([]);
+  
+  const { 
+    occupancyData, 
+    capacityData, 
+    availableWeeks, 
+    currentOccupancy, 
+    loading, 
+    error 
+  } = usePoolData();
   
   // Set initial week when available
   useEffect(() => {
-    if (poolData.availableWeeks.length > 0 && !selectedWeekId) {
-      setSelectedWeekId(poolData.availableWeeks[0].id);
+    if (availableWeeks.length > 0 && !selectedWeekId) {
+      setSelectedWeekId(availableWeeks[0].id);
     }
-  }, [poolData.availableWeeks, selectedWeekId]);
+  }, [availableWeeks, selectedWeekId]);
+
+  // Process weekly data when selectedWeekId changes
+  useEffect(() => {
+    if (occupancyData && capacityData && selectedWeekId) {
+      const summary = processOccupancyData(occupancyData, capacityData, selectedWeekId);
+      setHourlySummary(summary);
+    }
+  }, [selectedWeekId, occupancyData, capacityData]);
+
+  // Process overall data when raw data changes
+  useEffect(() => {
+    if (occupancyData && capacityData) {
+      const summary = processOverallOccupancyData(occupancyData, capacityData);
+      setOverallHourlySummary(summary);
+    }
+  }, [occupancyData, capacityData]);
 
   return (
     <PoolDataContext.Provider value={{
-      ...poolData,
+      occupancyData,
+      capacityData,
+      hourlySummary,
+      overallHourlySummary,
+      availableWeeks,
+      currentOccupancy,
+      loading,
+      error,
       selectedWeekId,
       setSelectedWeekId
     }}>
