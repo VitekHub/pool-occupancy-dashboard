@@ -6,7 +6,7 @@ import type { OccupancyRecord, CapacityRecord } from '@/utils/types/poolData';
 
 interface HeaderProps {
   currentOccupancy: OccupancyRecord | null;
-  capacityData: CapacityRecord[];
+  capacityData: CapacityRecord[] | undefined;
 }
 
 const Header: React.FC<HeaderProps> = ({ currentOccupancy, capacityData }) => {

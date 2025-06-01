@@ -5,7 +5,7 @@ import type { OccupancyRecord, CapacityRecord } from '@/utils/types/poolData';
 
 interface CurrentOccupancyProps {
   currentOccupancy: OccupancyRecord | null;
-  capacityData: CapacityRecord[];
+  capacityData: CapacityRecord[] | undefined;
 }
 
 const getUtilizationColor = (rate: number): string => {
@@ -17,7 +17,7 @@ const getUtilizationColor = (rate: number): string => {
 const CurrentOccupancy: React.FC<CurrentOccupancyProps> = ({ currentOccupancy, capacityData }) => {
   const { t } = useTranslation(['common']);
 
-  if (!currentOccupancy) {
+  if (!currentOccupancy || !capacityData?.length) {
     return null;
   }
 
