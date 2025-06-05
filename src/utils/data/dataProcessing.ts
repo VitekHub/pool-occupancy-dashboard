@@ -3,6 +3,7 @@ import { DAYS, HOURS } from '../../constants/time';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary } from '../types/poolData';
 import { getAvailableWeeks } from '../date/dateUtils';
 import { getHourFromTime } from './csvParser';
+import { TOTAL_MAX_OCCUPANCY } from '@/constants/pool';
 
 // Filter data for a specific week
 const filterDataForWeek = (
@@ -112,7 +113,7 @@ const calculateHourlySummary = (
       const hour = parseInt(hourStr);
       
       if (values.length > 0) {
-        const maximumOccupancy = capacityMap[day]?.[hour] || 135;
+        const maximumOccupancy = capacityMap[day]?.[hour] || TOTAL_MAX_OCCUPANCY;
         const stats = calculateTimeSlotStats(values, maximumOccupancy, day, hour, date);
         summary.push(stats);
       }
@@ -220,9 +221,9 @@ export const processOverallOccupancyData = (
         minOccupancy: 0,
         maxOccupancy: 0,
         averageOccupancy: 0,
-        maximumOccupancy: 135, // Default maximum occupancy
+        maximumOccupancy: TOTAL_MAX_OCCUPANCY,
         utilizationRate: averageUtilization,
-        remainingCapacity: 135, // Full capacity remaining when no data
+        remainingCapacity: TOTAL_MAX_OCCUPANCY, // Full capacity remaining when no data
         date: new Date() // Current date as fallback
       };
       

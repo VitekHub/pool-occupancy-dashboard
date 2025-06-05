@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { usePoolData } from '@/utils/hooks/usePoolDataHook';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import type { HourlyOccupancySummary } from '@/utils/types/poolData';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
 
-interface PoolOccupancyChartProps {
-  selectedWeekId: string;
-}
-
-const PoolOccupancyChart: React.FC<PoolOccupancyChartProps> = ({ selectedWeekId }) => {
+const PoolOccupancyChart: React.FC = () => {
   const { t } = useTranslation(['charts', 'common']);
-  const { hourlySummary, loading, error } = usePoolData(selectedWeekId);
+  const { hourlySummary, loading, error } = usePoolDataContext();
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
   const validHours = getValidHours(selectedDay);
 
@@ -20,8 +16,8 @@ const PoolOccupancyChart: React.FC<PoolOccupancyChartProps> = ({ selectedWeekId 
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
   }
 
-  if (error) {
-    return <div className="text-red-500">{t('common:error', { message: error })}</div>;
+  if (error?.message) {
+    return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
   // Create a map of all hours with their data

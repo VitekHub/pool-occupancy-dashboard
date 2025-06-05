@@ -2,6 +2,8 @@ import { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { ProcessedHeatmapData, BaseCellData } from '@/utils/types/heatmapTypes';
 import { DAYS, HOURS } from '@/constants/time';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
+import { UTILIZATION_THRESHOLDS } from '@/constants/pool';
+import { UTILIZATION_COLORS } from '@/constants/colors';
 
 const isClosedHour = (hour: number, day: string, date: string | undefined): boolean => {
   // Weekend hours check
@@ -18,21 +20,21 @@ const isClosedHour = (hour: number, day: string, date: string | undefined): bool
 type TranslationFunction = (key: string, options?: { [key: string]: string | number }) => string;
 
 export const getLegendItems = (t: TranslationFunction) => [
-  { color: 'bg-gray-100 border border-gray-300', label: t('heatmaps:common.legend.labels.empty') },
-  { color: 'bg-green-100', label: t('heatmaps:common.legend.labels.veryLow') },
-  { color: 'bg-green-300', label: t('heatmaps:common.legend.labels.low') },
-  { color: 'bg-yellow-300', label: t('heatmaps:common.legend.labels.medium') },
-  { color: 'bg-orange-400', label: t('heatmaps:common.legend.labels.high') },
-  { color: 'bg-red-500', label: t('heatmaps:common.legend.labels.veryHigh') }
+  { color: `${UTILIZATION_COLORS.EMPTY} border border-gray-300`, label: t('heatmaps:common.legend.labels.empty') },
+  { color: UTILIZATION_COLORS.VERY_LOW, label: t('heatmaps:common.legend.labels.veryLow') },
+  { color: UTILIZATION_COLORS.LOW, label: t('heatmaps:common.legend.labels.low') },
+  { color: UTILIZATION_COLORS.MEDIUM, label: t('heatmaps:common.legend.labels.medium') },
+  { color: UTILIZATION_COLORS.HIGH, label: t('heatmaps:common.legend.labels.high') },
+  { color: UTILIZATION_COLORS.VERY_HIGH, label: t('heatmaps:common.legend.labels.veryHigh') }
 ];
 
 export const getColorForUtilization = (rate: number): string => {
-  if (rate === 0) return 'bg-gray-100';
-  if (rate < 25) return 'bg-green-100';
-  if (rate < 33) return 'bg-green-300';
-  if (rate < 42) return 'bg-yellow-300';
-  if (rate < 52) return 'bg-orange-400';
-  return 'bg-red-500';
+  if (rate === 0) return UTILIZATION_COLORS.EMPTY;
+  if (rate < UTILIZATION_THRESHOLDS.VERY_LOW) return UTILIZATION_COLORS.VERY_LOW;
+  if (rate < UTILIZATION_THRESHOLDS.LOW) return UTILIZATION_COLORS.LOW;
+  if (rate < UTILIZATION_THRESHOLDS.MEDIUM) return UTILIZATION_COLORS.MEDIUM;
+  if (rate < UTILIZATION_THRESHOLDS.HIGH) return UTILIZATION_COLORS.HIGH;
+  return UTILIZATION_COLORS.VERY_HIGH;
 };
 
 export const processHeatmapData = (

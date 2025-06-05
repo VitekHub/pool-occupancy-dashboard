@@ -5,7 +5,7 @@ import OverallOccupancyHeatmap from '@/components/heatmaps/OverallOccupancyHeatm
 import OccupancyHeatmap from '@/components/heatmaps/OccupancyHeatmap';
 import RawHeatmap from '@/components/heatmaps/RawHeatmap';
 import PoolOccupancyChart from '@/components/charts/PoolOccupancyChart';
-import GroupedBarChart from '@/components/charts/GroupedBarChart';
+import WeeklyComparisonChart from '@/components/charts/WeeklyComparisonChart';
 import PoolOccupancyTable from '@/components/tables/PoolOccupancyTable';
 
 export const TAB_CONFIG: TabConfig[] = [
@@ -19,12 +19,12 @@ export const TAB_CONFIG: TabConfig[] = [
     showWeekSelector: false
   },
   {
-    id: 'grouped',
+    id: 'weeklyComparison',
     icon: BarChart,
-    labelKey: 'dashboard:tabs.grouped',
-    component: GroupedBarChart,
-    titleKey: 'charts:groupedTitle',
-    descriptionKey: 'charts:groupedDescription',
+    labelKey: 'dashboard:tabs.weeklyComparison',
+    component: WeeklyComparisonChart,
+    titleKey: 'charts:weeklyComparisonTitle',
+    descriptionKey: 'charts:weeklyComparisonDescription',
     showWeekSelector: true
   },
   {

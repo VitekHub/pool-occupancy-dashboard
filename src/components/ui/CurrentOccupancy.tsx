@@ -1,33 +1,31 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
-import type { OccupancyRecord, CapacityRecord } from '@/utils/types/poolData';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { TOTAL_MAX_OCCUPANCY, UTILIZATION_THRESHOLDS } from '@/constants/pool';
+import { PROGRESS_COLORS } from '@/constants/colors';
 
-interface CurrentOccupancyProps {
-  currentOccupancy: OccupancyRecord | null;
-  capacityData: CapacityRecord[];
-}
-
-const getUtilizationColor = (rate: number): string => {
-  if (rate < 33) return 'bg-green-500';
-  if (rate < 52) return 'bg-yellow-500';
-  return 'bg-red-500';
+const getUtilizationColor = (rate: number) => {
+  if (rate < UTILIZATION_THRESHOLDS.LOW) return PROGRESS_COLORS.LOW;
+  if (rate < UTILIZATION_THRESHOLDS.HIGH) return PROGRESS_COLORS.MEDIUM;
+  return PROGRESS_COLORS.HIGH;
 };
 
-const CurrentOccupancy: React.FC<CurrentOccupancyProps> = ({ currentOccupancy, capacityData }) => {
+const CurrentOccupancy: React.FC = () => {
   const { t } = useTranslation(['common']);
+  const { currentOccupancy, capacityData } = usePoolDataContext();
 
-  if (!currentOccupancy) {
+  if (!currentOccupancy || !capacityData?.length) {
     return null;
   }
 
   // Find the maximum occupancy for the current hour
   const currentMaxOccupancy = capacityData.find(
-    record => 
+    record =>
       record.date.getTime() === currentOccupancy.date.getTime() &&
-      record.day === currentOccupancy.day && 
+      record.day === currentOccupancy.day &&
       parseInt(record.hour) === currentOccupancy.hour
-  )?.maximumOccupancy || 135; // Default to 135 if not found
+  )?.maximumOccupancy || TOTAL_MAX_OCCUPANCY;
 
   // Calculate utilization percentage
   const utilizationRate = Math.round((currentOccupancy.occupancy / currentMaxOccupancy) * 100);
@@ -44,8 +42,8 @@ const CurrentOccupancy: React.FC<CurrentOccupancyProps> = ({ currentOccupancy, c
               {currentOccupancy.time} • {currentOccupancy.occupancy}/{currentMaxOccupancy} {t('people')}
             </span>
             <div className="flex items-center gap-1">
-              <div className="w-16 bg-blue-800 rounded-full h-2">
-                <div 
+              <div className={`w-16 ${PROGRESS_COLORS.BACKGROUND} rounded-full h-2`}>
+                <div
                   className={`${utilizationColor} h-2 rounded-full transition-all duration-300`}
                   style={{ width: `${utilizationRate}%` }}
                 />

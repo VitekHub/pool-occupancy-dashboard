@@ -15,9 +15,9 @@
     "utilizationRate": "Míra využití",
     "availableSpots": "Volná místa"
   },
-  "groupedTitle": "Analýza týdenního porovnání",
-  "groupedDescription": "Porovnejte míru využití, obsazenost a otevřené dráhy za poslední čtyři týdny pro každou hodinu vybraného dne.",
-  "grouped": {
+  "weeklyComparisonTitle": "Analýza týdenního porovnání",
+  "weeklyComparisonDescription": "Porovnejte míru využití, obsazenost a otevřené dráhy za poslední čtyři týdny pro každou hodinu vybraného dne.",
+  "weeklyComparison": {
     "week": "Týden",
     "lanes": "Dráhy",
     "utilizationRate": "Míra využití",

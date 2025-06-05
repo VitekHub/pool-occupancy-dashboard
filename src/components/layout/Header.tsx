@@ -2,15 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import CurrentOccupancy from '@/components/ui/CurrentOccupancy';
-import type { OccupancyRecord, CapacityRecord } from '@/utils/types/poolData';
 
-interface HeaderProps {
-  currentOccupancy: OccupancyRecord | null;
-  capacityData: CapacityRecord[];
-}
-
-const Header: React.FC<HeaderProps> = ({ currentOccupancy, capacityData }) => {
+const Header: React.FC = () => {
   const { t } = useTranslation(['dashboard']);
+
 
   return (
     <header className="bg-blue-600 text-white shadow-lg">
@@ -30,10 +25,7 @@ const Header: React.FC<HeaderProps> = ({ currentOccupancy, capacityData }) => {
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <CurrentOccupancy 
-              currentOccupancy={currentOccupancy} 
-              capacityData={capacityData} 
-            />
+            <CurrentOccupancy />
             <LanguageSwitcher />
           </div>
         </div>

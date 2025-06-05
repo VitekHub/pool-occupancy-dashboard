@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download } from 'lucide-react';
-import { usePoolData } from '@/utils/hooks/usePoolDataHook';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import Table from '@/components/ui/Table';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
 
-interface PoolOccupancyTableProps {
-  selectedWeekId: string;
-}
-
-const PoolOccupancyTable: React.FC<PoolOccupancyTableProps> = ({ selectedWeekId }) => {
+const PoolOccupancyTable: React.FC = () => {
   const { t } = useTranslation(['tables', 'common']);
-  const { hourlySummary, loading, error } = usePoolData(selectedWeekId);
+  const { hourlySummary, loading, error } = usePoolDataContext();
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
   const validHours = getValidHours(selectedDay);
 
@@ -20,8 +16,8 @@ const PoolOccupancyTable: React.FC<PoolOccupancyTableProps> = ({ selectedWeekId 
     return <div className="flex justify-center items-center h-32">{t('common:loading')}</div>;
   }
 
-  if (error) {
-    return <div className="text-red-500">{t('common:error', { message: error })}</div>;
+  if (error?.message) {
+    return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
   // Filter data for the selected day
