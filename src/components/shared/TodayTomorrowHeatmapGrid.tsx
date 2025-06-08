@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExtendedHeatmapGridProps } from '@/utils/types/heatmapTypes';
+import { ExtendedHeatmapGridProps, ExtendedCellData } from '@/utils/types/heatmapTypes';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
 import HolidayWarning from './HolidayWarning';
+import FloatingTooltip from '@/components/ui/FloatingTooltip';
+import GroupedBarChart from '@/components/charts/GroupedBarChart';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
+import type { ChartDataItem } from '@/utils/types/poolData';
 
 const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({ 
   days, 
@@ -10,13 +15,57 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
   getCellData, 
   dayLabels
 }) => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const { availableWeeks, weeklySummaries, capacityData } = usePoolDataContext();
+  
+  // Hover state
+  const [hoveredDay, setHoveredDay] = useState<string | null>(null);
+  const [hoveredHour, setHoveredHour] = useState<number | null>(null);
+  const [hoveredChartData, setHoveredChartData] = useState<ChartDataItem[]>([]);
+  const [hoveredCellPosition, setHoveredCellPosition] = useState<DOMRect | null>(null);
+  const [isHoverChartVisible, setIsHoverChartVisible] = useState(false);
+  
+  // Get the last 4 weeks including the current week
+  const currentWeekIndex = availableWeeks.findIndex(week => {
+    const now = new Date();
+    return now >= week.startDate && now <= week.endDate;
+  });
+  const relevantWeeks = availableWeeks.slice(currentWeekIndex >= 0 ? currentWeekIndex : 0, (currentWeekIndex >= 0 ? currentWeekIndex : 0) + 4);
   
   const subtitles = [
     t('heatmaps:todayTomorrow.daySubtitle.occupancy'),
     t('heatmaps:todayTomorrow.daySubtitle.lanes'),
     t('heatmaps:todayTomorrow.daySubtitle.raw')
   ];
+  
+  // Handle cell hover
+  const handleCellHover = (day: string, hour: number, rect: DOMRect) => {
+    setHoveredDay(day);
+    setHoveredHour(hour);
+    setHoveredCellPosition(rect);
+    
+    // Prepare chart data for the hovered hour
+    const chartData = prepareChartDataForHour(
+      day,
+      hour,
+      relevantWeeks,
+      weeklySummaries,
+      capacityData,
+      i18n.language
+    );
+    
+    setHoveredChartData([chartData]);
+    setIsHoverChartVisible(true);
+  };
+  
+  // Handle cell leave
+  const handleCellLeave = () => {
+    setIsHoverChartVisible(false);
+    setHoveredDay(null);
+    setHoveredHour(null);
+    setHoveredChartData([]);
+    setHoveredCellPosition(null);
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -48,7 +97,14 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
               )}
             </div>
             {hours.map(hour => {
-              const { color, displayText, title, openedLanes, rawOccupancyDisplayText } = getCellData(day, hour);
+              const cellData: ExtendedCellData = getCellData(day, hour);
+              const { color, displayText, title, openedLanes, rawOccupancyDisplayText } = cellData;
+              
+              const handleMouseEnter = (event: React.MouseEvent<HTMLDivElement>) => {
+                const rect = event.currentTarget.getBoundingClientRect();
+                handleCellHover(day, hour, rect);
+              };
+              
               return (
                 <div key={`${day}-${hour}`} className="w-12">
                   { days.indexOf(day) > 0 && 
@@ -59,6 +115,8 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   <div
                     className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleCellLeave}
                   >
                     <span className="text-xs font-medium text-gray-700">{displayText}</span>
                   </div>
@@ -94,6 +152,21 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
             </div>
           </div>
         ))}
+        
+        {/* Floating tooltip with hover chart */}
+        {isHoverChartVisible && hoveredChartData && relevantWeeks && hoveredDay && hoveredHour !== null && (
+          <FloatingTooltip
+            isVisible={isHoverChartVisible}
+            targetRect={hoveredCellPosition}
+          >
+            <GroupedBarChart
+              chartData={hoveredChartData}
+              relevantWeeks={relevantWeeks}
+              selectedDay={hoveredDay}
+              hideOccupancySquare={true}
+            />
+          </FloatingTooltip>
+        )}
       </div>
     </div>
   );

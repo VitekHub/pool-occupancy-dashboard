@@ -3,11 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import GroupedBarChart from './GroupedBarChart';
 import { usePoolDataContext } from '@/contexts/PoolDataContext';
-import { TOTAL_MAX_OCCUPANCY, TOTAL_LANES } from '@/constants/pool';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
-import { format } from 'date-fns';
-import { cs, enUS } from 'date-fns/locale';
+import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
 import type { ChartDataItem } from '@/utils/types/poolData';
 
 const WeeklyComparisonChart: React.FC = () => {
@@ -36,50 +34,21 @@ const WeeklyComparisonChart: React.FC = () => {
   }
 
   const validHours = getValidHours(selectedDay);
-  const dateLocale = i18n.language === 'cs' ? cs : enUS;
 
   // Get the visible hours (3 at a time)
   const visibleHours = validHours.slice(startHourIndex, startHourIndex + 3);
 
   // Prepare data for the chart
-  const chartData: ChartDataItem[] = visibleHours.map(hour => {
-    const hourData: Partial<ChartDataItem> = {
-      hour: `${hour}:00`,
-    };
-
-    relevantWeeks.forEach((week, index) => {
-      const weekSummary = weeklySummaries[week.id] || [];
-      const weekData = weekSummary.find(
-        summary => summary.hour === hour &&
-          summary.day === selectedDay
-      );
-
-      // Calculate the specific day's date by adding days based on the day of the week
-      const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(selectedDay);
-      const dayDate = new Date(week.startDate);
-      dayDate.setDate(dayDate.getDate() + dayIndex);
-
-      const foundHourlyCapacity = capacityData?.find(
-        cap =>
-          cap.day === selectedDay &&
-          parseInt(cap.hour) === hour &&
-          cap.date.getTime() === dayDate.getTime()
-      );
-
-      const weekLabel = format(dayDate, 'd.M.', { locale: dateLocale });
-      const dayLabel = weekLabel;
-
-      hourData[`week${index}`] = weekData?.utilizationRate || 0;
-      hourData[`minOccupancy${index}`] = weekData?.minOccupancy || 0;
-      hourData[`maxOccupancy${index}`] = weekData?.maxOccupancy || 0;
-      hourData[`openedLanes${index}`] = foundHourlyCapacity ?
-        Math.round(foundHourlyCapacity.maximumOccupancy / (TOTAL_MAX_OCCUPANCY / TOTAL_LANES)) :
-        0;
-      hourData[`dayLabel${index}`] = dayLabel;
-    });
-
-    return hourData;
-  });
+  const chartData: ChartDataItem[] = visibleHours.map(hour =>
+    prepareChartDataForHour(
+      selectedDay,
+      hour,
+      relevantWeeks,
+      weeklySummaries,
+      capacityData,
+      i18n.language
+    )
+  );
 
   const handlePrevious = () => {
     setStartHourIndex(Math.max(0, startHourIndex - 1));

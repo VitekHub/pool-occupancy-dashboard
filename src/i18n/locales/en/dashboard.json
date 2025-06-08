@@ -4,10 +4,10 @@
   "tabs": {
     "todayTomorrow": "Today/Tomorrow",
     "overall": "Average Occupancy",
-    "chart": "Occupancy Chart",
-    "table": "Data Table",
+    "chart": "Daily Occupancy",
+    "table": "Downloadable Data",
     "weeklyComparison": "Weekly Comparison",
-    "heatmap": "Weekly Heatmap",
-    "absolute": "Weekly Raw"
+    "heatmap": "Weekly Percentage Occupancy",
+    "absolute": "Weekly Actual Occupancy"
   }
 }

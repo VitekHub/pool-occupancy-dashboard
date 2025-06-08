@@ -15,6 +15,7 @@ interface CustomBarProps {
   openedLanes: (payload: CustomBarPayload) => number;
   dayLabel: (payload: CustomBarPayload) => string;
   payload: CustomBarPayload;
+  hideOccupancySquare?: boolean;
 }
 
 const CustomBar: React.FC<CustomBarProps> = ({
@@ -28,7 +29,8 @@ const CustomBar: React.FC<CustomBarProps> = ({
   maxOccupancy: getMaxOccupancy,
   openedLanes: getOpenedLanes,
   dayLabel: getDayLabel,
-  payload
+  payload,
+  hideOccupancySquare = false
 }) => {
   const maxOccupancy = getMaxOccupancy(payload);
   const minOccupancy = getMinOccupancy(payload);
@@ -74,7 +76,7 @@ const CustomBar: React.FC<CustomBarProps> = ({
       {value > 0 && (
         <text
           x={x + width / 2}
-          y={y + height / 2 + squareSize / 2 + 15}
+          y={hideOccupancySquare ? y + height / 2 + 5 : y + height / 2 + squareSize / 2 + 15}
           textAnchor="middle"
           fill="#374151"
           fontSize="12"
@@ -83,16 +85,18 @@ const CustomBar: React.FC<CustomBarProps> = ({
         </text>
       )}
       
-      {/* Occupancy square */}
-      <rect
-        x={x + (width - squareSize) / 2}
-        y={y + height / 2 - squareSize / 2}
-        width={squareSize}
-        height={squareSize}
-        fill={occupancyColor}
-        stroke="#374151"
-        strokeWidth="1"
-      />
+      {/* Occupancy square - only show if not hidden */}
+      {!hideOccupancySquare && (
+        <rect
+          x={x + (width - squareSize) / 2}
+          y={y + height / 2 - squareSize / 2}
+          width={squareSize}
+          height={squareSize}
+          fill={occupancyColor}
+          stroke="#374151"
+          strokeWidth="1"
+        />
+      )}
       
       {/* Lanes text */}
       {value > 0 && (

@@ -4,10 +4,10 @@
   "tabs": {
     "todayTomorrow": "Dnes/Zítra",
     "overall": "Průměrná obsazenost",
-    "chart": "Graf obsazenosti",
-    "table": "Tabulka dat",
+    "chart": "Denní obsazenost",
+    "table": "Data ke stažení",
     "weeklyComparison": "Týdenní porovnání",
-    "heatmap": "Týdenní mapa",
-    "absolute": "Týdenní počty"
+    "heatmap": "Týdenní procentuální obsazenost",
+    "absolute": "Týdenní skutečná obsazenost"
   }
 }

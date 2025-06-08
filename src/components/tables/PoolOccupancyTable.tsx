@@ -21,10 +21,10 @@ const PoolOccupancyTable: React.FC = () => {
   }
 
   // Filter data for the selected day
-  const filteredData = hourlySummary.filter(item => 
+  const filteredData = hourlySummary.filter(item =>
     item.day === selectedDay && validHours.includes(item.hour)
   );
-  
+
   // Sort by hour for proper display
   const sortedData = [...filteredData].sort((a, b) => a.hour - b.hour);
 
@@ -47,8 +47,8 @@ const PoolOccupancyTable: React.FC = () => {
       accessor: (item: typeof sortedData[0]) => (
         <div className="flex items-center">
           <div className="w-16 bg-gray-200 rounded-full h-2.5 mr-2">
-            <div 
-              className="bg-blue-600 h-2.5 rounded-full" 
+            <div
+              className="bg-blue-600 h-2.5 rounded-full"
               style={{ width: `${item.utilizationRate}%` }}
             ></div>
           </div>
@@ -62,38 +62,41 @@ const PoolOccupancyTable: React.FC = () => {
     }
   ];
 
+  const DownloadButton = ({ url, label }: { url: string, label: string }) => (
+    <button
+      onClick={() => window.open(url, '_blank')}
+      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      <Download className="w-4 h-4 mr-2" />
+      {label}
+    </button>
+  );
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      
+
       {/* Download section */}
       <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-700 mb-2">{t('tables:downloads.title')}</h3>
         <div className="flex flex-wrap gap-4">
-          <button
-            onClick={() => window.open(import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL, '_blank')}
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            {t('tables:downloads.occupancy')}
-          </button>
-          <a
-            href={import.meta.env.VITE_MAX_CAPACITY_CSV_URL}
-            target="_blank"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            {t('tables:downloads.capacity')}
-          </a>
+          <DownloadButton
+            url={import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL}
+            label={t('tables:downloads.occupancy')}
+          />
+          <DownloadButton
+            url={import.meta.env.VITE_MAX_CAPACITY_CSV_URL}
+            label={t('tables:downloads.capacity')}
+          />
         </div>
       </div>
-      
+
       {/* Day selector */}
       <DaySelector
         selectedDay={selectedDay}
         onChange={setSelectedDay}
         id="day-select-table"
       />
-      
+
       {/* Data table */}
       <Table
         columns={columns}

@@ -17,12 +17,14 @@ interface GroupedBarChartProps {
   chartData: ChartDataItem[];
   relevantWeeks: WeekInfo[];
   selectedDay: string;
+  hideOccupancySquare?: boolean;
 }
 
 const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
   chartData,
   relevantWeeks,
-  selectedDay
+  selectedDay,
+  hideOccupancySquare = false
 }) => {
   const { t } = useTranslation(['charts', 'common']);
 
@@ -91,6 +93,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
                 maxOccupancy={(data: CustomBarPayload) => data[`maxOccupancy${relevantWeeks.length - 1 - index}`] as number}
                 openedLanes={(data: CustomBarPayload) => data[`openedLanes${relevantWeeks.length - 1 - index}`] as number}
                 dayLabel={(data: CustomBarPayload) => data[`dayLabel${relevantWeeks.length - 1 - index}`] as string}
+                hideOccupancySquare={hideOccupancySquare}
               />
             }
           />
