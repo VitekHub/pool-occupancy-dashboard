@@ -16,7 +16,7 @@ const PoolSelector: React.FC = () => {
     `flex items-center px-4 py-2 text-sm font-medium transition-colors ${
       selectedPool === pool
         ? 'bg-white text-blue-600'
-        : 'text-blue-100 hover:text-white hover:bg-blue-600'
+        : 'text-blue-100 hover:text-white hover:bg-blue-500'
     }`;
 
   return (

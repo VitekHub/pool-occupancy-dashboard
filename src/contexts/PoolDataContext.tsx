@@ -5,6 +5,7 @@ import { PoolDataProcessor } from '@/utils/data/dataProcessing';
 import { getAvailableWeeks } from '@/utils/date/dateUtils';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from '@/utils/types/poolData';
+import { isInsidePool } from '@/utils/types/poolTypes';
 
 interface PoolDataContextType {
   occupancyData: OccupancyRecord[] | undefined;
@@ -93,8 +94,8 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   return (
     <PoolDataContext.Provider value={{
       occupancyData,
-      capacityData,
-      weekCapacityData,
+      capacityData: isInsidePool(selectedPool) ? capacityData : undefined,
+      weekCapacityData: isInsidePool(selectedPool) ? weekCapacityData : undefined,
       hourlySummary,
       overallHourlySummary,
       weeklySummaries,
