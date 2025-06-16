@@ -18,6 +18,7 @@
     "description": "This heatmap displays current occupancy, number of opened lanes and historical average occupancy for today and tomorrow, helping you plan your visit.",
     "showMore": "Show full week",
     "showLess": "Show today and tomorrow only",
+    "showTooltips": "Weekly comparison preview",
     "daySubtitle": {
       "raw": "Current occupancy (number of people)",
       "occupancy": "Historical Occupancy of Opened Lanes",

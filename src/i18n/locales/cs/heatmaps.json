@@ -18,6 +18,7 @@
     "description": "Tato mapa zobrazuje aktuální obsazenost, počet otevřených drah a historickou průměrnou obsazenost pro dnešek a zítřek.",
     "showMore": "Zobrazit celý týden",
     "showLess": "Zobrazit pouze dnes a zítra",
+    "showTooltips": "Náhled týdenního porovnání",
     "daySubtitle": {
       "raw": "Aktuální obsazenost (počet lidí)",
       "occupancy": "Historická obsazenost otevřených drah",

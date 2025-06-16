@@ -15,7 +15,8 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
   days, 
   hours, 
   getCellData, 
-  dayLabels
+  dayLabels,
+  showTooltips = true
 }) => {
   const { t, i18n } = useTranslation('common');
   const { availableWeeks, weeklySummaries, capacityData } = usePoolDataContext();
@@ -157,7 +158,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
         ))}
         
         {/* Floating tooltip with hover chart */}
-        {isHoverChartVisible && hoveredChartData && relevantWeeks && hoveredDay && hoveredHour !== null && (
+        {showTooltips && isHoverChartVisible && hoveredChartData && relevantWeeks && hoveredDay && hoveredHour !== null && (
           <FloatingTooltip
             isVisible={isHoverChartVisible}
             targetRect={hoveredCellPosition}
