@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePoolData } from '@/utils/hooks/usePoolData';
-import { processOccupancyData, processOverallOccupancyData } from '@/utils/data/dataProcessing';
+import { PoolDataProcessor } from '@/utils/data/dataProcessing';
 import { getAvailableWeeks } from '@/utils/date/dateUtils';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from '@/utils/types/poolData';
 
@@ -55,8 +55,9 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Process weekly data when selectedWeekId changes
   useEffect(() => {
+    const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || []);
     if (occupancyData && capacityData && selectedWeekId) {
-      const summary = processOccupancyData(occupancyData, capacityData, selectedWeekId);
+      const summary = dataProcessor.processOccupancyData(selectedWeekId);
       setHourlySummary(summary);
     }
   }, [selectedWeekId, occupancyData, capacityData]);
@@ -64,7 +65,8 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Process overall data when raw data changes
   useEffect(() => {
     if (occupancyData && capacityData) {
-      const summary = processOverallOccupancyData(occupancyData, capacityData);
+      const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || []);
+      const summary = dataProcessor.processOverallOccupancyData();
       setOverallHourlySummary(summary);
 
       // Update current occupancy
@@ -78,7 +80,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setAvailableWeeks(weeks);
       
       weeks.forEach(week => {
-        const weeklySummary = processOccupancyData(occupancyData, capacityData, week.id);
+        const weeklySummary = dataProcessor.processOccupancyData(week.id);
         summaries[week.id] = weeklySummary;
       });
       setWeeklySummaries(summaries);
