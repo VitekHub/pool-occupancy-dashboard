@@ -221,7 +221,7 @@ export const processOverallOccupancyData = (
         minOccupancy: 0,
         maxOccupancy: 0,
         averageOccupancy: 0,
-        maximumCapacitymaximumCapacity TOTAL_MAX_OCCUPANCY: TOTAL_MAX_CAPACITY,
+        maximumCapacity: TOTAL_MAX_CAPACITY,
         utilizationRate: averageUtilization,
         remainingCapacity: TOTAL_MAX_CAPACITY, // Full capacity remaining when no data
         date: new Date() // Current date as fallback
