@@ -10,7 +10,8 @@
   },
   "downloads": {
     "title": "Stáhnout data",
-    "occupancy": "Stáhnout data obsazenosti (CSV)",
-    "capacity": "Stáhnout data kapacity (CSV)"
+    "insideOccupancy": "Data obsazenosti vnitřního bazénu (CSV)",
+    "outsideOccupancy": "Data obsazenosti vnějšího bazénu (CSV)",
+    "capacity": "Data kapacity vnitřního bazénu (CSV)"
   }
 }

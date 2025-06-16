@@ -41,7 +41,8 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [currentOccupancy, setCurrentOccupancy] = useState<OccupancyRecord | null>(null);
   
   const { 
-    occupancyData, 
+    insideOccupancyData,
+    outsideOccupancyData, 
     capacityData, 
     weekCapacityData,
     loading, 
@@ -49,6 +50,13 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   } = usePoolData();
 
   const { selectedPool } = usePoolSelector();
+
+  // Combine occupancy data based on selected pool
+  const getPoolDataProcessor = () => {
+    const occupancyData = isInsidePool(selectedPool) ? insideOccupancyData : outsideOccupancyData;
+    const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPool);
+    return { dataProcessor, occupancyData }
+  }  
 
   // Set initial week when available
   useEffect(() => {
@@ -59,17 +67,17 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Process weekly data when selectedWeekId or selectedPool changes
   useEffect(() => {
-    const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPool);
+    const { dataProcessor, occupancyData } = getPoolDataProcessor();
     if (occupancyData && capacityData && selectedWeekId) {
       const summary = dataProcessor.processOccupancyData(selectedWeekId);
       setHourlySummary(summary);
     }
-  }, [selectedWeekId, occupancyData, capacityData, selectedPool]);
+  }, [selectedWeekId, insideOccupancyData, outsideOccupancyData, capacityData, selectedPool]);
 
   // Process overall data when raw data or selectedPool changes
   useEffect(() => {
+    const { dataProcessor, occupancyData } = getPoolDataProcessor();
     if (occupancyData && capacityData) {
-      const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPool);
       const summary = dataProcessor.processOverallOccupancyData();
       setOverallHourlySummary(summary);
 
@@ -89,11 +97,11 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       });
       setWeeklySummaries(summaries);
     }
-  }, [occupancyData, capacityData, selectedPool]);
+  }, [ insideOccupancyData, outsideOccupancyData, capacityData, selectedPool]);
 
   return (
     <PoolDataContext.Provider value={{
-      occupancyData,
+      occupancyData: isInsidePool(selectedPool) ? insideOccupancyData : outsideOccupancyData,
       capacityData: isInsidePool(selectedPool) ? capacityData : undefined,
       weekCapacityData: isInsidePool(selectedPool) ? weekCapacityData : undefined,
       hourlySummary,

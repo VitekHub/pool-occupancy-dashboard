@@ -80,8 +80,12 @@ const PoolOccupancyTable: React.FC = () => {
         <h3 className="text-sm font-medium text-gray-700 mb-2">{t('tables:downloads.title')}</h3>
         <div className="flex flex-wrap gap-4">
           <DownloadButton
-            url={import.meta.env.VITE_POOL_OCCUPANCY_CSV_URL}
-            label={t('tables:downloads.occupancy')}
+            url={import.meta.env.VITE_OUTSIDE_POOL_OCCUPANCY_CSV_URL}
+            label={t('tables:downloads.outsideOccupancy')}
+          />
+          <DownloadButton
+            url={import.meta.env.VITE_INSIDE_POOL_OCCUPANCY_CSV_URL}
+            label={t('tables:downloads.insideOccupancy')}
           />
           <DownloadButton
             url={import.meta.env.VITE_MAX_CAPACITY_CSV_URL}

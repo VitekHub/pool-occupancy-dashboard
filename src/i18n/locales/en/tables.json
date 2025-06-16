@@ -10,7 +10,8 @@
   },
   "downloads": {
     "title": "Download Data",
-    "occupancy": "Download occupancy data (CSV)",
-    "capacity": "Download capacity data (CSV)"
+    "insideOccupancy": "Inside pool occupancy data (CSV)",
+    "outsideOccupancy": "Outside pool occupancy data (CSV)",
+    "capacity": "Inside pool capacity data (CSV)"
   }
 }

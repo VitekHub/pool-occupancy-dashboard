@@ -14,6 +14,13 @@ export class PoolDataProcessor {
     private selectedPool: PoolType
   ) {}
 
+  private formatNumber(value: number) : number {
+    if (value < 1) {
+      return Number(value.toFixed(1));
+    }
+    return Math.round(value);
+  }
+
   // Filter data for a specific week
   private filterDataForWeek(
     data: (OccupancyRecord | CapacityRecord)[],
@@ -94,10 +101,10 @@ export class PoolDataProcessor {
     
     // Calculate average using only non-zero values
     const sum = activeOccupancyValues.reduce((acc, val) => acc + val, 0);
-    const averageOccupancy = Math.round(sum / activeOccupancyValues.length);
+    const averageOccupancy = this.formatNumber(sum / activeOccupancyValues.length);
     const minOccupancy = Math.min(...occupancyValues);
     const maxOccupancy = Math.max(...occupancyValues);
-    const utilizationRate = Math.round((averageOccupancy / maximumCapacity) * 100);
+    const utilizationRate = this.formatNumber((averageOccupancy / maximumCapacity) * 100);
     const remainingCapacity = maximumCapacity - averageOccupancy;
 
     return {
@@ -158,7 +165,7 @@ export class PoolDataProcessor {
     // If no data is available, return 0 to indicate no utilization
     if (nonZeroRates.length === 0) return 0;
     
-    return Math.round(nonZeroRates.reduce((sum, rate) => sum + rate, 0) / nonZeroRates.length);
+    return this.formatNumber(nonZeroRates.reduce((sum, rate) => sum + rate, 0) / nonZeroRates.length);
   };
 
   private getMaxCapacityByPoolType(): number {
