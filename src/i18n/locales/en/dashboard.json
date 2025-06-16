@@ -1,5 +1,5 @@
 {
-  "title": "Kraví hora Pool - Open Lane Occupancy",
+  "title": "Kraví hora Pool - Occupancy",
   "weeklySchedule": "Weekly Schedule",
   "tabs": {
     "todayTomorrow": "Today/Tomorrow",
@@ -9,5 +9,9 @@
     "weeklyComparison": "Weekly Comparison",
     "heatmap": "Weekly Percentage Occupancy",
     "absolute": "Weekly Actual Occupancy"
+  },
+  "poolSelector": {
+    "inside": "Inside Pool",
+    "outside": "Outside Pool"
   }
 }

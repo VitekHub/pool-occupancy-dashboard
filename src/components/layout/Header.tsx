@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import CurrentOccupancy from '@/components/ui/CurrentOccupancy';
+import PoolSelector from '@/components/ui/PoolSelector';
 
 const Header: React.FC = () => {
   const { t } = useTranslation(['dashboard']);
@@ -25,6 +26,7 @@ const Header: React.FC = () => {
             </a>
           </div>
           <div className="flex items-center gap-4">
+            <PoolSelector />
             <CurrentOccupancy />
             <LanguageSwitcher />
           </div>

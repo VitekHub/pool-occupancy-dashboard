@@ -1,5 +1,5 @@
 {
-  "title": "Bazén Kraví hora - Obsazenost otevřených drah",
+  "title": "Bazén Kraví hora - Obsazenost",
   "weeklySchedule": "Týdenní rozpis",
   "tabs": {
     "todayTomorrow": "Dnes/Zítra",
@@ -9,5 +9,9 @@
     "weeklyComparison": "Týdenní porovnání",
     "heatmap": "Týdenní procentuální obsazenost",
     "absolute": "Týdenní skutečná obsazenost"
+  },
+  "poolSelector": {
+    "inside": "Vnitřní bazén",
+    "outside": "Venkovní bazén"
   }
 }
