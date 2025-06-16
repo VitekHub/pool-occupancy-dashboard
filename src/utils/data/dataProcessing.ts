@@ -8,16 +8,17 @@ import { TOTAL_MAX_CAPACITY } from '@/constants/pool';
 // Filter data for a specific week
 const filterDataForWeek = (
   data: (OccupancyRecord | CapacityRecord)[],
-  weekStart: Date,
-  weekEnd: Date
+  selectedWeekId: string
 ) => {
+  const weekStart = parse(selectedWeekId, 'yyyy-MM-dd', new Date());
+  const weekEnd = addDays(weekStart, 6);
   return data.filter(record => 
     isWithinInterval(record.date, { start: weekStart, end: weekEnd })
   );
 };
 
 // Group occupancy records by day and hour
-const groupOccupancyByDayAndHour = (
+const createOccupancyMap = (
   occupancyData: OccupancyRecord[]
 ): Record<string, Record<number, { values: number[], date: Date }>> => {
   const grouped: Record<string, Record<number, { values: number[], date: Date }>> = {};
@@ -103,12 +104,12 @@ const calculateTimeSlotStats = (
 
 // Calculate hourly summary for grouped data
 const calculateHourlySummary = (
-  groupedData: Record<string, Record<number, { values: number[], date: Date }>>,
+  occupancyMap: Record<string, Record<number, { values: number[], date: Date }>>,
   capacityMap: Record<string, Record<number, number>>
 ): HourlyOccupancySummary[] => {
   const summary: HourlyOccupancySummary[] = [];
 
-  Object.entries(groupedData).forEach(([day, hourData]) => {
+  Object.entries(occupancyMap).forEach(([day, hourData]) => {
     Object.entries(hourData).forEach(([hourStr, { values, date }]) => {
       const hour = parseInt(hourStr);
       
@@ -179,16 +180,13 @@ export const processOccupancyData = (
   capacityData: CapacityRecord[],
   selectedWeekId: string
 ): HourlyOccupancySummary[] => {
-  const weekStart = parse(selectedWeekId, 'yyyy-MM-dd', new Date());
-  const weekEnd = addDays(weekStart, 6);
-  
-  const filteredOccupancyData = filterDataForWeek(occupancyData, weekStart, weekEnd);
-  const filteredCapacityData = filterDataForWeek(capacityData, weekStart, weekEnd);
-  
-  const groupedData = groupOccupancyByDayAndHour(filteredOccupancyData as OccupancyRecord[]);
+  const filteredOccupancyData = filterDataForWeek(occupancyData, selectedWeekId);
+  const filteredCapacityData = filterDataForWeek(capacityData, selectedWeekId);
+
+  const occupancyMap = createOccupancyMap(filteredOccupancyData as OccupancyRecord[]);
   const capacityMap = createCapacityMap(filteredCapacityData as CapacityRecord[]);
   
-  return calculateHourlySummary(groupedData, capacityMap);
+  return calculateHourlySummary(occupancyMap, capacityMap);
 };
 
 // Process all occupancy data to get overall patterns
