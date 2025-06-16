@@ -39,7 +39,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [weeklySummaries, setWeeklySummaries] = useState<Record<string, HourlyOccupancySummary[]>>({});
   const [availableWeeks, setAvailableWeeks] = useState<WeekInfo[]>([]);
   const [currentOccupancy, setCurrentOccupancy] = useState<OccupancyRecord | null>(null);
-  const [isProcessingData, setIsProcessingData] = useState<boolean>(false);
+  const [isProcessingData, setIsProcessingData] = useState<boolean>(true);
 
   const { 
     insideOccupancyData,
@@ -52,7 +52,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const { selectedPool } = usePoolSelector();
 
-  const processWithTimeout = (callback: () => void) => {
+  const processWithTimeout = React.useCallback((callback: () => void) => {
     if (loading) {
       callback();
     } else {
@@ -62,14 +62,14 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setIsProcessingData(false);
       }, 200);
     }
-};
+  }, [loading]);
 
   // Combine occupancy data based on selected pool
-  const getPoolDataProcessor = () => {
+  const getPoolDataProcessor = React.useCallback(() => {
     const occupancyData = isInsidePool(selectedPool) ? insideOccupancyData : outsideOccupancyData;
     const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPool);
-    return { dataProcessor, occupancyData }
-  }  
+    return { dataProcessor, occupancyData };
+  }, [selectedPool, insideOccupancyData, outsideOccupancyData, capacityData]);
 
   // Set initial week when available
   useEffect(() => {
@@ -78,6 +78,13 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [availableWeeks, selectedWeekId]);
 
+  // Reset selected week when pool changes
+  useEffect(() => {
+    if (availableWeeks.length > 0) {
+      setSelectedWeekId(availableWeeks[0].id);
+    }
+  }, [availableWeeks, selectedPool]);
+
   // Process weekly data when selectedWeekId or selectedPool changes
   useEffect(() => {
     const { dataProcessor, occupancyData } = getPoolDataProcessor();
@@ -85,16 +92,13 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const summary = dataProcessor.processOccupancyData(selectedWeekId);
       setHourlySummary(summary);
     }
-  }, [selectedWeekId, insideOccupancyData, outsideOccupancyData, capacityData, selectedPool]);
+  }, [selectedWeekId, insideOccupancyData, outsideOccupancyData, capacityData, selectedPool, getPoolDataProcessor]);
 
   // Process overall data when raw data or selectedPool changes
   useEffect(() => {
     processWithTimeout(() => {
       const { dataProcessor, occupancyData } = getPoolDataProcessor();
       if (occupancyData && capacityData) {
-        if (availableWeeks.length > 0) {
-          setSelectedWeekId(availableWeeks[0].id);
-        }
 
         const summary = dataProcessor.processOverallOccupancyData();
         setOverallHourlySummary(summary);
@@ -116,7 +120,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setWeeklySummaries(summaries);
       }
     });
-  }, [insideOccupancyData, outsideOccupancyData, capacityData, selectedPool]);
+  }, [insideOccupancyData, outsideOccupancyData, capacityData, selectedPool, processWithTimeout, getPoolDataProcessor]);
 
   return (
     <PoolDataContext.Provider value={{
