@@ -10,7 +10,7 @@ export interface CapacityRecord {
   date: Date;
   day: string;
   hour: string;
-  maximumOccupancy: number;
+  maximumCapacity: number;
 }
 
 export interface HourlyOccupancySummary {
@@ -19,7 +19,7 @@ export interface HourlyOccupancySummary {
   minOccupancy: number;
   maxOccupancy: number;
   averageOccupancy: number;
-  maximumOccupancy: number;
+  maximumCapacity: number;
   utilizationRate: number;
   remainingCapacity: number;
   date: Date;

@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
 import { usePoolDataContext } from '@/contexts/PoolDataContext';
-import { TOTAL_MAX_OCCUPANCY, UTILIZATION_THRESHOLDS } from '@/constants/pool';
+import { TOTAL_MAX_CAPACITY, UTILIZATION_THRESHOLDS } from '@/constants/pool';
 import { PROGRESS_COLORS } from '@/constants/colors';
 
 const getUtilizationColor = (rate: number) => {
@@ -25,7 +25,7 @@ const CurrentOccupancy: React.FC = () => {
       record.date.getTime() === currentOccupancy.date.getTime() &&
       record.day === currentOccupancy.day &&
       parseInt(record.hour) === currentOccupancy.hour
-  )?.maximumOccupancy || TOTAL_MAX_OCCUPANCY;
+  )?.maximumCapacity || TOTAL_MAX_CAPACITY;
 
   // Calculate utilization percentage
   const utilizationRate = Math.round((currentOccupancy.occupancy / currentMaxOccupancy) * 100);

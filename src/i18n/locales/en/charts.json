@@ -11,7 +11,7 @@
   },
   "stats": {
     "averageOccupancy": "Average occupancy",
-    "maximumOccupancy": "Maximum occupancy",
+    "maximumCapacity": "Maximum capacity",
     "utilizationRate": "Utilization rate",
     "availableSpots": "Available spots"
   },

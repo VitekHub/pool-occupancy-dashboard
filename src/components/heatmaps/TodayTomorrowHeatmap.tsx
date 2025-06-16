@@ -9,7 +9,7 @@ import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
 import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
-import { TOTAL_MAX_OCCUPANCY, TOTAL_LANES } from '@/constants/pool';
+import { TOTAL_MAX_CAPACITY, TOTAL_LANES } from '@/constants/pool';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -53,9 +53,9 @@ const TodayTomorrowHeatmap: React.FC = () => {
     const newItem: HourlyDataWithRatio = {
       ...item,
       ratio: capacity ? {
-        current: Math.round(capacity.maximumOccupancy / (TOTAL_MAX_OCCUPANCY / TOTAL_LANES)),
+        current: Math.round(capacity.maximumCapacity / (TOTAL_MAX_CAPACITY / TOTAL_LANES)),
         total: TOTAL_LANES,
-        fillRatio: capacity.maximumOccupancy / TOTAL_MAX_OCCUPANCY
+        fillRatio: capacity.maximumCapacity / TOTAL_MAX_CAPACITY
       } : undefined
     };
 

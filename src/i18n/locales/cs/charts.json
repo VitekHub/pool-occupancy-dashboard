@@ -11,7 +11,7 @@
   },
   "stats": {
     "averageOccupancy": "Průměrná obsazenost",
-    "maximumOccupancy": "Maximální kapacita",
+    "maximumCapacity": "Maximální kapacita",
     "utilizationRate": "Míra využití",
     "availableSpots": "Volná místa"
   },

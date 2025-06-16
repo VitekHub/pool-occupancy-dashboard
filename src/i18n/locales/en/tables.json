@@ -4,7 +4,7 @@
   "columns": {
     "hour": "Hour",
     "averageOccupancy": "Average Occupancy",
-    "maximumOccupancy": "Maximum Occupancy",
+    "maximumCapacity": "Maximum Capacity",
     "utilizationRate": "Utilization Rate",
     "remainingCapacity": "Remaining Capacity"
   },

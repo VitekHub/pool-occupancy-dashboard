@@ -1,5 +1,5 @@
 // Pool capacity constants
-export const TOTAL_MAX_OCCUPANCY = 135;
+export const TOTAL_MAX_CAPACITY = 135;
 export const TOTAL_LANES = 6;
 
 // Utilization thresholds (in percentage)

@@ -39,8 +39,8 @@ const PoolOccupancyTable: React.FC = () => {
       accessor: 'averageOccupancy'
     },
     {
-      header: t('tables:columns.maximumOccupancy'),
-      accessor: 'maximumOccupancy'
+      header: t('tables:columns.maximumCapacity'),
+      accessor: 'maximumCapacity'
     },
     {
       header: t('tables:columns.utilizationRate'),

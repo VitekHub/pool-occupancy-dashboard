@@ -3,7 +3,7 @@ import { DAYS, HOURS } from '../../constants/time';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary } from '../types/poolData';
 import { getAvailableWeeks } from '../date/dateUtils';
 import { getHourFromTime } from './csvParser';
-import { TOTAL_MAX_OCCUPANCY } from '@/constants/pool';
+import { TOTAL_MAX_CAPACITY } from '@/constants/pool';
 
 // Filter data for a specific week
 const filterDataForWeek = (
@@ -48,7 +48,7 @@ const createCapacityMap = (
     if (!capacityMap[record.day]) {
       capacityMap[record.day] = {};
     }
-    capacityMap[record.day][parseInt(record.hour)] = record.maximumOccupancy;
+    capacityMap[record.day][parseInt(record.hour)] = record.maximumCapacity;
   });
 
   return capacityMap;
@@ -57,7 +57,7 @@ const createCapacityMap = (
 // Calculate statistics for a single time slot
 const calculateTimeSlotStats = (
   occupancyValues: number[],
-  maximumOccupancy: number,
+  maximumCapacity: number,
   day: string,
   hour: number,
   date: Date
@@ -73,9 +73,9 @@ const calculateTimeSlotStats = (
       minOccupancy: 0,
       maxOccupancy: 0,
       averageOccupancy: 0,
-      maximumOccupancy,
+      maximumCapacity,
       utilizationRate: 0,
-      remainingCapacity: maximumOccupancy,
+      remainingCapacity: maximumCapacity,
       date
     };
   }
@@ -85,8 +85,8 @@ const calculateTimeSlotStats = (
   const averageOccupancy = Math.round(sum / activeOccupancyValues.length);
   const minOccupancy = Math.min(...occupancyValues);
   const maxOccupancy = Math.max(...occupancyValues);
-  const utilizationRate = Math.round((averageOccupancy / maximumOccupancy) * 100);
-  const remainingCapacity = maximumOccupancy - averageOccupancy;
+  const utilizationRate = Math.round((averageOccupancy / maximumCapacity) * 100);
+  const remainingCapacity = maximumCapacity - averageOccupancy;
 
   return {
     day,
@@ -94,7 +94,7 @@ const calculateTimeSlotStats = (
     minOccupancy,
     maxOccupancy,
     averageOccupancy,
-    maximumOccupancy,
+    maximumCapacity,
     utilizationRate,
     remainingCapacity,
     date
@@ -113,8 +113,8 @@ const calculateHourlySummary = (
       const hour = parseInt(hourStr);
       
       if (values.length > 0) {
-        const maximumOccupancy = capacityMap[day]?.[hour] || TOTAL_MAX_OCCUPANCY;
-        const stats = calculateTimeSlotStats(values, maximumOccupancy, day, hour, date);
+        const maximumCapacity = capacityMap[day]?.[hour] || TOTAL_MAX_CAPACITY;
+        const stats = calculateTimeSlotStats(values, maximumCapacity, day, hour, date);
         summary.push(stats);
       }
     });
@@ -221,9 +221,9 @@ export const processOverallOccupancyData = (
         minOccupancy: 0,
         maxOccupancy: 0,
         averageOccupancy: 0,
-        maximumOccupancy: TOTAL_MAX_OCCUPANCY,
+        maximumCapacitymaximumCapacity TOTAL_MAX_OCCUPANCY: TOTAL_MAX_CAPACITY,
         utilizationRate: averageUtilization,
-        remainingCapacity: TOTAL_MAX_OCCUPANCY, // Full capacity remaining when no data
+        remainingCapacity: TOTAL_MAX_CAPACITY, // Full capacity remaining when no data
         date: new Date() // Current date as fallback
       };
       

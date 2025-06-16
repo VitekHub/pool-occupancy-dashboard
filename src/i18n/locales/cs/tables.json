@@ -4,7 +4,7 @@
   "columns": {
     "hour": "Hodina",
     "averageOccupancy": "Průměrná obsazenost",
-    "maximumOccupancy": "Maximální kapacita",
+    "maximumCapacity": "Maximální kapacita",
     "utilizationRate": "Míra využití",
     "remainingCapacity": "Zbývající kapacita"
   },
