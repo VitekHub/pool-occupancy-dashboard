@@ -6,10 +6,19 @@ import { PoolType, POOL_TYPES } from '@/utils/types/poolTypes';
 
 const PoolSelector: React.FC = () => {
   const { t } = useTranslation(['dashboard']);
-  const { selectedPoolType, setselectedPoolType } = usePoolSelector();
+  const { selectedPoolType, setSelectedPoolType, selectedPool } = usePoolSelector();
+  
+  // Determine which pool types are available
+  const hasInsidePool = selectedPool?.insidePool !== undefined;
+  const hasOutsidePool = selectedPool?.outsidePool !== undefined;
+
+  // If no pool is configured or no pool types are available, don't render
+  if (!hasInsidePool && !hasOutsidePool) {
+    return null;
+  }
 
   const handlePoolChange = (pool: PoolType) => {
-    setselectedPoolType(pool);
+    setSelectedPoolType(pool);
   };
 
   const getButtonClass = (pool: PoolType) =>
@@ -21,20 +30,24 @@ const PoolSelector: React.FC = () => {
 
   return (
     <div className="flex flex-col sm:flex-row items-center bg-blue-700 rounded-lg overflow-hidden">
-      <button
-        onClick={() => handlePoolChange(POOL_TYPES.INSIDE)}
-        className={getButtonClass(POOL_TYPES.INSIDE)}
-      >
-        <Building className="w-4 h-4 mr-2" />
-        {t('poolSelector.inside')}
-      </button>
-      <button
-        onClick={() => handlePoolChange(POOL_TYPES.OUTSIDE)}
-        className={getButtonClass(POOL_TYPES.OUTSIDE)}
-      >
-        <Waves className="w-4 h-4 mr-2" />
-        {t('poolSelector.outside')}
-      </button>
+      {hasInsidePool && (
+        <button
+          onClick={() => handlePoolChange(POOL_TYPES.INSIDE)}
+          className={getButtonClass(POOL_TYPES.INSIDE)}
+        >
+          <Building className="w-4 h-4 mr-2" />
+          {t('poolSelector.inside')}
+        </button>
+      )}
+      {hasOutsidePool && (
+        <button
+          onClick={() => handlePoolChange(POOL_TYPES.OUTSIDE)}
+          className={getButtonClass(POOL_TYPES.OUTSIDE)}
+        >
+          <Waves className="w-4 h-4 mr-2" />
+          {t('poolSelector.outside')}
+        </button>
+      )}
     </div>
   );
 };

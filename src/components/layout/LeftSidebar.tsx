@@ -44,12 +44,12 @@ const LeftSidebar: React.FC = () => {
         <div className="flex-1 overflow-y-auto py-4">
           {poolConfig.map((pool, index) => {
             const IconComponent = getPoolIcon(index);
-            const isSelected = selectedPool === pool.name;
+            const isSelected = selectedPool.name === pool.name;
             
             return (
               <button
                 key={index}
-                onClick={() => setSelectedPool(pool.name)}
+                onClick={() => setSelectedPool(pool)}
                 className={`w-full flex items-center px-4 py-3 text-left transition-colors hover:bg-blue-500 ${
                   isSelected ? 'bg-blue-700 border-r-4 border-blue-200' : ''
                 }`}

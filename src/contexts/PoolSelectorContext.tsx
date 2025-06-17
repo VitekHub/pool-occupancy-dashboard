@@ -1,17 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PoolType, POOL_TYPES } from '@/utils/types/poolTypes';
+import { PoolConfig } from '@/utils/types/poolConfig';
 import poolConfig from '@/pool_occupancy_config.json';
-
-interface PoolConfig {
-  name: string;
-}
 
 interface PoolSelectorContextType {
   selectedPoolType: PoolType;
-  setselectedPoolType: (pool: PoolType) => void;
-  selectedPool: string;
-  setSelectedPool: (poolName: string) => void;
+  setSelectedPoolType: (pool: PoolType) => void;
+  selectedPool: PoolConfig;
+  setSelectedPool: (pool: PoolConfig) => void;
 }
 
 const PoolSelectorContext = createContext<PoolSelectorContextType | null>(null);
@@ -25,15 +22,26 @@ export const usePoolSelector = () => {
 };
 
 export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedPoolType, setselectedPoolType] = useState<PoolType>(POOL_TYPES.INSIDE);
-  const [selectedPool, setSelectedPool] = useState<string>(
-    poolConfig.length > 0 ? poolConfig[0].name : ''
+  const [selectedPoolType, setSelectedPoolType] = useState<PoolType>(POOL_TYPES.INSIDE);
+  const [selectedPool, setSelectedPool] = useState<PoolConfig>(
+    poolConfig.length > 0 ? poolConfig[0] as PoolConfig : {} as PoolConfig
   );
+
+  // Update selectedPoolType when selectedPool changes
+  useEffect(() => {
+    if (selectedPool) {
+      if (selectedPool.insidePool !== undefined) {
+        setSelectedPoolType(POOL_TYPES.INSIDE);
+      } else {
+        setSelectedPoolType(POOL_TYPES.OUTSIDE);
+      }
+    }
+  }, [selectedPool, selectedPoolType]);
 
   return (
     <PoolSelectorContext.Provider value={{ 
       selectedPoolType, 
-      setselectedPoolType,
+      setSelectedPoolType,
       selectedPool,
       setSelectedPool
     }}>
