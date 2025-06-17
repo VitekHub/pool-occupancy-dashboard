@@ -1,6 +1,9 @@
 {
   "title": "Analýza obsazenosti bazénu",
-  "description": "Graf níže ukazuje průměrnou obsazenost pro každou hodinu v porovnání s maximální kapacitou, která se během dne mění podle rezervovaných drah pro specifické aktivity.",
+  "description": {
+    "inside": "Graf níže ukazuje průměrnou obsazenost pro každou hodinu v porovnání s maximální kapacitou, která se během dne mění podle rezervovaných drah pro specifické aktivity.",
+    "outside": "Graf níže ukazuje průměrnou obsazenost pro každou hodinu v porovnání s maximální kapacitou bazénu."
+  },
   "axis": {
     "hour": "Hodina dne",
     "occupancy": "Obsazenost"
@@ -16,7 +19,10 @@
     "availableSpots": "Volná místa"
   },
   "weeklyComparisonTitle": "Analýza týdenního porovnání",
-  "weeklyComparisonDescription": "Porovnejte míru využití, obsazenost a otevřené dráhy za poslední čtyři týdny pro každou hodinu vybraného dne.",
+  "weeklyComparisonDescription": {
+    "inside": "Porovnejte míru využití, obsazenost a otevřené dráhy za poslední čtyři týdny pro každou hodinu vybraného dne.",
+    "outside": "Porovnejte míru využití a obsazenost za poslední čtyři týdny pro každou hodinu vybraného dne."
+  },
   "weeklyComparison": {
     "week": "Týden",
     "lanes": "Dráhy",

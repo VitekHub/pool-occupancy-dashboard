@@ -1,6 +1,9 @@
 {
   "title": "Pool Occupancy Analysis",
-  "description": "The chart below shows the average occupancy for each hour compared to the maximum occupancy that varies throughout the day as lanes may be reserved for specific activities.",
+  "description": {
+    "inside": "The chart below shows the average occupancy for each hour compared to the maximum occupancy that varies throughout the day as lanes may be reserved for specific activities.",
+    "outside": "The chart below shows the average occupancy for each hour compared to the maximum capacity of the pool."
+  },
   "axis": {
     "hour": "Hour of Day",
     "occupancy": "Occupancy"
@@ -16,7 +19,10 @@
     "availableSpots": "Available spots"
   },
   "weeklyComparisonTitle": "Weekly Comparison Analysis",
-  "weeklyComparisonDescription": "Compare utilization rates, raw occupancy, and opened lanes across the past four weeks for each hour of the selected day.",
+  "weeklyComparisonDescription": {
+    "inside": "Compare utilization rates, raw occupancy, and opened lanes across the past four weeks for each hour of the selected day.",
+    "outside": "Compare utilization rates and raw occupancy across the past four weeks for each hour of the selected day."
+  },
   "weeklyComparison": {
     "week": "Week",
     "lanes": "Lanes",
