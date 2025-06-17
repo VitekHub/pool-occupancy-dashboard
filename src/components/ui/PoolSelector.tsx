@@ -6,15 +6,15 @@ import { PoolType, POOL_TYPES } from '@/utils/types/poolTypes';
 
 const PoolSelector: React.FC = () => {
   const { t } = useTranslation(['dashboard']);
-  const { selectedPool, setSelectedPool } = usePoolSelector();
+  const { selectedPoolType, setselectedPoolType } = usePoolSelector();
 
   const handlePoolChange = (pool: PoolType) => {
-    setSelectedPool(pool);
+    setselectedPoolType(pool);
   };
 
   const getButtonClass = (pool: PoolType) =>
     `flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors sm:w-auto ${
-      selectedPool === pool
+      selectedPoolType === pool
         ? 'bg-white text-blue-600'
         : 'text-blue-100 hover:text-white hover:bg-blue-500'
     }`;

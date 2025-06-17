@@ -11,7 +11,7 @@ export class PoolDataProcessor {
   constructor(
     private occupancyData: OccupancyRecord[],
     private capacityData: CapacityRecord[],
-    private selectedPool: PoolType
+    private selectedPoolType: PoolType
   ) {}
 
   private formatNumber(value: number) : number {
@@ -169,7 +169,7 @@ export class PoolDataProcessor {
   };
 
   private getMaxCapacityByPoolType(): number {
-    return isInsidePool(this.selectedPool) ? INSIDE_MAX_CAPACITY : OUTSIDE_MAX_CAPACITY;
+    return isInsidePool(this.selectedPoolType) ? INSIDE_MAX_CAPACITY : OUTSIDE_MAX_CAPACITY;
   }
 
   // Process the occupancy data to group by day and hour
@@ -177,7 +177,7 @@ export class PoolDataProcessor {
     selectedWeekId: string
   ): HourlyOccupancySummary[] {
     const occupancyMap = this.createOccupancyMap(selectedWeekId);
-    const insideCapacityMap = isInsidePool(this.selectedPool) ? this.createCapacityMap(selectedWeekId) : {};
+    const insideCapacityMap = isInsidePool(this.selectedPoolType) ? this.createCapacityMap(selectedWeekId) : {};
     
     const summary: HourlyOccupancySummary[] = [];
     Object.entries(occupancyMap).forEach(([day, hourData]) => {
@@ -185,7 +185,7 @@ export class PoolDataProcessor {
         const hour = parseInt(hourStr);
         
         if (values.length > 0) {
-          const maximumCapacity = isInsidePool(this.selectedPool) ? (insideCapacityMap[day]?.[hour] || INSIDE_MAX_CAPACITY) : OUTSIDE_MAX_CAPACITY;
+          const maximumCapacity = isInsidePool(this.selectedPoolType) ? (insideCapacityMap[day]?.[hour] || INSIDE_MAX_CAPACITY) : OUTSIDE_MAX_CAPACITY;
           const stats = this.calculateTimeSlotStats(values, maximumCapacity, day, hour, date);
           summary.push(stats);
         }

@@ -20,7 +20,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
 }) => {
   const { t, i18n } = useTranslation('common');
   const { availableWeeks, weeklySummaries, capacityData } = usePoolDataContext();
-  const { selectedPool } = usePoolSelector();
+  const { selectedPoolType } = usePoolSelector();
   
   // Hover state
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
@@ -124,7 +124,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   >
                     <span className="text-xs font-medium text-gray-700">{displayText}</span>
                   </div>
-                  {isInsidePool(selectedPool) && openedLanes && (
+                  {isInsidePool(selectedPoolType) && openedLanes && (
                     <div className="h-12 border border-gray-200 relative flex items-center justify-center">
                       <div 
                         className="absolute bottom-0 bg-blue-400"
@@ -149,7 +149,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
             })}
             <div className="w-58 flex-shrink-0 font-normal text-gray-500 pl-4 mt-2">
               <div className="h-12 flex items-center">{subtitles[0]}</div>
-              {isInsidePool(selectedPool) && <div className="h-12 flex items-center">{subtitles[1]}</div>}
+              {isInsidePool(selectedPoolType) && <div className="h-12 flex items-center">{subtitles[1]}</div>}
               {days.indexOf(day) === 0 && (
                 <div className="h-12 flex items-center">{subtitles[2]}</div>
               )}

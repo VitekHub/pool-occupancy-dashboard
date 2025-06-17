@@ -16,14 +16,14 @@ const getUtilizationColor = (rate: number) => {
 const CurrentOccupancy: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { currentOccupancy, capacityData } = usePoolDataContext();
-  const { selectedPool } = usePoolSelector();
+  const { selectedPoolType } = usePoolSelector();
   let currentMaxCapacity: number;
 
   if (!currentOccupancy) {
     return null;
   }
 
-  if ((isInsidePool(selectedPool))) {
+  if ((isInsidePool(selectedPoolType))) {
     if (!capacityData?.length) {
       return null;
     }

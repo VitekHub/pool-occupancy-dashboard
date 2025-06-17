@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import CurrentOccupancy from '@/components/ui/CurrentOccupancy';
 import PoolSelector from '@/components/ui/PoolSelector';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const Header: React.FC = () => {
   const { t } = useTranslation(['dashboard']);
+  const { selectedPool } = usePoolSelector();
 
 
   return (
@@ -13,7 +15,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div className="mb-4 md:mb-0">
-            <h1 className="text-3xl font-bold">{t('dashboard:title')}</h1>
+            <h1 className="text-2xl font-bold">{selectedPool} - {t('dashboard:titleSuffix')}</h1>
           </div>
           <div className="flex items-center gap-8">
             <PoolSelector />

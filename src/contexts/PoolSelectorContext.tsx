@@ -1,10 +1,17 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState } from 'react';
 import { PoolType, POOL_TYPES } from '@/utils/types/poolTypes';
+import poolConfig from '@/pool_occupancy_config.json';
+
+interface PoolConfig {
+  name: string;
+}
 
 interface PoolSelectorContextType {
-  selectedPool: PoolType;
-  setSelectedPool: (pool: PoolType) => void;
+  selectedPoolType: PoolType;
+  setselectedPoolType: (pool: PoolType) => void;
+  selectedPool: string;
+  setSelectedPool: (poolName: string) => void;
 }
 
 const PoolSelectorContext = createContext<PoolSelectorContextType | null>(null);
@@ -18,10 +25,18 @@ export const usePoolSelector = () => {
 };
 
 export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedPool, setSelectedPool] = useState<PoolType>(POOL_TYPES.INSIDE);
+  const [selectedPoolType, setselectedPoolType] = useState<PoolType>(POOL_TYPES.INSIDE);
+  const [selectedPool, setSelectedPool] = useState<string>(
+    poolConfig.length > 0 ? poolConfig[0].name : ''
+  );
 
   return (
-    <PoolSelectorContext.Provider value={{ selectedPool, setSelectedPool }}>
+    <PoolSelectorContext.Provider value={{ 
+      selectedPoolType, 
+      setselectedPoolType,
+      selectedPool,
+      setSelectedPool
+    }}>
       {children}
     </PoolSelectorContext.Provider>
   );
