@@ -1,7 +1,7 @@
 import React from 'react';
 import { getColorForOccupancy } from '@/utils/charts/colorUtils';
-
 import type { CustomBarPayload } from '@/utils/types/poolData';
+import { INSIDE_TOTAL_LANES } from '@/constants/pool';
 
 interface CustomBarProps {
   fill: string;
@@ -36,6 +36,7 @@ const CustomBar: React.FC<CustomBarProps> = ({
   const minOccupancy = getMinOccupancy(payload);
   const occupancyColor = getColorForOccupancy(maxOccupancy);
   const squareSize = Math.min(width * 0.6, height * 0.3);
+  const openedLanes = getOpenedLanes(payload);
   
   return (
     <g>
@@ -99,7 +100,7 @@ const CustomBar: React.FC<CustomBarProps> = ({
       )}
       
       {/* Lanes text */}
-      {value > 0 && (
+      {openedLanes && value > 0 && (
         <text
           x={x + width / 2}
           y={y + 20}
@@ -108,7 +109,7 @@ const CustomBar: React.FC<CustomBarProps> = ({
           fontSize="13"
           fontWeight="500"
         >
-          {`${getOpenedLanes(payload)}/6`}
+          {`${openedLanes}/${INSIDE_TOTAL_LANES}`}
         </text>
       )}
     </g>

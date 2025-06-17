@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { cs, enUS } from 'date-fns/locale';
-import { TOTAL_MAX_OCCUPANCY, TOTAL_LANES } from '@/constants/pool';
+import { INSIDE_MAX_CAPACITY, INSIDE_TOTAL_LANES } from '@/constants/pool';
 import type { ChartDataItem, WeekInfo, HourlyOccupancySummary, CapacityRecord } from '@/utils/types/poolData';
 
 export const prepareChartDataForHour = (
@@ -41,7 +41,7 @@ export const prepareChartDataForHour = (
     hourData[`minOccupancy${index}`] = weekData?.minOccupancy || 0;
     hourData[`maxOccupancy${index}`] = weekData?.maxOccupancy || 0;
     hourData[`openedLanes${index}`] = foundHourlyCapacity ?
-      Math.round(foundHourlyCapacity.maximumOccupancy / (TOTAL_MAX_OCCUPANCY / TOTAL_LANES)) :
+      Math.round(foundHourlyCapacity.maximumCapacity / (INSIDE_MAX_CAPACITY / INSIDE_TOTAL_LANES)) :
       0;
     hourData[`dayLabel${index}`] = dayLabel;
   });

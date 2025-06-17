@@ -29,7 +29,7 @@ const PoolOccupancyChart: React.FC = () => {
       minOccupancy: 0,
       maxOccupancy: 0,
       averageOccupancy: 0,
-      maximumOccupancy: 0,
+      maximumCapacity: 0,
       utilizationRate: 0,
       remainingCapacity: 0,
       date: new Date()
@@ -40,7 +40,7 @@ const PoolOccupancyChart: React.FC = () => {
   const chartData = hourlyData.map(item => ({
     hour: `${item.hour}:00`,
     average: item.averageOccupancy,
-    maximum: item.maximumOccupancy
+    maximum: item.maximumCapacity
   }));
 
   return (
@@ -79,7 +79,7 @@ const PoolOccupancyChart: React.FC = () => {
             <h3 className="font-semibold text-lg">{item.hour}:00</h3>
             <div className="mt-2 space-y-1">
               <p className="text-sm">{t('charts:stats.averageOccupancy')}: <span className="font-medium">{item.averageOccupancy}</span></p>
-              <p className="text-sm">{t('charts:stats.maximumOccupancy')}: <span className="font-medium">{item.maximumOccupancy}</span></p>
+              <p className="text-sm">{t('charts:stats.maximumCapacity')}: <span className="font-medium">{item.maximumCapacity}</span></p>
               <p className="text-sm">{t('charts:stats.utilizationRate')}: <span className="font-medium">{item.utilizationRate}%</span></p>
               <p className="text-sm">{t('charts:stats.availableSpots')}: <span className="font-medium">{item.remainingCapacity}</span></p>
             </div>

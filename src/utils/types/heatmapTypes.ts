@@ -29,5 +29,5 @@ export interface ExtendedCellData extends BaseCellData {
 
 export interface ExtendedHeatmapGridProps extends BaseHeatmapGridProps {
   getCellData: (day: string, hour: number) => ExtendedCellData;
-  hasExtraRow?: boolean;
+  showTooltips?: boolean;
 }

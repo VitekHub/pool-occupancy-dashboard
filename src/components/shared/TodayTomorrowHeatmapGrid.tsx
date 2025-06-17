@@ -8,15 +8,19 @@ import GroupedBarChart from '@/components/charts/GroupedBarChart';
 import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
 import type { ChartDataItem } from '@/utils/types/poolData';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
+import { isInsidePool } from '@/utils/types/poolTypes';
 
 const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({ 
   days, 
   hours, 
   getCellData, 
-  dayLabels
+  dayLabels,
+  showTooltips = true
 }) => {
   const { t, i18n } = useTranslation('common');
   const { availableWeeks, weeklySummaries, capacityData } = usePoolDataContext();
+  const { selectedPool } = usePoolSelector();
   
   // Hover state
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
@@ -120,7 +124,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   >
                     <span className="text-xs font-medium text-gray-700">{displayText}</span>
                   </div>
-                  {openedLanes && (
+                  {isInsidePool(selectedPool) && openedLanes && (
                     <div className="h-12 border border-gray-200 relative flex items-center justify-center">
                       <div 
                         className="absolute bottom-0 bg-blue-400"
@@ -145,7 +149,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
             })}
             <div className="w-58 flex-shrink-0 font-normal text-gray-500 pl-4 mt-2">
               <div className="h-12 flex items-center">{subtitles[0]}</div>
-              <div className="h-12 flex items-center">{subtitles[1]}</div>
+              {isInsidePool(selectedPool) && <div className="h-12 flex items-center">{subtitles[1]}</div>}
               {days.indexOf(day) === 0 && (
                 <div className="h-12 flex items-center">{subtitles[2]}</div>
               )}
@@ -154,7 +158,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
         ))}
         
         {/* Floating tooltip with hover chart */}
-        {isHoverChartVisible && hoveredChartData && relevantWeeks && hoveredDay && hoveredHour !== null && (
+        {showTooltips && isHoverChartVisible && hoveredChartData && relevantWeeks && hoveredDay && hoveredHour !== null && (
           <FloatingTooltip
             isVisible={isHoverChartVisible}
             targetRect={hoveredCellPosition}

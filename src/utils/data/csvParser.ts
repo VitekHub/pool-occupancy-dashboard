@@ -35,7 +35,7 @@ export const parseCapacityCSV = (csvText: string): CapacityRecord[] => {
       date,
       day: values[1],
       hour: values[2],
-      maximumOccupancy: parseInt(values[3], 10)
+      maximumCapacity: parseInt(values[3], 10)
     };
   });
 };

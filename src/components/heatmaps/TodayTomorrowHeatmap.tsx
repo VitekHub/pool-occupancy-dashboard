@@ -9,7 +9,8 @@ import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
 import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
-import { TOTAL_MAX_OCCUPANCY, TOTAL_LANES } from '@/constants/pool';
+import { INSIDE_MAX_CAPACITY, INSIDE_TOTAL_LANES } from '@/constants/pool';
+import FloatingTooltipToggle from '../ui/FloatingTooltipToggle';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -20,6 +21,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
     error
   } = usePoolDataContext();
   const [showFullWeek, setShowFullWeek] = useState(false);
+  const [showTooltips, setShowTooltips] = useState(true);
 
   // Get today's day name
   const today = new Date();
@@ -53,9 +55,9 @@ const TodayTomorrowHeatmap: React.FC = () => {
     const newItem: HourlyDataWithRatio = {
       ...item,
       ratio: capacity ? {
-        current: Math.round(capacity.maximumOccupancy / (TOTAL_MAX_OCCUPANCY / TOTAL_LANES)),
-        total: TOTAL_LANES,
-        fillRatio: capacity.maximumOccupancy / TOTAL_MAX_OCCUPANCY
+        current: Math.round(capacity.maximumCapacity / (INSIDE_MAX_CAPACITY / INSIDE_TOTAL_LANES)),
+        total: INSIDE_TOTAL_LANES,
+        fillRatio: capacity.maximumCapacity / INSIDE_MAX_CAPACITY
       } : undefined
     };
 
@@ -105,6 +107,11 @@ const TodayTomorrowHeatmap: React.FC = () => {
 
   return (
     <div>
+      <FloatingTooltipToggle
+        showTooltips={showTooltips}
+        setShowTooltips={setShowTooltips}
+      />
+
       {showMoreButton}
 
       <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -113,6 +120,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
           hours={HOURS}
           getCellData={getCellDataWithTranslation}
           dayLabels={dayLabels}
+          showTooltips={showTooltips}
         />
         
         <HeatmapLegend

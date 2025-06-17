@@ -72,12 +72,13 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
             const minOccupancy = payload[`minOccupancy${weekIndex}`];
             const maxOccupancy = payload[`maxOccupancy${weekIndex}`];
             const openedLanes = payload[`openedLanes${weekIndex}`];
+            const openedLanesText = openedLanes ? `, ${openedLanes} ${t('charts:weeklyComparison.lanes')}` : '';
             const dayLabel = payload[`dayLabel${weekIndex}`];
             const occupancyText = minOccupancy === maxOccupancy ?
               `${maxOccupancy}` :
               `${minOccupancy}-${maxOccupancy}`;
             return [
-              `${t(`common:days.${selectedDay.toLowerCase()}`)} ${dayLabel} - ${value}% (${occupancyText} ${t('common:people')}, ${openedLanes} ${t('charts:weeklyComparison.lanes')})`
+              `${t(`common:days.${selectedDay.toLowerCase()}`)} ${dayLabel} - ${value}% (${occupancyText} ${t('common:people')}${openedLanesText})`
             ];
           }}
         />

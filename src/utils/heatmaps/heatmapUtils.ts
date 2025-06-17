@@ -1,5 +1,5 @@
 import { HourlyDataWithRatio } from '@/utils/types/poolData';
-import { ProcessedHeatmapData, BaseCellData } from '@/utils/types/heatmapTypes';
+import { ProcessedHeatmapData, BaseCellData, ExtendedCellData } from '@/utils/types/heatmapTypes';
 import { DAYS, HOURS } from '@/constants/time';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
 import { UTILIZATION_THRESHOLDS } from '@/constants/pool';
@@ -42,7 +42,7 @@ export const processHeatmapData = (
   days: string[] = DAYS
 ): ProcessedHeatmapData => {
   const utilizationMap: Record<string, Record<number, number>> = {};
-  const ratioMap: Record<string, Record<number, HourlyOccupancySummary['ratio']>> = {};
+  const ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>> = {};
   
   // Initialize with empty data
   days.forEach(day => {

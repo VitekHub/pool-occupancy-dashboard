@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
+import { isInsidePool } from '@/utils/types/poolTypes';
 import ContentCard from '@/components/ui/ContentCard';
 import WeekNavigator from '@/components/ui/WeekNavigator';
 import Header from '@/components/layout/Header';
@@ -13,9 +15,14 @@ function App() {
   const { t } = useTranslation(['dashboard', 'common']);
   const [activeTab, setActiveTab] = useState<TabType>(TAB_CONFIG[0].id);
   const { loading } = usePoolDataContext();
+  const { selectedPool } = usePoolSelector();
   
   const activeConfig = TAB_CONFIG.find(tab => tab.id === activeTab)!;
   const TabComponent = activeConfig.component;
+  
+  // Get pool-specific description
+  const poolType = isInsidePool(selectedPool) ? 'inside' : 'outside';
+  const descriptionKey = `${activeConfig.descriptionKey}.${poolType}`;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -29,7 +36,7 @@ function App() {
           <ContentCard
             icon={activeConfig.icon}
             title={t(activeConfig.titleKey)}
-            description={t(activeConfig.descriptionKey)}
+            description={t(descriptionKey)}
             weekSelector={
               activeConfig.showWeekSelector && !loading ? (
                 <WeekNavigator />

@@ -1,4 +1,4 @@
-import { DivideIcon as LucideIcon } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 interface ContentCardProps {
   icon: LucideIcon;
@@ -10,8 +10,8 @@ interface ContentCardProps {
 
 const ContentCard: React.FC<ContentCardProps> = ({ icon: Icon, title, description, weekSelector, children }) => {
   return (
-    <div className="grid grid-cols-1 gap-6">
-      <div className="bg-white p-4 rounded-lg shadow">
+    <div className="grid mx-auto grid-cols-1 gap-6">
+      <div className="bg-white mx-auto p-4 rounded-lg shadow">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <Icon className="h-6 w-6 text-blue-500 mr-2" />
@@ -22,7 +22,7 @@ const ContentCard: React.FC<ContentCardProps> = ({ icon: Icon, title, descriptio
           </div>
           <div className="w-[200px]"></div>
         </div>
-        <p className="text-gray-600 mb-4">{description}</p>
+        <p className="text-gray-600 mb-2 break-words max-w-[900px]">{description}</p>
         {children}
       </div>
     </div>

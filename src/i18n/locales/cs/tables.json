@@ -1,16 +1,20 @@
 {
   "title": "Data o obsazenosti bazénu",
-  "description": "Tato tabulka poskytuje detailní statistiky hodinové obsazenosti pro každý den v týdnu, zobrazuje průměrnou obsazenost v rámci hodiny a maximální kapacitu, která se během dne mění podle rezervovaných drah pro specifické aktivity.",
+  "description": {
+    "inside": "Tato tabulka poskytuje detailní statistiky hodinové obsazenosti pro každý den v týdnu, zobrazuje průměrnou obsazenost v rámci hodiny a maximální kapacitu, která se během dne mění podle rezervovaných drah pro specifické aktivity.",
+    "outside": "Tato tabulka poskytuje detailní statistiky hodinové obsazenosti pro každý den v týdnu, zobrazuje průměrnou obsazenost v rámci hodiny a maximální kapacitu bazénu."
+  },
   "columns": {
     "hour": "Hodina",
     "averageOccupancy": "Průměrná obsazenost",
-    "maximumOccupancy": "Maximální kapacita",
+    "maximumCapacity": "Maximální kapacita",
     "utilizationRate": "Míra využití",
     "remainingCapacity": "Zbývající kapacita"
   },
   "downloads": {
     "title": "Stáhnout data",
-    "occupancy": "Stáhnout data obsazenosti (CSV)",
-    "capacity": "Stáhnout data kapacity (CSV)"
+    "insideOccupancy": "Data obsazenosti vnitřního bazénu (CSV)",
+    "outsideOccupancy": "Data obsazenosti vnějšího bazénu (CSV)",
+    "capacity": "Data kapacity vnitřního bazénu (CSV)"
   }
 }

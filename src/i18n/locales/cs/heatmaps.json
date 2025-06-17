@@ -15,30 +15,43 @@
   },
   "todayTomorrow": {
     "title": "Dnes a zítra",
-    "description": "Tato mapa zobrazuje aktuální obsazenost, počet otevřených drah a historickou průměrnou obsazenost pro dnešek a zítřek.",
+    "description": {
+      "inside": "Tato mapa zobrazuje aktuální obsazenost, počet otevřených drah a historickou průměrnou obsazenost pro dnešek a zítřek.",
+      "outside": "Tato mapa zobrazuje aktuální obsazenost a historickou průměrnou obsazenost pro dnešek a zítřek."
+    },
     "showMore": "Zobrazit celý týden",
     "showLess": "Zobrazit pouze dnes a zítra",
+    "showTooltips": "Náhled týdenního porovnání",
     "daySubtitle": {
       "raw": "Aktuální obsazenost (počet lidí)",
-      "occupancy": "Historická obsazenost otevřených drah",
+      "occupancy": "Historická obsazenost",
       "lanes": "Aktuálně otevřené dráhy"
     },
     "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno"
   },
   "overall": {
     "title": "Průměrná obsazenost",
-    "description": "Tato mapa ukazuje průměrnou obsazenost bazénu za poslední týdny. Zobrazuje typické vzory obsazenosti pro každý den v týdnu s ohledem na uzavřené dráhy.",
+    "description": {
+      "inside": "Tato mapa ukazuje průměrnou obsazenost bazénu za poslední týdny. Zobrazuje typické vzory obsazenosti pro každý den v týdnu s ohledem na uzavřené dráhy.",
+      "outside": "Tato mapa ukazuje průměrnou obsazenost bazénu za poslední týdny. Zobrazuje typické vzory obsazenosti pro každý den v týdnu."
+    },
     "averageLabel": "průměr",
     "tooltip": "{{day}} v {{hour}}:00 - průměrně {{utilization}}% obsazeno"
   },
   "occupancy": {
     "title": "Týdenní mapa obsazenosti",
-    "description": "Tato mapa ukazuje, jak je bazén zaplněn vzhledem k jeho maximální kapacitě. Maximum se během dne mění podle rezervovaných drah pro specifické aktivity.",
+    "description": {
+      "inside": "Tato mapa ukazuje, jak je bazén zaplněn vzhledem k jeho maximální kapacitě. Maximum se během dne mění podle rezervovaných drah pro specifické aktivity.",
+      "outside": "Tato mapa ukazuje, jak je bazén zaplněn vzhledem k jeho maximální kapacitě."
+    },
     "tooltip": "{{day}} v {{hour}}:00 - {{utilization}}% obsazeno"
   },
   "raw": {
     "title": "Týdenní počty návštěvníků",
-    "description": "Tato mapa ukazuje skutečný (min-max) počet lidí v bazénu pro každou hodinu, pomáhá vizualizovat absolutní čísla obsazenosti během týdne.",
+    "description": {
+      "inside": "Tato mapa ukazuje skutečný (min-max) počet lidí v bazénu pro každou hodinu, pomáhá vizualizovat absolutní čísla obsazenosti během týdne s ohledem na proměnlivou kapacitu drah.",
+      "outside": "Tato mapa ukazuje skutečný (min-max) počet lidí v bazénu pro každou hodinu, pomáhá vizualizovat absolutní čísla obsazenosti během týdne."
+    },
     "tooltip": "{{day}} v {{hour}}:00 - {{min}} až {{max}} lidí",
     "legend": {
       "title": "Počet návštěvníků",
