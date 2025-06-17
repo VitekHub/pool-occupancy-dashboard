@@ -30,15 +30,6 @@ const PoolSelector: React.FC = () => {
 
   return (
     <div className="flex flex-col sm:flex-row items-center bg-blue-700 rounded-lg overflow-hidden">
-      {hasInsidePool && (
-        <button
-          onClick={() => handlePoolChange(POOL_TYPES.INSIDE)}
-          className={getButtonClass(POOL_TYPES.INSIDE)}
-        >
-          <Building className="w-4 h-4 mr-2" />
-          {t('poolSelector.inside')}
-        </button>
-      )}
       {hasOutsidePool && (
         <button
           onClick={() => handlePoolChange(POOL_TYPES.OUTSIDE)}
@@ -46,6 +37,15 @@ const PoolSelector: React.FC = () => {
         >
           <Waves className="w-4 h-4 mr-2" />
           {t('poolSelector.outside')}
+        </button>
+      )}
+      {hasInsidePool && (
+        <button
+          onClick={() => handlePoolChange(POOL_TYPES.INSIDE)}
+          className={getButtonClass(POOL_TYPES.INSIDE)}
+        >
+          <Building className="w-4 h-4 mr-2" />
+          {t('poolSelector.inside')}
         </button>
       )}
     </div>

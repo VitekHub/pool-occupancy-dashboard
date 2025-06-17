@@ -22,7 +22,7 @@ export const usePoolSelector = () => {
 };
 
 export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedPoolType, setSelectedPoolType] = useState<PoolType>(POOL_TYPES.INSIDE);
+  const [selectedPoolType, setSelectedPoolType] = useState<PoolType>(POOL_TYPES.OUTSIDE);
   const [selectedPool, setSelectedPool] = useState<PoolConfig>(
     poolConfig.length > 0 ? poolConfig[0] as PoolConfig : {} as PoolConfig
   );
@@ -30,13 +30,13 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Update selectedPoolType when selectedPool changes
   useEffect(() => {
     if (selectedPool) {
-      if (selectedPool?.insidePool?.viewStats) {
-        setSelectedPoolType(POOL_TYPES.INSIDE);
-      } else {
+      if (selectedPool?.outsidePool?.viewStats) {
         setSelectedPoolType(POOL_TYPES.OUTSIDE);
+      } else {
+        setSelectedPoolType(POOL_TYPES.INSIDE);
       }
     }
-  }, [selectedPool, selectedPoolType]);
+  }, [selectedPool]);
 
   return (
     <PoolSelectorContext.Provider value={{ 
