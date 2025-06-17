@@ -30,7 +30,7 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Update selectedPoolType when selectedPool changes
   useEffect(() => {
     if (selectedPool) {
-      if (selectedPool.insidePool !== undefined) {
+      if (selectedPool?.insidePool?.viewStats) {
         setSelectedPoolType(POOL_TYPES.INSIDE);
       } else {
         setSelectedPoolType(POOL_TYPES.OUTSIDE);

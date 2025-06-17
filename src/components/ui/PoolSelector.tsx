@@ -8,9 +8,9 @@ const PoolSelector: React.FC = () => {
   const { t } = useTranslation(['dashboard']);
   const { selectedPoolType, setSelectedPoolType, selectedPool } = usePoolSelector();
   
-  // Determine which pool types are available
-  const hasInsidePool = selectedPool?.insidePool !== undefined;
-  const hasOutsidePool = selectedPool?.outsidePool !== undefined;
+  // Determine which pool types are available and have viewStats enabled
+  const hasInsidePool = selectedPool?.insidePool?.viewStats === true;
+  const hasOutsidePool = selectedPool?.outsidePool?.viewStats === true;
 
   // If no pool is configured or no pool types are available, don't render
   if (!hasInsidePool && !hasOutsidePool) {
