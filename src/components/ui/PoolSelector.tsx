@@ -13,14 +13,14 @@ const PoolSelector: React.FC = () => {
   };
 
   const getButtonClass = (pool: PoolType) =>
-    `flex items-center px-4 py-2 text-sm font-medium transition-colors ${
+    `flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors sm:w-auto ${
       selectedPool === pool
         ? 'bg-white text-blue-600'
         : 'text-blue-100 hover:text-white hover:bg-blue-500'
     }`;
 
   return (
-    <div className="flex items-center bg-blue-700 rounded-lg overflow-hidden">
+    <div className="flex flex-col sm:flex-row items-center bg-blue-700 rounded-lg overflow-hidden">
       <button
         onClick={() => handlePoolChange(POOL_TYPES.INSIDE)}
         className={getButtonClass(POOL_TYPES.INSIDE)}

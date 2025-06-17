@@ -15,19 +15,21 @@ const Header: React.FC = () => {
           <div className="mb-4 md:mb-0">
             <h1 className="text-3xl font-bold">{t('dashboard:title')}</h1>
           </div>
-          <div>
-            <a 
-              href="https://www.kravihora-brno.cz/kryta-plavecka-hala/rozpis"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-100 hover:text-white transition-colors text-sm mt-1 block underline"
-            >
-              {t('dashboard:weeklySchedule')}
-            </a>
-          </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-8">
             <PoolSelector />
             <CurrentOccupancy />
+          </div>
+          <div className="flex items-center gap-4">
+            <div>
+              <a 
+                href="https://www.kravihora-brno.cz/kryta-plavecka-hala/rozpis"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-100 hover:text-white transition-colors text-sm mt-1 block underline"
+              >
+                {t('dashboard:weeklySchedule')}
+              </a>
+            </div>
             <LanguageSwitcher />
           </div>
         </div>
