@@ -10,6 +10,7 @@ import { getDayLabels } from '@/utils/date/dateUtils';
 import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
 import { INSIDE_MAX_CAPACITY, INSIDE_TOTAL_LANES } from '@/constants/pool';
+import FloatingTooltipToggle from '../ui/FloatingTooltipToggle';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -106,22 +107,10 @@ const TodayTomorrowHeatmap: React.FC = () => {
 
   return (
     <div>
-      {/* Tooltip toggle */}
-      <div className="mb-4 flex items-center">
-        <label className="flex items-center cursor-pointer">
-          <span className="mr-2 text-sm text-gray-700">{t('heatmaps:todayTomorrow.showTooltips')}</span>
-          <div className="relative">
-            <input
-              type="checkbox"
-              checked={showTooltips}
-              onChange={(e) => setShowTooltips(e.target.checked)}
-              className="sr-only"
-            />
-            <div className={`block w-11 h-6 rounded-full ${showTooltips ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
-            <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition ${showTooltips ? 'transform translate-x-5' : ''}`}></div>
-          </div>
-        </label>
-      </div>
+      <FloatingTooltipToggle
+        showTooltips={showTooltips}
+        setShowTooltips={setShowTooltips}
+      />
 
       {showMoreButton}
 
