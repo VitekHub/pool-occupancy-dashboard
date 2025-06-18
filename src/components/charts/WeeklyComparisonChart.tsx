@@ -7,6 +7,7 @@ import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
 import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
 import type { ChartDataItem } from '@/utils/types/poolData';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const WeeklyComparisonChart: React.FC = () => {
   const { t, i18n } = useTranslation(['charts', 'common']);
@@ -20,6 +21,7 @@ const WeeklyComparisonChart: React.FC = () => {
     error,
     selectedWeekId
   } = usePoolDataContext();
+  const { selectedPool } = usePoolSelector();
 
   // Get the last 4 weeks including the selected week
   const selectedWeekIndex = availableWeeks.findIndex(week => week.id === selectedWeekId);
@@ -46,7 +48,8 @@ const WeeklyComparisonChart: React.FC = () => {
       relevantWeeks,
       weeklySummaries,
       capacityData,
-      i18n.language
+      i18n.language,
+      selectedPool
     )
   );
 

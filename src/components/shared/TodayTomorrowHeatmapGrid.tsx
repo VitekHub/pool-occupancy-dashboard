@@ -20,7 +20,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
 }) => {
   const { t, i18n } = useTranslation('common');
   const { availableWeeks, weeklySummaries, capacityData } = usePoolDataContext();
-  const { selectedPoolType } = usePoolSelector();
+  const { selectedPoolType, selectedPool } = usePoolSelector();
   
   // Hover state
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
@@ -55,7 +55,8 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
       relevantWeeks,
       weeklySummaries,
       capacityData,
-      i18n.language
+      i18n.language,
+      selectedPool
     );
     
     setHoveredChartData([chartData]);
@@ -78,7 +79,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
         <div className="flex">
           <div className="w-24 flex-shrink-0" />
           {hours.map(hour => (
-            <div key={hour} className="w-12 text-center text-xs font-medium text-gray-600">
+            <div key={hour} className="w-14 text-center text-xs font-medium text-gray-600">
               {hour}:00
             </div>
           ))}
@@ -110,9 +111,9 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
               };
               
               return (
-                <div key={`${day}-${hour}`} className="w-12">
+                <div key={`${day}-${hour}`} className="w-14">
                   { days.indexOf(day) > 0 && 
-                    (<div className="w-12 text-center text-xs font-medium text-gray-600">
+                    (<div className="w-14 text-center text-xs font-medium text-gray-600">
                       {hour}:00
                     </div>
                   )}

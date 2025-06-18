@@ -96,7 +96,7 @@ const PoolOccupancyTable: React.FC = () => {
               label={t('tables:downloads.insideOccupancy')}
             />
           )}
-          {import.meta.env.VITE_MAX_CAPACITY_CSV_URL && (
+          {insidePoolUrl && import.meta.env.VITE_MAX_CAPACITY_CSV_URL && (
             <DownloadButton
               url={import.meta.env.VITE_MAX_CAPACITY_CSV_URL}
               label={t('tables:downloads.capacity')}

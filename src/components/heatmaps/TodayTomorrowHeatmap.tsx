@@ -9,8 +9,8 @@ import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
 import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
-import { INSIDE_MAX_CAPACITY, INSIDE_TOTAL_LANES } from '@/constants/pool';
-import FloatingTooltipToggle from '../ui/FloatingTooltipToggle';
+import FloatingTooltipToggle from '@/components/ui/FloatingTooltipToggle';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -20,6 +20,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
     loading,
     error
   } = usePoolDataContext();
+  const { selectedPool } = usePoolSelector();
   const [showFullWeek, setShowFullWeek] = useState(false);
   const [showTooltips, setShowTooltips] = useState(true);
 
@@ -54,10 +55,10 @@ const TodayTomorrowHeatmap: React.FC = () => {
     // Create new item with ratio data
     const newItem: HourlyDataWithRatio = {
       ...item,
-      ratio: capacity ? {
-        current: Math.round(capacity.maximumCapacity / (INSIDE_MAX_CAPACITY / INSIDE_TOTAL_LANES)),
-        total: INSIDE_TOTAL_LANES,
-        fillRatio: capacity.maximumCapacity / INSIDE_MAX_CAPACITY
+      ratio: selectedPool.insidePool && capacity ? {
+        current: Math.round(capacity.maximumCapacity / (selectedPool.insidePool.maximumCapacity / selectedPool.insidePool.totalLanes)), 
+        total: selectedPool.insidePool.totalLanes,
+        fillRatio: capacity.maximumCapacity / selectedPool.insidePool.maximumCapacity
       } : undefined
     };
 

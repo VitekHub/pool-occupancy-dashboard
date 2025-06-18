@@ -14,7 +14,7 @@
   "downloads": {
     "title": "Stáhnout data",
     "insideOccupancy": "Data obsazenosti vnitřního bazénu (CSV)",
-    "outsideOccupancy": "Data obsazenosti vnějšího bazénu (CSV)",
+    "outsideOccupancy": "Data obsazenosti venkovního bazénu (CSV)",
     "capacity": "Data kapacity vnitřního bazénu (CSV)"
   }
 }

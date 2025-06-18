@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
 import { usePoolDataContext } from '@/contexts/PoolDataContext';
-import { INSIDE_MAX_CAPACITY, OUTSIDE_MAX_CAPACITY, UTILIZATION_THRESHOLDS } from '@/constants/pool';
+import { UTILIZATION_THRESHOLDS } from '@/constants/pool';
 import { PROGRESS_COLORS } from '@/constants/colors';
 import { isInsidePool } from '@/utils/types/poolTypes';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
@@ -16,7 +16,7 @@ const getUtilizationColor = (rate: number) => {
 const CurrentOccupancy: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { currentOccupancy, capacityData } = usePoolDataContext();
-  const { selectedPoolType } = usePoolSelector();
+  const { selectedPoolType, selectedPool } = usePoolSelector();
   let currentMaxCapacity: number;
 
   if (!currentOccupancy) {
@@ -33,9 +33,9 @@ const CurrentOccupancy: React.FC = () => {
         record.date.getTime() === currentOccupancy.date.getTime() &&
         record.day === currentOccupancy.day &&
         parseInt(record.hour) === currentOccupancy.hour
-    )?.maximumCapacity || INSIDE_MAX_CAPACITY;
+    )?.maximumCapacity || selectedPool.insidePool?.maximumCapacity || 0;
   } else {
-    currentMaxCapacity = OUTSIDE_MAX_CAPACITY;
+    currentMaxCapacity = selectedPool.outsidePool?.maximumCapacity || 0;
   }
 
   // Calculate utilization percentage

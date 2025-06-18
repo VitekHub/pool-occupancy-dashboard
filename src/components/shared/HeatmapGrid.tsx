@@ -19,7 +19,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
         <div className="flex">
           <div className="w-24 flex-shrink-0" />
           {hours.map(hour => (
-            <div key={hour} className="w-12 text-center text-xs font-medium text-gray-600">
+            <div key={hour} className="w-14 text-center text-xs font-medium text-gray-600">
               {hour}:00
             </div>
           ))}
@@ -43,7 +43,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
             {hours.map(hour => {
               const { color, displayText, title } = getCellData(day, hour);
               return (
-                <div key={`${day}-${hour}`} className="w-12">
+                <div key={`${day}-${hour}`} className="w-14">
                   <div
                     className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}

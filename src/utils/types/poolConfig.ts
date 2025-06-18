@@ -5,7 +5,7 @@ export interface PoolConfig {
     pattern: string;
     csvFile: string;
     maximumCapacity: number;
-    totalLanes?: number;
+    totalLanes: number;
     collectStats: boolean;
     viewStats: boolean;
   };
