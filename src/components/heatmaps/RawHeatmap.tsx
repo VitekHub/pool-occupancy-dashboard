@@ -6,10 +6,13 @@ import { getDayLabels } from '@/utils/date/dateUtils';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
+import { POOL_TYPES } from '@/utils/types/poolTypes';
 
 const RawHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
   const { hourlySummary, loading, error, selectedWeekId } = usePoolDataContext();
+  const { selectedPool, selectedPoolType } = usePoolSelector();
   const dayLabels = getDayLabels(selectedWeekId);
 
   if (loading) {
@@ -46,9 +49,12 @@ const RawHeatmap: React.FC = () => {
     const displayText = range.min === range.max ? 
       (range.min > 0 ? `${range.min}` : '') : 
       `${range.min}-${range.max}`;
-    
+    const average = (range.min + range.max) / 2;
+    const maximumCapacity = selectedPoolType === POOL_TYPES.INSIDE ?  selectedPool.insidePool?.maximumCapacity : selectedPool.outsidePool?.maximumCapacity;
+    const percentageUtilization = maximumCapacity ? (average / maximumCapacity) * 100 : 0;
+
     return {
-      color: getColorForUtilization(range.max),
+      color: getColorForUtilization(percentageUtilization),
       displayText,
       title: t('heatmaps:raw.tooltip', {
         day: t(`common:days.${day.toLowerCase()}`),

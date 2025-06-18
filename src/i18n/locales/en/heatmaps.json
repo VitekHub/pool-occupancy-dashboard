@@ -5,10 +5,10 @@
       "labels": {
         "empty": "0%",
         "veryLow": "<25%",
-        "low": "<33%",
-        "medium": "<42%",
-        "high": "<52%",
-        "veryHigh": "52%+"
+        "low": "<40%",
+        "medium": "<55%",
+        "high": "<70%",
+        "veryHigh": "70%+"
       }
     },
     "holidayWarning": "This day is a public holiday. Occupancy may differ from a regular day."
@@ -57,11 +57,11 @@
       "title": "Number of Visitors",
       "labels": {
         "empty": "0",
-        "veryLow": "<25",
-        "low": "<33",
-        "medium": "<42",
-        "high": "<52",
-        "veryHigh": "52+"
+        "veryLow": "<25%",
+        "low": "<40%",
+        "medium": "<55%",
+        "high": "<70%",
+        "veryHigh": "70%+"
       }
     }
   }

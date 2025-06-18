@@ -1,6 +1,7 @@
 export interface PoolConfig {
   name: string;
   insidePool?: {
+    customName?: string;
     url: string;
     pattern: string;
     csvFile: string;
@@ -10,6 +11,7 @@ export interface PoolConfig {
     viewStats: boolean;
   };
   outsidePool?: {
+    customName?: string;
     url: string;
     pattern: string;
     csvFile: string;

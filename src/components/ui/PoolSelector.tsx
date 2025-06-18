@@ -11,6 +11,8 @@ const PoolSelector: React.FC = () => {
   // Determine which pool types are available and have viewStats enabled
   const hasInsidePool = selectedPool?.insidePool?.viewStats === true;
   const hasOutsidePool = selectedPool?.outsidePool?.viewStats === true;
+  const insidePoolLabel = selectedPool?.insidePool?.customName || t('poolSelector.inside');
+  const outsidePoolLabel = selectedPool?.outsidePool?.customName || t('poolSelector.outside');
 
   // If no pool is configured or no pool types are available, don't render
   if (!hasInsidePool && !hasOutsidePool) {
@@ -36,7 +38,7 @@ const PoolSelector: React.FC = () => {
           className={getButtonClass(POOL_TYPES.OUTSIDE)}
         >
           <Waves className="w-4 h-4 mr-2" />
-          {t('poolSelector.outside')}
+          {outsidePoolLabel}
         </button>
       )}
       {hasInsidePool && (
@@ -45,7 +47,7 @@ const PoolSelector: React.FC = () => {
           className={getButtonClass(POOL_TYPES.INSIDE)}
         >
           <Building className="w-4 h-4 mr-2" />
-          {t('poolSelector.inside')}
+          {insidePoolLabel}
         </button>
       )}
     </div>
