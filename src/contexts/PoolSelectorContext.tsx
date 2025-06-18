@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { PoolType, POOL_TYPES } from '@/utils/types/poolTypes';
 import { PoolConfig } from '@/utils/types/poolConfig';
 import poolConfig from '@/pool_occupancy_config.json';
@@ -26,17 +26,6 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [selectedPool, setSelectedPool] = useState<PoolConfig>(
     poolConfig.length > 0 ? poolConfig[0] as PoolConfig : {} as PoolConfig
   );
-
-  // Update selectedPoolType when selectedPool changes
-  useEffect(() => {
-    if (selectedPool) {
-      if (selectedPool?.outsidePool?.viewStats) {
-        setSelectedPoolType(POOL_TYPES.OUTSIDE);
-      } else {
-        setSelectedPoolType(POOL_TYPES.INSIDE);
-      }
-    }
-  }, [selectedPool]);
 
   return (
     <PoolSelectorContext.Provider value={{ 

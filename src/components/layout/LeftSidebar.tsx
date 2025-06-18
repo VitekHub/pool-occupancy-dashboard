@@ -3,6 +3,7 @@ import { Waves, Building, TreePine, MapPin, Droplets, Users, Zap, Shield, Star, 
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import poolConfig from '@/pool_occupancy_config.json';
 import { PoolConfig } from '@/utils/types/poolConfig';
+import { POOL_TYPES } from '@/utils/types/poolTypes';
 
 const getPoolIcon = (index: number) => {
   const icons = [
@@ -23,7 +24,16 @@ const getPoolIcon = (index: number) => {
 
 const LeftSidebar: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { selectedPool, setSelectedPool } = usePoolSelector();
+  const { selectedPool, setSelectedPool, setSelectedPoolType } = usePoolSelector();
+
+  const handlePoolSelect = (pool: PoolConfig) => {
+    setSelectedPool(pool);
+    if (pool?.outsidePool?.viewStats) {
+      setSelectedPoolType(POOL_TYPES.OUTSIDE);
+    } else {
+      setSelectedPoolType(POOL_TYPES.INSIDE);
+    }
+  };
 
   // Filter pools to only show those that have at least one pool type with viewStats enabled
   const visiblePools = poolConfig.filter((pool: PoolConfig) => pool.insidePool?.viewStats || pool.outsidePool?.viewStats);
@@ -52,7 +62,7 @@ const LeftSidebar: React.FC = () => {
             return (
               <button
                 key={index}
-                onClick={() => setSelectedPool(pool)}
+                onClick={() => handlePoolSelect(pool)}
                 className={`w-full flex items-center px-4 py-3 text-left transition-colors hover:bg-blue-500 ${
                   isSelected ? 'bg-blue-700 border-r-4 border-blue-200' : ''
                 }`}
