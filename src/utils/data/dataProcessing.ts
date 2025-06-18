@@ -206,7 +206,7 @@ export class PoolDataProcessor {
     DAYS.forEach(day => {
       HOURS.forEach(hour => {
         const averageUtilization = this.calculateAverageUtilization(day, hour, weeklyUtilization, weeks);
-        const recentWeekData = this.processOccupancyData(weeks[0].id).find(data => data.day === day && data.hour === hour);
+        const recentWeekData = weeks?.length > 0 && this.processOccupancyData(weeks[0].id).find(data => data.day === day && data.hour === hour);
         const maximumCapacity = this.getMaxCapacityByPoolType();
         
         // Create a summary entry even if we don't have recent week data

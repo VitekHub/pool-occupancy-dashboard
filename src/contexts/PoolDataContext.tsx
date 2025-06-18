@@ -37,7 +37,6 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [hourlySummary, setHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [overallHourlySummary, setOverallHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [weeklySummaries, setWeeklySummaries] = useState<Record<string, HourlyOccupancySummary[]>>({});
-  const [availableWeeks, setAvailableWeeks] = useState<WeekInfo[]>([]);
   const [currentOccupancy, setCurrentOccupancy] = useState<OccupancyRecord | null>(null);
   const [isProcessingData, setIsProcessingData] = useState<boolean>(true);
 
@@ -52,6 +51,13 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const { selectedPoolType } = usePoolSelector();
 
+  const occupancyData = isInsidePool(selectedPoolType) ? insideOccupancyData : outsideOccupancyData;
+
+  const availableWeeks = React.useMemo(() => {
+    if (!occupancyData) return [];
+    return getAvailableWeeks(occupancyData.map(record => record.date));
+  }, [occupancyData]);
+
   const processWithTimeout = React.useCallback((callback: () => void) => {
     if (loading) {
       callback();
@@ -63,13 +69,6 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }, 200);
     }
   }, [loading]);
-
-  // Combine occupancy data based on selected pool
-  const getPoolDataProcessor = React.useCallback(() => {
-    const occupancyData = isInsidePool(selectedPoolType) ? insideOccupancyData : outsideOccupancyData;
-    const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPoolType);
-    return { dataProcessor, occupancyData };
-  }, [selectedPoolType, insideOccupancyData, outsideOccupancyData, capacityData]);
 
   // Set initial week when available
   useEffect(() => {
@@ -87,19 +86,18 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Process weekly data when selectedWeekId or selectedPoolType changes
   useEffect(() => {
-    const { dataProcessor, occupancyData } = getPoolDataProcessor();
+    const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPoolType);
     if (occupancyData && capacityData && selectedWeekId) {
       const summary = dataProcessor.processOccupancyData(selectedWeekId);
       setHourlySummary(summary);
     }
-  }, [selectedWeekId, insideOccupancyData, outsideOccupancyData, capacityData, selectedPoolType, getPoolDataProcessor]);
+  }, [selectedWeekId, occupancyData, capacityData, selectedPoolType]);
 
-  // Process overall data when raw data or selectedPoolType changes
+  // Process overall data and weekly summaries using memoized availableWeeks
   useEffect(() => {
     processWithTimeout(() => {
-      const { dataProcessor, occupancyData } = getPoolDataProcessor();
+      const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPoolType);
       if (occupancyData && capacityData) {
-
         const summary = dataProcessor.processOverallOccupancyData();
         setOverallHourlySummary(summary);
 
@@ -108,23 +106,20 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           occupancyData.length > 0 ? occupancyData[occupancyData.length - 1] : null
         );
 
-        // Process data for all available weeks
+        // Process data for all available weeks using memoized availableWeeks
         const summaries: Record<string, HourlyOccupancySummary[]> = {};
-        const weeks = getAvailableWeeks(occupancyData.map(record => record.date));
-        setAvailableWeeks(weeks);
-        
-        weeks.forEach(week => {
+        availableWeeks.forEach(week => {
           const weeklySummary = dataProcessor.processOccupancyData(week.id);
           summaries[week.id] = weeklySummary;
         });
         setWeeklySummaries(summaries);
       }
     });
-  }, [insideOccupancyData, outsideOccupancyData, capacityData, selectedPoolType, processWithTimeout, getPoolDataProcessor]);
+  }, [occupancyData, capacityData, selectedPoolType, processWithTimeout, availableWeeks]);
 
   return (
     <PoolDataContext.Provider value={{
-      occupancyData: isInsidePool(selectedPoolType) ? insideOccupancyData : outsideOccupancyData,
+      occupancyData,
       capacityData: isInsidePool(selectedPoolType) ? capacityData : undefined,
       weekCapacityData: isInsidePool(selectedPoolType) ? weekCapacityData : undefined,
       hourlySummary,

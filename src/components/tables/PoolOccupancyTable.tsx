@@ -5,10 +5,12 @@ import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import Table from '@/components/ui/Table';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const PoolOccupancyTable: React.FC = () => {
   const { t } = useTranslation(['tables', 'common']);
   const { hourlySummary, loading, error } = usePoolDataContext();
+  const { selectedPool } = usePoolSelector();
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
   const validHours = getValidHours(selectedDay);
 
@@ -19,6 +21,9 @@ const PoolOccupancyTable: React.FC = () => {
   if (error?.message) {
     return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
+
+  const insidePoolUrl = selectedPool.insidePool ? new URL(selectedPool.insidePool.url, import.meta.env.VITE_BASE_OCCUPANCY_CSV_URL).href : null;
+  const outsidePoolUrl = selectedPool.outsidePool ? new URL(selectedPool.outsidePool.url, import.meta.env.VITE_BASE_OCCUPANCY_CSV_URL).href : null;
 
   // Filter data for the selected day
   const filteredData = hourlySummary.filter(item =>
@@ -79,18 +84,24 @@ const PoolOccupancyTable: React.FC = () => {
       <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-700 mb-2">{t('tables:downloads.title')}</h3>
         <div className="flex flex-wrap gap-4">
-          <DownloadButton
-            url={import.meta.env.VITE_OUTSIDE_POOL_OCCUPANCY_CSV_URL}
-            label={t('tables:downloads.outsideOccupancy')}
-          />
-          <DownloadButton
-            url={import.meta.env.VITE_INSIDE_POOL_OCCUPANCY_CSV_URL}
-            label={t('tables:downloads.insideOccupancy')}
-          />
-          <DownloadButton
-            url={import.meta.env.VITE_MAX_CAPACITY_CSV_URL}
-            label={t('tables:downloads.capacity')}
-          />
+          {outsidePoolUrl && (
+            <DownloadButton
+              url={outsidePoolUrl}
+              label={t('tables:downloads.outsideOccupancy')}
+            />
+          )}
+          {insidePoolUrl && (
+            <DownloadButton
+              url={insidePoolUrl}
+              label={t('tables:downloads.insideOccupancy')}
+            />
+          )}
+          {import.meta.env.VITE_MAX_CAPACITY_CSV_URL && (
+            <DownloadButton
+              url={import.meta.env.VITE_MAX_CAPACITY_CSV_URL}
+              label={t('tables:downloads.capacity')}
+            />
+          )}
         </div>
       </div>
 
