@@ -77,7 +77,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const summary = dataProcessor.processOccupancyData(selectedWeekId);
       setHourlySummary(summary);
     }
-  }, [selectedWeekId, occupancyData, capacityData, selectedPoolType]);
+  }, [selectedWeekId, occupancyData, capacityData, selectedPool, selectedPoolType]);
 
   // Process overall data and weekly summaries using memoized availableWeeks
   useEffect(() => {
@@ -101,7 +101,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setWeeklySummaries(summaries);
       }
     };
-  }, [occupancyData, capacityData, selectedPoolType, availableWeeks, loading]);
+  }, [occupancyData, capacityData, selectedPool, selectedPoolType, availableWeeks, loading]);
 
   return (
     <PoolDataContext.Provider value={{

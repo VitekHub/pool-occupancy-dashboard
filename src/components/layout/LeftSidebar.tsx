@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Waves, Building, TreePine, MapPin, Droplets, Users, Zap, Shield, Star, Heart } from 'lucide-react';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
-import poolConfig from '@/pool_occupancy_config.json';
 import { PoolConfig } from '@/utils/types/poolConfig';
 import { POOL_TYPES } from '@/utils/types/poolTypes';
 
@@ -24,7 +23,7 @@ const getPoolIcon = (index: number) => {
 
 const LeftSidebar: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { selectedPool, setSelectedPool, setSelectedPoolType } = usePoolSelector();
+  const { poolConfig, selectedPool, setSelectedPool, setSelectedPoolType } = usePoolSelector();
 
   const handlePoolSelect = (pool: PoolConfig) => {
     setSelectedPool(pool);
