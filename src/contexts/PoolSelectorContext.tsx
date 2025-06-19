@@ -34,10 +34,10 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
     import.meta.env.VITE_POOL_OCCUPANCY_CONFIG_URL,
     fetcher
   );
+  usePrefetchPoolsData(poolConfig);
 
   useEffect(() => {
     if (poolConfig && poolConfig.length > 0) {
-      usePrefetchPoolsData(poolConfig);
       setSelectedPool(poolConfig[0]);
       setSelectedPoolType(poolConfig[0].outsidePool?.viewStats ? POOL_TYPES.OUTSIDE : POOL_TYPES.INSIDE);
     }
