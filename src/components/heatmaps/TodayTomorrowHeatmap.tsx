@@ -11,6 +11,7 @@ import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
 import FloatingTooltipToggle from '@/components/ui/FloatingTooltipToggle';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
+import { POOL_TYPES } from '@/utils/types/poolTypes';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -20,7 +21,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
     loading,
     error
   } = usePoolDataContext();
-  const { selectedPool } = usePoolSelector();
+  const { selectedPool, selectedPoolType } = usePoolSelector();
   const [showFullWeek, setShowFullWeek] = useState(false);
   const [showTooltips, setShowTooltips] = useState(true);
 
@@ -92,15 +93,18 @@ const TodayTomorrowHeatmap: React.FC = () => {
     return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
-  const { utilizationMap, ratioMap } = processHeatmapData(filteredData, displayDays);
-  
-  const getCellDataWithTranslation = (day: string, hour: number) => 
+  const { utilizationMap, maxUtilizationPerDayMap, ratioMap } = processHeatmapData(filteredData, displayDays);
+  const maximumPoolCapacity = selectedPoolType === POOL_TYPES.INSIDE ? selectedPool.insidePool?.maximumCapacity || 0 : selectedPool.outsidePool?.maximumCapacity || 0;
+
+  const getCellDataWithTranslation = (day: string, hour: number) =>
     getTodayTomorrowCellData(
-      day, 
-      hour, 
-      utilizationMap, 
-      ratioMap, 
+      day,
+      hour,
+      utilizationMap,
+      maxUtilizationPerDayMap,
+      ratioMap,
       filteredData,
+      maximumPoolCapacity,
       'heatmaps:todayTomorrow.tooltip',
       t,
       dayLabels

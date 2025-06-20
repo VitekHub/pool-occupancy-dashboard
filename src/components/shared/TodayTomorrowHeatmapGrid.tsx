@@ -103,7 +103,16 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
             </div>
             {hours.map(hour => {
               const cellData: ExtendedCellData = getCellData(day, hour);
-              const { color, displayText, title, openedLanes, rawOccupancyDisplayText } = cellData;
+              const { 
+                color, 
+                colorFillRatio, 
+                displayText, 
+                title, 
+                openedLanes, 
+                rawOccupancyDisplayText, 
+                rawOccupancyColor, 
+                rawOccupancyColorFillRatio 
+              } = cellData;
               
               const handleMouseEnter = (event: React.MouseEvent<HTMLDivElement>) => {
                 const rect = event.currentTarget.getBoundingClientRect();
@@ -118,17 +127,24 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                     </div>
                   )}
                   <div
-                    className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
+                    className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleCellLeave}
                   >
-                    <span className="text-xs font-medium text-gray-700">{displayText}</span>
+                    <div 
+                      className={`absolute bottom-0 ${color}`}
+                      style={{ 
+                        height: `${colorFillRatio * 100}%`,
+                        width: '100%'
+                      }}
+                    />
+                    <span className="text-xs font-medium text-gray-700 z-10">{displayText}</span>
                   </div>
                   {isInsidePool(selectedPoolType) && openedLanes && (
-                    <div className="h-12 border border-gray-200 relative flex items-center justify-center">
+                    <div className="h-12 border bg-blue-200 red-dotted-background border-gray-200 relative flex items-center justify-center">
                       <div 
-                        className="absolute bottom-0 bg-blue-400"
+                        className="absolute top-0 bg-blue-300"
                         style={{ 
                           height: `${openedLanes.fillRatio * 100}%`,
                           width: '100%'
@@ -139,9 +155,16 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   )}
                   {days.indexOf(day) === 0 && (
                     <div
-                      className={`h-12 border border-gray-200 hover:opacity-80 transition-opacity flex items-center justify-center`}
+                      className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     >
-                      <span className="text-xs font-medium text-gray-700">{rawOccupancyDisplayText}</span>
+                    <div 
+                      className={`absolute bottom-0 ${rawOccupancyColor}`}
+                      style={{ 
+                        height: `${rawOccupancyColorFillRatio * 100}%`,
+                        width: '100%'
+                      }}
+                    />
+                      <span className="text-xs font-medium text-center text-gray-700 z-10">{rawOccupancyDisplayText}</span>
                     </div>
                   )}
                   <div className="mb-8"></div>

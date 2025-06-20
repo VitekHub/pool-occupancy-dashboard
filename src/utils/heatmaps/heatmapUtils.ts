@@ -64,13 +64,22 @@ export const processHeatmapData = (
     }
   });
 
-  return { utilizationMap, ratioMap };
+  const maxUtilizationPerDayMap: Record<string, number> = data.reduce((acc, item) => {
+    if (!acc[item.day]) {
+      acc[item.day] = 0;
+    }
+    acc[item.day] = Math.max(acc[item.day], item.utilizationRate);
+    return acc;
+  }, {} as Record<string, number>);
+
+  return { utilizationMap, ratioMap, maxUtilizationPerDayMap };
 };
 
 export const getCellData = (
   day: string,
   hour: number,
   utilizationMap: Record<string, Record<number, number>>,
+  maxUtilizationPerDayMap: Record<string, number>,
   tooltipTranslationKey: string,
   t: TranslationFunction
 ): BaseCellData => {
@@ -78,6 +87,7 @@ export const getCellData = (
   
   return {
     color: getColorForUtilization(utilization),
+    colorFillRatio: maxUtilizationPerDayMap[day] > 0 ? utilization / maxUtilizationPerDayMap[day] : 0, // Fill ratio based on max utilization of the day
     displayText: utilization > 0 ? `${utilization}%` : '',
     title: t(tooltipTranslationKey, {
       day: t(`common:days.${day.toLowerCase()}`),
@@ -91,8 +101,10 @@ export const getTodayTomorrowCellData = (
   day: string,
   hour: number,
   utilizationMap: Record<string, Record<number, number>>,
+  maxUtilizationPerDayMap: Record<string, number>,
   ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>,
   data: HourlyDataWithRatio[],
+  maximumPoolCapacity: number,
   tooltipTranslationKey: string,
   t: TranslationFunction,
   dayLabels: Record<string, string>
@@ -101,21 +113,30 @@ export const getTodayTomorrowCellData = (
   const date = dayLabels[day];
   const ratio = isClosedHour(hour, day, date) ? undefined : ratioMap[day][hour];
   const hourData = data.find(item => item.day === day && item.hour === hour);
-  const rawOccupancyColor = getColorForUtilization(hourData?.maxOccupancy || 0);
   
+  // get max number out of raw data for 'maxOccupancy'
+  const maxDayOccupancy = Math.max(...data.map(item => item.maxOccupancy), 0);
+
   let rawOccupancyDisplayText = '';
+  let rawUtilizationInPercentage = 0
+  let rawOccupancyColorFillRatio = 0;
   if (hourData) {
     if (hourData.minOccupancy === hourData.maxOccupancy) {
       rawOccupancyDisplayText = hourData.minOccupancy > 0 ? `${hourData.minOccupancy}` : '';
     } else if (hourData.minOccupancy > 0 || hourData.maxOccupancy > 0) {
       rawOccupancyDisplayText = `${hourData.minOccupancy}-${hourData.maxOccupancy}`;
     }
+    const average = (hourData.minOccupancy + hourData.maxOccupancy) / 2;
+    rawUtilizationInPercentage = maximumPoolCapacity ? (average / maximumPoolCapacity) * 100 : 0;
+    rawOccupancyColorFillRatio = hourData.maxOccupancy === maxDayOccupancy ? 1 : average / maxDayOccupancy; // Fill ratio based on max raw utilization of the day
   }
   
   return {
     color: getColorForUtilization(utilization),
+    colorFillRatio: maxUtilizationPerDayMap[day] > 0 ? utilization / maxUtilizationPerDayMap[day] : 0, // Fill ratio based on max historical utilization of the day
     displayText: utilization > 0 ? `${utilization}%` : '',
-    rawOccupancyColor,
+    rawOccupancyColor: getColorForUtilization(rawUtilizationInPercentage),
+    rawOccupancyColorFillRatio,
     rawOccupancyDisplayText,
     title: t(tooltipTranslationKey, {
       day: t(`common:days.${day.toLowerCase()}`),

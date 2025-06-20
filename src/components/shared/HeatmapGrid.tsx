@@ -41,14 +41,21 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
               )}
             </div>
             {hours.map(hour => {
-              const { color, displayText, title } = getCellData(day, hour);
+              const { color, colorFillRatio, displayText, title } = getCellData(day, hour);
               return (
                 <div key={`${day}-${hour}`} className="w-14">
                   <div
-                    className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
+                    className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
                   >
-                    <span className="text-xs font-medium text-gray-700">{displayText}</span>
+                    <div 
+                      className={`absolute bottom-0 ${color}`}
+                      style={{ 
+                        height: `${colorFillRatio * 100}%`,
+                        width: '100%'
+                      }}
+                    />
+                    <span className="text-xs font-medium text-center text-gray-700 z-10">{displayText}</span>
                   </div>
                 </div>
               );

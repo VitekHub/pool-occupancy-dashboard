@@ -22,6 +22,15 @@ const RawHeatmap: React.FC = () => {
   if (error?.message) {
     return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
+  
+  // Create a map for maximum occupancy per day
+  const maxOccupancyPerDayMap = hourlySummary.reduce((acc, item) => {
+    if (!acc[item.day]) {
+      acc[item.day] = 0;
+    }
+    acc[item.day] = Math.max(acc[item.day], item.maxOccupancy);
+    return acc;
+  }, {} as Record<string, number>);
 
   // Create a map for quick lookup of average occupancy
   const occupancyMap: Record<string, Record<number, { min: number; max: number }>> = {};
@@ -55,6 +64,7 @@ const RawHeatmap: React.FC = () => {
 
     return {
       color: getColorForUtilization(percentageUtilization),
+      colorFillRatio: range.max === maxOccupancyPerDayMap[day] ? 1 : average / maxOccupancyPerDayMap[day], // Fill ratio based on max occupancy of the day
       displayText,
       title: t('heatmaps:raw.tooltip', {
         day: t(`common:days.${day.toLowerCase()}`),

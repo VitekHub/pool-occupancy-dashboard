@@ -35,10 +35,10 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
     return <div className="text-red-500">{t('common:error', { message: error })}</div>;
   }
 
-  const { utilizationMap } = processHeatmapData(data, days);
+  const { utilizationMap, maxUtilizationPerDayMap } = processHeatmapData(data, days);
   
   const getCellDataWithTranslation = (day: string, hour: number) => 
-    getCellData(day, hour, utilizationMap, tooltipTranslationKey, t);
+    getCellData(day, hour, utilizationMap, maxUtilizationPerDayMap, tooltipTranslationKey, t);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
