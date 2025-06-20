@@ -22,8 +22,8 @@ const PoolOccupancyTable: React.FC = () => {
     return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
-  const insidePoolUrl = selectedPool.insidePool ? new URL(selectedPool.insidePool.url, import.meta.env.VITE_BASE_OCCUPANCY_CSV_URL).href : null;
-  const outsidePoolUrl = selectedPool.outsidePool ? new URL(selectedPool.outsidePool.url, import.meta.env.VITE_BASE_OCCUPANCY_CSV_URL).href : null;
+  const insidePoolCsvUrl = selectedPool.insidePool ? new URL(selectedPool.insidePool.csvFile, import.meta.env.VITE_BASE_OCCUPANCY_CSV_URL).href : null;
+  const outsidePoolCsvUrl = selectedPool.outsidePool ? new URL(selectedPool.outsidePool.csvFile, import.meta.env.VITE_BASE_OCCUPANCY_CSV_URL).href : null;
 
   // Filter data for the selected day
   const filteredData = hourlySummary.filter(item =>
@@ -84,19 +84,19 @@ const PoolOccupancyTable: React.FC = () => {
       <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-700 mb-2">{t('tables:downloads.title')}</h3>
         <div className="flex flex-wrap gap-4">
-          {outsidePoolUrl && (
+          {outsidePoolCsvUrl && (
             <DownloadButton
-              url={outsidePoolUrl}
+              url={outsidePoolCsvUrl}
               label={t('tables:downloads.outsideOccupancy')}
             />
           )}
-          {insidePoolUrl && (
+          {insidePoolCsvUrl && (
             <DownloadButton
-              url={insidePoolUrl}
+              url={insidePoolCsvUrl}
               label={t('tables:downloads.insideOccupancy')}
             />
           )}
-          {insidePoolUrl && import.meta.env.VITE_MAX_CAPACITY_CSV_URL && (
+          {insidePoolCsvUrl && import.meta.env.VITE_MAX_CAPACITY_CSV_URL && (
             <DownloadButton
               url={import.meta.env.VITE_MAX_CAPACITY_CSV_URL}
               label={t('tables:downloads.capacity')}
