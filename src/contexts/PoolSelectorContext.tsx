@@ -32,7 +32,11 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
   
   const { data: poolConfig, error } = useSWR<PoolConfig[]>(
     import.meta.env.VITE_POOL_OCCUPANCY_CONFIG_URL,
-    fetcher
+    fetcher,
+    {
+      revalidateOnMount: true,
+      revalidateOnFocus: false
+    }
   );
   usePrefetchPoolsData(poolConfig);
 
