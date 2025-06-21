@@ -2,6 +2,8 @@
   "common": {
     "legend": {
       "title": "Míra obsazenosti",
+      "heightExplanation": "Výška barevného pruhu představuje relativní obsazenost v rámci daného dne - vyšší pruh znamená vyšší obsazenost v porovnání s ostatními hodinami téhož dne.",
+      "colorExplanation": "Barva představuje absolutní míru obsazenosti ve srovnání s maximální kapacitou bazénu - tmavší barvy znamenají vyšší obsazenost.",
       "labels": {
         "empty": "0%",
         "veryLow": "<25%",
