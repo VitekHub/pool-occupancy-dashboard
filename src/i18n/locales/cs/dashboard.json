@@ -1,6 +1,7 @@
 {
   "titleSuffix": "Obsazenost",
   "website": "Webová stránka",
+  "temporarilyClosed": "Dočasně uzavřeno: {{date}}",
   "tabs": {
     "todayTomorrow": "Dnes/Zítra",
     "overall": "Průměrná obsazenost",

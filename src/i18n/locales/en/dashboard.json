@@ -1,6 +1,7 @@
 {
   "titleSuffix": "Occupancy",
   "website": "Website",
+  "temporarilyClosed": "Temporarily Closed: {{date}}",
   "tabs": {
     "todayTomorrow": "Today/Tomorrow",
     "overall": "Average Occupancy",

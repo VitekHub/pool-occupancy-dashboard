@@ -6,16 +6,16 @@ import { POOL_TYPES } from '@/utils/types/poolTypes';
 
 const getPoolIcon = (index: number) => {
   const icons = [
-    Building,
-    Waves,
-    TreePine,
     MapPin,
     Droplets,
+    TreePine,
     Zap,
-    Users,
     Shield,
     Star,
-    Heart
+    Heart,
+    Building,
+    Waves,
+    Users
   ];
   
   return icons[index] || Waves;
@@ -33,6 +33,11 @@ const LeftSidebar: React.FC = () => {
       setSelectedPoolType(POOL_TYPES.INSIDE);
     }
   };
+
+  // Add Icon to all pools
+  poolConfig.forEach((pool, index) => {
+    pool.icon = getPoolIcon(index);
+  });
 
   // Filter pools to only show those that have at least one pool type with viewStats enabled
   const visiblePools = poolConfig.filter((pool: PoolConfig) => pool.insidePool?.viewStats || pool.outsidePool?.viewStats);
@@ -55,7 +60,6 @@ const LeftSidebar: React.FC = () => {
         {/* Pool List */}
         <div className="flex-1 overflow-y-auto py-4">
           {visiblePools.map((pool, index) => {
-            const IconComponent = getPoolIcon(index);
             const isSelected = selectedPool.name === pool.name;
             
             return (
@@ -67,7 +71,7 @@ const LeftSidebar: React.FC = () => {
                 }`}
                 title={!isExpanded ? pool.name : undefined}
               >
-                <IconComponent className="w-6 h-6 flex-shrink-0" />
+                {pool.icon && <pool.icon className="w-6 h-6 flex-shrink-0" />}
                 {isExpanded && (
                   <span className="ml-3 whitespace-nowrap overflow-hidden text-ellipsis">
                     {pool.name}

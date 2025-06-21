@@ -1,22 +1,20 @@
+interface PoolTypeConfig {
+  customName?: string;
+  url: string;
+  pattern: string;
+  csvFile: string;
+  maximumCapacity: number;
+  totalLanes?: number;
+  weekdaysOpeningHours: string;
+  weekendOpeningHours: string;
+  collectStats: boolean;
+  viewStats: boolean;
+  temporarilyClosed?: string;
+}
+
 export interface PoolConfig {
   name: string;
-  insidePool?: {
-    customName?: string;
-    url: string;
-    pattern: string;
-    csvFile: string;
-    maximumCapacity: number;
-    totalLanes: number;
-    collectStats: boolean;
-    viewStats: boolean;
-  };
-  outsidePool?: {
-    customName?: string;
-    url: string;
-    pattern: string;
-    csvFile: string;
-    maximumCapacity: number;
-    collectStats: boolean;
-    viewStats: boolean;
-  };
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  insidePool?: PoolTypeConfig;
+  outsidePool?: Omit<PoolTypeConfig, 'totalLanes'>;
 }
