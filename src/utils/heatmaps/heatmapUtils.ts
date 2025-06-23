@@ -134,7 +134,7 @@ export const getTodayTomorrowCellData = (
   let rawOccupancyDisplayText = '';
   let rawUtilizationInPercentage = 0
   let rawOccupancyColorFillRatio = 0;
-  if (hourData) {
+  if (hourData?.date && new Date(hourData.date).toDateString() === new Date().toDateString()) {
     if (hourData.minOccupancy === hourData.maxOccupancy) {
       rawOccupancyDisplayText = hourData.minOccupancy > 0 ? `${hourData.minOccupancy}` : '';
     } else if (hourData.minOccupancy > 0 || hourData.maxOccupancy > 0) {

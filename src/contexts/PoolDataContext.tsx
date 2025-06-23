@@ -88,9 +88,14 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setOverallHourlySummary(summary);
 
         // Update current occupancy
-        setCurrentOccupancy(
-          occupancyData.length > 0 ? occupancyData[occupancyData.length - 1] : null
-        );
+        if (occupancyData.length > 0) {
+          const lastOccupancyData= occupancyData[occupancyData.length - 1];
+          if (new Date(lastOccupancyData.date).toDateString() === new Date().toDateString()) {
+            setCurrentOccupancy(lastOccupancyData);
+          } else {
+            setCurrentOccupancy(null);
+          }
+        }
 
         // Process data for all available weeks using memoized availableWeeks
         const summaries: Record<string, HourlyOccupancySummary[]> = {};
