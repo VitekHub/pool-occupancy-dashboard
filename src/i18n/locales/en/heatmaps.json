@@ -2,6 +2,7 @@
   "common": {
     "legend": {
       "title": "Occupancy Rate",
+      "uniformHeightToggle": "Show Uniform Bar Height",
       "heightExplanation": "The height of the colored bar represents relative occupancy within that day - a taller bar indicates higher occupancy compared to other hours of the same day.",
       "colorExplanation": "The color represents absolute occupancy rate compared to maximum pool capacity - darker colors indicate higher occupancy."
     },

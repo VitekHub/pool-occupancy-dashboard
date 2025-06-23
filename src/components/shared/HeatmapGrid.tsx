@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { BaseHeatmapGridProps } from '@/utils/types/heatmapTypes';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
 import HolidayWarning from './HolidayWarning';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({ 
   days, 
@@ -11,6 +12,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
   dayLabels
 }) => {
   const { t } = useTranslation('common');
+  const { uniformHeatmapBarHeight } = usePoolSelector();
 
   return (
     <div className="overflow-x-auto">
@@ -51,7 +53,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
                     <div 
                       className={`absolute bottom-0 ${color}`}
                       style={{ 
-                        height: `${colorFillRatio * 100}%`,
+                        height: `${colorFillRatio === 0 ? 0 : (uniformHeatmapBarHeight ? 100 : colorFillRatio * 100)}%`,
                         width: '100%'
                       }}
                     />

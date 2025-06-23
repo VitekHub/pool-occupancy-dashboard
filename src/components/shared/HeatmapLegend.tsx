@@ -1,6 +1,7 @@
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import Toggle from '../ui/Toggle';
 
 interface LegendItem {
   color: string;
@@ -14,7 +15,7 @@ interface HeatmapLegendProps {
 
 const HeatmapLegend: React.FC<HeatmapLegendProps> = ({ title, items }) => {
   const { t } = useTranslation(['heatmaps']);
-    const { heatmapHighThreshold, setHeatmapHighThreshold } = usePoolSelector();
+    const { heatmapHighThreshold, setHeatmapHighThreshold, uniformHeatmapBarHeight, setUniformHeatmapBarHeight } = usePoolSelector();
 
   const explanations = [
     `🎨 ${t('heatmaps:common.legend.colorExplanation')}`,
@@ -40,6 +41,13 @@ const HeatmapLegend: React.FC<HeatmapLegendProps> = ({ title, items }) => {
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
           />
           <span className="text-xs ml-2">{ heatmapHighThreshold }</span>
+        </div>
+        <div  className="ml-2">
+          <Toggle
+            value={uniformHeatmapBarHeight}
+            setValue={setUniformHeatmapBarHeight}
+            label={t('heatmaps:common.legend.uniformHeightToggle')}
+          />
         </div>
       </div>
       

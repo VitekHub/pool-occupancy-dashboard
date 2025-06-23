@@ -20,7 +20,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
 }) => {
   const { t, i18n } = useTranslation('common');
   const { availableWeeks, weeklySummaries, capacityData } = usePoolDataContext();
-  const { selectedPoolType, selectedPool } = usePoolSelector();
+  const { selectedPoolType, selectedPool, uniformHeatmapBarHeight } = usePoolSelector();
   
   // Hover state
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
@@ -135,7 +135,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                     <div 
                       className={`absolute bottom-0 ${color}`}
                       style={{ 
-                        height: `${colorFillRatio * 100}%`,
+                        height: `${colorFillRatio === 0 ? 0 : (uniformHeatmapBarHeight ? 100 : colorFillRatio * 100)}%`,
                         width: '100%'
                       }}
                     />
@@ -160,7 +160,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                     <div 
                       className={`absolute bottom-0 ${rawOccupancyColor}`}
                       style={{ 
-                        height: `${rawOccupancyColorFillRatio * 100}%`,
+                        height: `${rawOccupancyColorFillRatio === 0 ? 0 : (uniformHeatmapBarHeight ? 100 : rawOccupancyColorFillRatio * 100)}%`,
                         width: '100%'
                       }}
                     />

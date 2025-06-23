@@ -9,7 +9,7 @@ import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
 import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
-import FloatingTooltipToggle from '@/components/ui/FloatingTooltipToggle';
+import Toggle from '@/components/ui/Toggle';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import { POOL_TYPES } from '@/utils/types/poolTypes';
 
@@ -113,9 +113,10 @@ const TodayTomorrowHeatmap: React.FC = () => {
 
   return (
     <div>
-      <FloatingTooltipToggle
-        showTooltips={showTooltips}
-        setShowTooltips={setShowTooltips}
+      <Toggle
+        value={showTooltips}
+        setValue={setShowTooltips}
+        label={t('heatmaps:todayTomorrow.showTooltips')}
       />
 
       {showMoreButton}

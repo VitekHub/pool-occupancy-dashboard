@@ -17,6 +17,8 @@ interface PoolSelectorContextType {
   poolConfig: PoolConfig[];
   heatmapHighThreshold: number;
   setHeatmapHighThreshold: (threshold: number) => void;
+  uniformHeatmapBarHeight: boolean;
+  setUniformHeatmapBarHeight: (value: boolean) => void;
 }
 
 const PoolSelectorContext = createContext<PoolSelectorContextType | null>(null);
@@ -33,6 +35,7 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [selectedPoolType, setSelectedPoolType] = useState<PoolType>(POOL_TYPES.OUTSIDE);
   const [selectedPool, setSelectedPool] = useState<PoolConfig>({} as PoolConfig);
   const [heatmapHighThreshold, setHeatmapHighThreshold] = useState<number>(DEFAULT_HEATMAP_HIGH_THRESHOLD);
+  const [uniformHeatmapBarHeight, setUniformHeatmapBarHeight] = useState<boolean>(false);
 
   const { data: poolConfig, error } = useSWR<PoolConfig[]>(
     import.meta.env.VITE_POOL_OCCUPANCY_CONFIG_URL,
@@ -63,7 +66,9 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setSelectedPool,
         poolConfig,
         heatmapHighThreshold,
-        setHeatmapHighThreshold
+        setHeatmapHighThreshold,
+        uniformHeatmapBarHeight,
+        setUniformHeatmapBarHeight
       }}>
         {children}
       </PoolSelectorContext.Provider>
