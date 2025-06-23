@@ -3,15 +3,7 @@
     "legend": {
       "title": "Míra obsazenosti",
       "heightExplanation": "Výška barevného pruhu představuje relativní obsazenost v rámci daného dne - vyšší pruh znamená vyšší obsazenost v porovnání s ostatními hodinami téhož dne.",
-      "colorExplanation": "Barva představuje absolutní míru obsazenosti ve srovnání s maximální kapacitou bazénu - tmavší barvy znamenají vyšší obsazenost.",
-      "labels": {
-        "empty": "0%",
-        "veryLow": "<25%",
-        "low": "<40%",
-        "medium": "<55%",
-        "high": "<70%",
-        "veryHigh": "70%+"
-      }
+      "colorExplanation": "Barva představuje absolutní míru obsazenosti ve srovnání s maximální kapacitou bazénu - tmavší barvy znamenají vyšší obsazenost."
     },
     "holidayWarning": "Tento den je státní svátek. Obsazenost se může lišit od běžného dne."
   },
@@ -56,15 +48,7 @@
     },
     "tooltip": "{{day}} v {{hour}}:00 - {{min}} až {{max}} lidí",
     "legend": {
-      "title": "Počet návštěvníků",
-      "labels": {
-        "empty": "0",
-        "veryLow": "<25%",
-        "low": "<40%",
-        "medium": "<55%",
-        "high": "<70%",
-        "veryHigh": "70%+"
-      }
+      "title": "Počet návštěvníků"
     }
   }
 }

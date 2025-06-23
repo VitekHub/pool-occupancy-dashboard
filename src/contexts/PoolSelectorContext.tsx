@@ -5,6 +5,7 @@ import { PoolType, POOL_TYPES } from '@/utils/types/poolTypes';
 import { PoolConfig } from '@/utils/types/poolConfig';
 import { usePrefetchPoolsData } from '@/utils/hooks/usePrefetchPoolsData';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { DEFAULT_HEATMAP_HIGH_THRESHOLD } from '@/constants/pool';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -14,6 +15,8 @@ interface PoolSelectorContextType {
   selectedPool: PoolConfig;
   setSelectedPool: (pool: PoolConfig) => void;
   poolConfig: PoolConfig[];
+  heatmapHighThreshold: number;
+  setHeatmapHighThreshold: (threshold: number) => void;
 }
 
 const PoolSelectorContext = createContext<PoolSelectorContextType | null>(null);
@@ -29,7 +32,8 @@ export const usePoolSelector = () => {
 export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedPoolType, setSelectedPoolType] = useState<PoolType>(POOL_TYPES.OUTSIDE);
   const [selectedPool, setSelectedPool] = useState<PoolConfig>({} as PoolConfig);
-  
+  const [heatmapHighThreshold, setHeatmapHighThreshold] = useState<number>(DEFAULT_HEATMAP_HIGH_THRESHOLD);
+
   const { data: poolConfig, error } = useSWR<PoolConfig[]>(
     import.meta.env.VITE_POOL_OCCUPANCY_CONFIG_URL,
     fetcher,
@@ -57,7 +61,9 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setSelectedPoolType,
         selectedPool,
         setSelectedPool,
-        poolConfig
+        poolConfig,
+        heatmapHighThreshold,
+        setHeatmapHighThreshold
       }}>
         {children}
       </PoolSelectorContext.Provider>

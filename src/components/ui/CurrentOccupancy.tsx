@@ -9,7 +9,7 @@ import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const getUtilizationColor = (rate: number) => {
   if (rate < UTILIZATION_THRESHOLDS.LOW) return PROGRESS_COLORS.LOW;
-  if (rate < UTILIZATION_THRESHOLDS.HIGH) return PROGRESS_COLORS.MEDIUM;
+  if (rate < UTILIZATION_THRESHOLDS.MEDIUM) return PROGRESS_COLORS.MEDIUM;
   return PROGRESS_COLORS.HIGH;
 };
 

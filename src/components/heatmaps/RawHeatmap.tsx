@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePoolDataContext } from '@/contexts/PoolDataContext';
-import { getColorForUtilization } from '@/utils/heatmaps/heatmapUtils';
+import { getColorForUtilization, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
 import { getDayLabels } from '@/utils/date/dateUtils';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
@@ -12,7 +12,7 @@ import { POOL_TYPES } from '@/utils/types/poolTypes';
 const RawHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
   const { hourlySummary, loading, error, selectedWeekId } = usePoolDataContext();
-  const { selectedPool, selectedPoolType } = usePoolSelector();
+  const { selectedPool, selectedPoolType, heatmapHighThreshold } = usePoolSelector();
   const dayLabels = getDayLabels(selectedWeekId);
 
   if (loading) {
@@ -63,8 +63,8 @@ const RawHeatmap: React.FC = () => {
     const percentageUtilization = maximumCapacity ? (average / maximumCapacity) * 100 : 0;
 
     return {
-      color: getColorForUtilization(percentageUtilization),
-      colorFillRatio: range.max === maxOccupancyPerDayMap[day] ? 1 : average / maxOccupancyPerDayMap[day], // Fill ratio based on max occupancy of the day
+      color: getColorForUtilization(percentageUtilization, heatmapHighThreshold),
+      colorFillRatio: range.max === maxOccupancyPerDayMap[day] ? 1 : (maxOccupancyPerDayMap[day] > 0 ? average / maxOccupancyPerDayMap[day] : 0), // Fill ratio based on max occupancy of the day
       displayText,
       title: t('heatmaps:raw.tooltip', {
         day: t(`common:days.${day.toLowerCase()}`),
@@ -74,15 +74,6 @@ const RawHeatmap: React.FC = () => {
       })
     };
   };
-
-  const LEGEND_ITEMS = [
-    { color: 'bg-gray-100 border border-gray-300', label: t('heatmaps:raw.legend.labels.empty') },
-    { color: 'bg-green-100', label: t('heatmaps:raw.legend.labels.veryLow') },
-    { color: 'bg-green-300', label: t('heatmaps:raw.legend.labels.low') },
-    { color: 'bg-yellow-300', label: t('heatmaps:raw.legend.labels.medium') },
-    { color: 'bg-orange-400', label: t('heatmaps:raw.legend.labels.high') },
-    { color: 'bg-red-500', label: t('heatmaps:raw.legend.labels.veryHigh') }
-  ];
   
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -96,7 +87,7 @@ const RawHeatmap: React.FC = () => {
       
       <HeatmapLegend
         title={t('heatmaps:raw.legend.title')}
-        items={LEGEND_ITEMS}
+        items={getLegendItems(heatmapHighThreshold)}
       />
     </div>
   );

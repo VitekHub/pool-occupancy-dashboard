@@ -21,7 +21,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
     loading,
     error
   } = usePoolDataContext();
-  const { selectedPool, selectedPoolType } = usePoolSelector();
+  const { selectedPool, selectedPoolType, heatmapHighThreshold } = usePoolSelector();
   const [showFullWeek, setShowFullWeek] = useState(false);
   const [showTooltips, setShowTooltips] = useState(true);
 
@@ -57,8 +57,8 @@ const TodayTomorrowHeatmap: React.FC = () => {
     const newItem: HourlyDataWithRatio = {
       ...item,
       ratio: selectedPool.insidePool && capacity ? {
-        current: Math.round(capacity.maximumCapacity / (selectedPool.insidePool.maximumCapacity / selectedPool.insidePool.totalLanes)), 
-        total: selectedPool.insidePool.totalLanes,
+        current: selectedPool.insidePool.totalLanes ? Math.round(capacity.maximumCapacity / (selectedPool.insidePool.maximumCapacity / selectedPool.insidePool.totalLanes)) : 0, 
+        total: selectedPool.insidePool.totalLanes || 0,
         fillRatio: capacity.maximumCapacity / selectedPool.insidePool.maximumCapacity
       } : undefined
     };
@@ -105,6 +105,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
       ratioMap,
       filteredData,
       maximumPoolCapacity,
+      heatmapHighThreshold,
       'heatmaps:todayTomorrow.tooltip',
       t,
       dayLabels
@@ -130,7 +131,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
         
         <HeatmapLegend
           title={t('heatmaps:common.legend.title')}
-          items={getLegendItems(t)}
+          items={getLegendItems(heatmapHighThreshold)}
         />
       </div>
 
