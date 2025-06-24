@@ -121,7 +121,6 @@ export const getTodayTomorrowCellData = (
   maxUtilizationPerDayMap: Record<string, number>,
   ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>,
   data: HourlyDataWithRatio[],
-  maximumPoolCapacity: number,
   heatmapHighThreshold: number,
   tooltipTranslationKey: string,
   t: TranslationFunction,
@@ -145,7 +144,7 @@ export const getTodayTomorrowCellData = (
       rawOccupancyDisplayText = `${hourData.minOccupancy}-${hourData.maxOccupancy}`;
     }
     const average = (hourData.minOccupancy + hourData.maxOccupancy) / 2;
-    rawUtilizationInPercentage = maximumPoolCapacity ? (average / maximumPoolCapacity) * 100 : 0;
+    rawUtilizationInPercentage = average / hourData.maximumCapacity * 100;
     rawOccupancyColorFillRatio = hourData.maxOccupancy === maxDayOccupancy ? 1 : average / maxDayOccupancy; // Fill ratio based on max raw utilization of the day
   }
   

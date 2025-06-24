@@ -7,12 +7,11 @@ import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
-import { POOL_TYPES } from '@/utils/types/poolTypes';
 
 const RawHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
   const { hourlySummary, loading, error, selectedWeekId } = usePoolDataContext();
-  const { selectedPool, selectedPoolType, heatmapHighThreshold } = usePoolSelector();
+  const { heatmapHighThreshold } = usePoolSelector();
   const dayLabels = getDayLabels(selectedWeekId);
 
   if (loading) {
@@ -33,13 +32,13 @@ const RawHeatmap: React.FC = () => {
   }, {} as Record<string, number>);
 
   // Create a map for quick lookup of average occupancy
-  const occupancyMap: Record<string, Record<number, { min: number; max: number }>> = {};
+  const occupancyMap: Record<string, Record<number, { min: number; max: number, utilizationRate: number }>> = {};
   
   // Initialize with empty data
   DAYS.forEach(day => {
     occupancyMap[day] = {};
     HOURS.forEach(hour => {
-      occupancyMap[day][hour] = { min: 0, max: 0 };
+      occupancyMap[day][hour] = { min: 0, max: 0, utilizationRate: 0 };
     });
   });
   
@@ -48,7 +47,8 @@ const RawHeatmap: React.FC = () => {
     if (occupancyMap[item.day] && HOURS.includes(item.hour)) {
       occupancyMap[item.day][item.hour] = {
         min: item.minOccupancy,
-        max: item.maxOccupancy
+        max: item.maxOccupancy,
+        utilizationRate: item.utilizationRate
       };
     }
   });
@@ -59,11 +59,9 @@ const RawHeatmap: React.FC = () => {
       (range.min > 0 ? `${range.min}` : '') : 
       `${range.min}-${range.max}`;
     const average = (range.min + range.max) / 2;
-    const maximumCapacity = selectedPoolType === POOL_TYPES.INSIDE ?  selectedPool.insidePool?.maximumCapacity : selectedPool.outsidePool?.maximumCapacity;
-    const percentageUtilization = maximumCapacity ? (average / maximumCapacity) * 100 : 0;
 
     return {
-      color: getColorForUtilization(percentageUtilization, heatmapHighThreshold),
+      color: getColorForUtilization(range.utilizationRate, heatmapHighThreshold),
       colorFillRatio: range.max === maxOccupancyPerDayMap[day] ? 1 : (maxOccupancyPerDayMap[day] > 0 ? average / maxOccupancyPerDayMap[day] : 0), // Fill ratio based on max occupancy of the day
       displayText,
       title: t('heatmaps:raw.tooltip', {
