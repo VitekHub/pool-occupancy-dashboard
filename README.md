@@ -1,27 +1,25 @@
-# Kraví hora Swimming Pool Occupancy Dashboard
+# Swimming Pool Occupancy Dashboard
 
-A modern, responsive React application that visualizes swimming pool occupancy data for the Kraví hora swimming pool. The dashboard helps users identify optimal swimming times by displaying occupancy patterns throughout the week.
+React application that visualizes swimming pool occupancy data for multiple swimming pools in Brno. The dashboard helps users identify optimal swimming times by displaying occupancy patterns throughout the week across different pool facilities.
 
 ## Features
 
+- 🏊 **Multi-Pool Support**
+  - Support for multiple swimming pool facilities
+  - Dynamic pool configuration via JSON
+
 - 📊 **Multiple Visualization Types**
   - Today/Tomorrow view with current occupancy and opened lanes
-  - Weekly heatmap showing utilization percentages
-  - Raw occupancy numbers visualization
-  - Daily occupancy charts with maximum capacity comparison
-  - Detailed data tables with CSV export options
+  - Weekly heatmap showing utilization percentages with adjustable thresholds
   - Average occupancy patterns across weeks
+  - Weekly comparison charts across multiple weeks
+
+- 🎨 **Advanced Heatmap Features**
+  - Color-coded occupancy rates with customizable thresholds
+  - Dual-layer visualization (color for absolute occupancy, height for relative)
 
 - 🌐 **Bilingual Support**
   - Czech (default) and English interfaces
-  - Easy language switching
-  - Fully translated UI elements and descriptions
-  - Date and time formatting based on locale
-
-- 📱 **Responsive Design**
-  - Works seamlessly on mobile, tablet, and desktop
-  - Optimized layouts for different screen sizes
-  - Touch-friendly interface
 
 - 🔄 **Real-time Updates**
   - Current occupancy display
@@ -38,6 +36,7 @@ A modern, responsive React application that visualizes swimming pool occupancy d
 - **Icons**: Lucide React
 - **Internationalization**: i18next with react-i18next
 - **Date Handling**: date-fns
+- **Data Fetching**: SWR
 - **Data Format**: CSV
 
 ## Project Structure
@@ -50,7 +49,9 @@ A modern, responsive React application that visualizes swimming pool occupancy d
     /shared        # Shared components (grids, legends)
     /tables        # Data table components
     /ui           # Reusable UI components
+    /layout       # Layout components (header, sidebar, footer)
   /constants      # Constants and configuration
+  /contexts       # React contexts for state management
   /i18n          # Internationalization setup
     /locales      # Translation files
       /cs         # Czech translations
@@ -70,48 +71,86 @@ A modern, responsive React application that visualizes swimming pool occupancy d
    ```bash
    cp .env.example .env
    ```
-3. Install dependencies:
+3. Configure your environment variables (see Configuration section below)
+4. Install dependencies:
    ```bash
    npm install
    ```
-4. Start the development server:
+5. Start the development server:
    ```bash
    npm run dev
    ```
 
-## Data Sources
+## Configuration
 
-The application works with three CSV data files:
-
-1. `pool_occupancy.csv`: Contains actual occupancy measurements
-   ```
-   Date,Day,Time,Occupancy
-   ```
-
-2. `capacity.csv`: Contains maximum capacity data
-   ```
-   Date,Day,Hour,Maximum Occupancy
-   ```
-
-3. `week_capacity.csv`: Contains weekly capacity data for lanes
-   ```
-   Date,Day,Hour,Maximum Occupancy
-   ```
-
-## Environment Variables
+### Environment Variables
 
 The application uses the following environment variables:
 
 | Variable | Description |
 |----------|-------------|
-| `VITE_POOL_OCCUPANCY_CSV_URL` | URL to fetch pool occupancy CSV data |
-| `VITE_MAX_CAPACITY_CSV_URL` | URL to fetch maximum capacity CSV data |
-| `VITE_WEEK_CAPACITY_CSV_URL` | URL to fetch weekly capacity CSV data |
+| `VITE_POOL_OCCUPANCY_CONFIG_URL` | URL to the pool configuration JSON file |
+| `VITE_BASE_OCCUPANCY_CSV_URL` | Base URL for occupancy CSV data files |
+| `VITE_MAX_CAPACITY_CSV_URL` | URL to the maximum capacity CSV data |
+| `VITE_WEEK_CAPACITY_CSV_URL` | URL to the weekly capacity CSV data |
 
-## Operating Hours
+### Pool Configuration
 
-- **Weekdays**: 6:00 to 21:00
-- **Weekends**: 8:00 to 20:00
+The application loads pool configurations from a JSON file specified in `VITE_POOL_OCCUPANCY_CONFIG_URL`. Each pool can have both inside and outside facilities:
+
+```json
+[
+  {
+    "name": "Pool Name",
+    "insidePool": {
+      "customName": "Indoor Pool",
+      "url": "https://pool-website.com",
+      "pattern": "data-pattern",
+      "csvFile": "indoor_occupancy.csv",
+      "maximumCapacity": 50,
+      "totalLanes": 6,
+      "weekdaysOpeningHours": "6:00-21:00",
+      "weekendOpeningHours": "8:00-20:00",
+      "collectStats": true,
+      "viewStats": true,
+      "temporarilyClosed": "1.1.2024 - 15.1.2024"
+    },
+    "outsidePool": {
+      "customName": "Outdoor Pool",
+      "url": "https://pool-website.com",
+      "pattern": "data-pattern",
+      "csvFile": "outdoor_occupancy.csv",
+      "maximumCapacity": 100,
+      "weekdaysOpeningHours": "6:00-21:00",
+      "weekendOpeningHours": "8:00-20:00",
+      "collectStats": true,
+      "viewStats": true
+    }
+  }
+]
+```
+
+## Data Sources
+
+The application works with three types of CSV data files:
+
+1. **Pool Occupancy Data** (`pool_occupancy.csv`):
+   ```
+   Date,Day,Time,Occupancy
+   01.01.2024,Monday,08:00:00,15
+   ```
+
+2. **Maximum Capacity Data** (`capacity.csv`):
+   ```
+   Date,Day,Hour,Maximum Occupancy
+   01.01.2024,Monday,8,45
+   ```
+
+3. **Weekly Capacity Data** (`week_capacity.csv`):
+   ```
+   Date,Day,Hour,Maximum Occupancy
+   01.01.2024,Monday,8,45
+   ```
 
 ## Building for Production
 
