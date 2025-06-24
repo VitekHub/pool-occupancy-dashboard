@@ -27,6 +27,10 @@ const getLegendLabel = (threshold: number, heatmapHighThreshold: number) => {
   return `<${adjustHeatmapThreshold(threshold, heatmapHighThreshold )}%`
 }
 
+export const getBarHeight = (colorFillRatio: number, uniformHeatmapBarHeight: boolean) => {
+  return `${colorFillRatio > 0 ? (uniformHeatmapBarHeight ? 100 : colorFillRatio * 100) : 0}%`
+}
+
 export const getLegendItems = (heatmapHighThreshold: number) => [
   { color: `${UTILIZATION_COLORS.EMPTY} border border-gray-300`, label: '0%' },
   { color: UTILIZATION_COLORS.VERY_LOW, label: getLegendLabel(UTILIZATION_THRESHOLDS.VERY_LOW, heatmapHighThreshold) },

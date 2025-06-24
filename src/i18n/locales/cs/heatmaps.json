@@ -45,7 +45,7 @@
     "title": "Týdenní počty návštěvníků",
     "description": {
       "inside": "Tato mapa ukazuje skutečný (min-max) počet lidí v bazénu pro každou hodinu, pomáhá vizualizovat absolutní čísla obsazenosti během týdne s ohledem na proměnlivou kapacitu drah.",
-      "outside": "Tato mapa ukazuje skutečný (min-max) počet lidí v bazénu pro každou hodinu, pomáhá vizualizovat absolutní čísla obsazenosti během týdne."
+      "outside": "Tato mapa ukazuje skutečný (min-max) počet lidí v bazénu pro každou hodinu."
     },
     "tooltip": "{{day}} v {{hour}}:00 - {{min}} až {{max}} lidí",
     "legend": {

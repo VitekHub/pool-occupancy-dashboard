@@ -31,7 +31,7 @@ function App() {
       <div className="flex-1 ml-16">
         <Header />
       
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 py-3">
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
         
           {/* Content based on active tab */}

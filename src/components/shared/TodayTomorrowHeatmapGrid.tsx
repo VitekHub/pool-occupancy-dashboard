@@ -10,6 +10,7 @@ import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
 import type { ChartDataItem } from '@/utils/types/poolData';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import { isInsidePool } from '@/utils/types/poolTypes';
+import { getBarHeight } from '@/utils/heatmaps/heatmapUtils';
 
 const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({ 
   days, 
@@ -135,7 +136,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                     <div 
                       className={`absolute bottom-0 ${color}`}
                       style={{ 
-                        height: `${colorFillRatio === 0 ? 0 : (uniformHeatmapBarHeight ? 100 : colorFillRatio * 100)}%`,
+                        height: getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
                         width: '100%'
                       }}
                     />
@@ -160,14 +161,14 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                     <div 
                       className={`absolute bottom-0 ${rawOccupancyColor}`}
                       style={{ 
-                        height: `${rawOccupancyColorFillRatio === 0 ? 0 : (uniformHeatmapBarHeight ? 100 : rawOccupancyColorFillRatio * 100)}%`,
+                        height: getBarHeight(rawOccupancyColorFillRatio, uniformHeatmapBarHeight),
                         width: '100%'
                       }}
                     />
                       <span className="text-xs font-medium text-center text-gray-700 z-10">{rawOccupancyDisplayText}</span>
                     </div>
                   )}
-                  <div className="mb-8"></div>
+                  <div className="mb-6"></div>
                 </div>
               );
             })}

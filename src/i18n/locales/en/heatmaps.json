@@ -45,7 +45,7 @@
     "title": "Weekly Raw Occupancy",
     "description": {
       "inside": "This heatmap shows the actual (min-max) number of people in the pool for each hour, helping you visualize the raw occupancy numbers throughout the week with varying lane capacity.",
-      "outside": "This heatmap shows the actual (min-max) number of people in the pool for each hour, helping you visualize the raw occupancy numbers throughout the week."
+      "outside": "This heatmap shows the actual (min-max) number of people in the pool for each hour."
     },
     "tooltip": "{{day}} at {{hour}}:00 - {{min}} to {{max}} people",
     "legend": {
