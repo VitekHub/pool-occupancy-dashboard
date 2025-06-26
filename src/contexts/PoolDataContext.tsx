@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePoolData } from '@/utils/hooks/usePoolData';
-import { PoolDataProcessor } from '@/utils/data/dataProcessing';
+import PoolDataProcessor from '@/utils/data/poolDataProcessor';
 import { getAvailableWeeks } from '@/utils/date/dateUtils';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from '@/utils/types/poolData';

@@ -46,10 +46,10 @@ export interface WeekInfo {
   displayText: string;
 }
 
-export interface HourlyDataWithRatio extends HourlyOccupancySummary {
-  ratio?: {
+export interface HourlyOccupancySummaryWithLanes extends HourlyOccupancySummary {
+  lanes?: {
     current: number;
     total: number;
-    fillRatio: number;
+    colorFillRatio: number;
   };
 }

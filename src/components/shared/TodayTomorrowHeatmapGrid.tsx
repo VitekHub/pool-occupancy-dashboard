@@ -10,7 +10,7 @@ import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
 import type { ChartDataItem } from '@/utils/types/poolData';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import { isInsidePool } from '@/utils/types/poolTypes';
-import { getBarHeight } from '@/utils/heatmaps/heatmapUtils';
+import HeatmapDataProcessor from '@/utils/heatmaps/heatmapDataProcessor';
 
 const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({ 
   days, 
@@ -110,9 +110,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                 displayText, 
                 title, 
                 openedLanes, 
-                rawOccupancyDisplayText, 
-                rawOccupancyColor, 
-                rawOccupancyColorFillRatio 
+                rawOccupancy
               } = cellData;
               
               const handleMouseEnter = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -136,7 +134,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                     <div 
                       className={`absolute bottom-0 ${color}`}
                       style={{ 
-                        height: getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
+                        height: HeatmapDataProcessor.getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
                         width: '100%'
                       }}
                     />
@@ -145,27 +143,27 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   {isInsidePool(selectedPoolType) && openedLanes && (
                     <div className="h-12 border bg-blue-200 red-dotted-background border-gray-200 relative flex items-center justify-center">
                       <div 
-                        className="absolute top-0 bg-blue-300"
+                        className={`absolute top-0 ${openedLanes.color}`}
                         style={{ 
-                          height: `${openedLanes.fillRatio * 100}%`,
+                          height: `${openedLanes.colorFillRatio * 100}%`,
                           width: '100%'
                         }}
                       />
-                      <span className="text-xs font-medium text-gray-700 z-10">{openedLanes.text}</span>
+                      <span className="text-xs font-medium text-gray-700 z-10">{openedLanes.displayText}</span>
                     </div>
                   )}
-                  {days.indexOf(day) === 0 && (
+                  {days.indexOf(day) === 0 && rawOccupancy && (
                     <div
                       className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     >
                     <div 
-                      className={`absolute bottom-0 ${rawOccupancyColor}`}
+                      className={`absolute bottom-0 ${rawOccupancy.color}`}
                       style={{ 
-                        height: getBarHeight(rawOccupancyColorFillRatio, uniformHeatmapBarHeight),
+                        height: HeatmapDataProcessor.getBarHeight(rawOccupancy.colorFillRatio, uniformHeatmapBarHeight),
                         width: '100%'
                       }}
                     />
-                      <span className="text-xs font-medium text-center text-gray-700 z-10">{rawOccupancyDisplayText}</span>
+                      <span className="text-xs font-medium text-center text-gray-700 z-10">{rawOccupancy.displayText}</span>
                     </div>
                   )}
                   <div className="mb-6"></div>

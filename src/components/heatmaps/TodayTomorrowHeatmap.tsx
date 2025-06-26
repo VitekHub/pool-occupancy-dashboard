@@ -7,8 +7,8 @@ import { usePoolDataContext } from '@/contexts/PoolDataContext';
 import { format } from 'date-fns';
 import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
-import type { HourlyDataWithRatio } from '@/utils/types/poolData';
-import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
+import type { HourlyOccupancySummaryWithLanes } from '@/utils/types/poolData';
+import HeatmapDataProcessor from '@/utils/heatmaps/heatmapDataProcessor';
 import Toggle from '@/components/ui/Toggle';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
@@ -40,7 +40,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
   const dayLabels = getDayLabels(today, orderedDays);
 
   // Filter data for today and tomorrow only
-  const filteredData = overallHourlySummary.map(item => {
+  const filteredOverallHourlyData = overallHourlySummary.map(item => {
     const dayIndex = DAYS.indexOf(item.day);
     const todayIndex = DAYS.indexOf(todayName);
     const tomorrowIndex = (todayIndex + 1) % DAYS.length;
@@ -52,13 +52,13 @@ const TodayTomorrowHeatmap: React.FC = () => {
         parseInt(cap.hour) === item.hour
     );
     
-    // Create new item with ratio data
-    const newItem: HourlyDataWithRatio = {
+    // Create new item with lanes data
+    const newItem: HourlyOccupancySummaryWithLanes = {
       ...item,
-      ratio: selectedPool.insidePool && capacity ? {
+      lanes: selectedPool.insidePool && capacity ? {
         current: selectedPool.insidePool.totalLanes ? Math.round(capacity.maximumCapacity / (selectedPool.insidePool.maximumCapacity / selectedPool.insidePool.totalLanes)) : 0, 
         total: selectedPool.insidePool.totalLanes || 0,
-        fillRatio: capacity.maximumCapacity / selectedPool.insidePool.maximumCapacity
+        colorFillRatio: capacity.maximumCapacity / selectedPool.insidePool.maximumCapacity
       } : undefined
     };
 
@@ -67,7 +67,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
     }
 
     return newItem;
-  }).filter((item): item is HourlyDataWithRatio => item !== null);
+  }).filter((item): item is HourlyOccupancySummaryWithLanes => item !== null);
 
   // Get the days to display
   const displayDays = showFullWeek
@@ -92,21 +92,13 @@ const TodayTomorrowHeatmap: React.FC = () => {
     return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
-  const { utilizationMap, maxUtilizationPerDayMap, ratioMap } = processHeatmapData(filteredData, displayDays);
-
-  const getCellDataWithTranslation = (day: string, hour: number) =>
-    getTodayTomorrowCellData(
-      day,
-      hour,
-      utilizationMap,
-      maxUtilizationPerDayMap,
-      ratioMap,
-      filteredData,
-      heatmapHighThreshold,
-      'heatmaps:todayTomorrow.tooltip',
-      t,
-      dayLabels
-    );
+  const heatmapDataProcessor = new HeatmapDataProcessor(
+    filteredOverallHourlyData,
+    heatmapHighThreshold,
+    'heatmaps:todayTomorrow.tooltip',
+    t,
+    dayLabels
+  );
 
   return (
     <div>
@@ -122,14 +114,14 @@ const TodayTomorrowHeatmap: React.FC = () => {
         <TodayTomorrowHeatmapGrid
           days={displayDays}
           hours={HOURS}
-          getCellData={getCellDataWithTranslation}
+          getCellData={(day, hour) => heatmapDataProcessor.getTodayTomorrowCellData(day, hour)}
           dayLabels={dayLabels}
           showTooltips={showTooltips}
         />
         
         <HeatmapLegend
           title={t('heatmaps:common.legend.title')}
-          items={getLegendItems(heatmapHighThreshold)}
+          items={heatmapDataProcessor.getLegendItems()}
         />
       </div>
 

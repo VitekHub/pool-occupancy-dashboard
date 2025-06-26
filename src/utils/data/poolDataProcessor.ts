@@ -7,7 +7,7 @@ import { PoolType, isInsidePool } from '@/utils/types/poolTypes';
 import { PoolConfig } from '@/utils/types/poolConfig';
 
 
-export class PoolDataProcessor {
+export default class PoolDataProcessor {
   constructor(
     private occupancyData: OccupancyRecord[],
     private capacityData: CapacityRecord[],

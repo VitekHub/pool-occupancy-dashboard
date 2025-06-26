@@ -4,7 +4,7 @@ import { BaseHeatmapGridProps } from '@/utils/types/heatmapTypes';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
 import HolidayWarning from './HolidayWarning';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
-import { getBarHeight } from '@/utils/heatmaps/heatmapUtils';
+import HeatmapDataProcessor from '@/utils/heatmaps/heatmapDataProcessor';
 
 const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({ 
   days, 
@@ -54,7 +54,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
                     <div 
                       className={`absolute bottom-0 ${color}`}
                       style={{ 
-                        height: getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
+                        height: HeatmapDataProcessor.getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
                         width: '100%'
                       }}
                     />

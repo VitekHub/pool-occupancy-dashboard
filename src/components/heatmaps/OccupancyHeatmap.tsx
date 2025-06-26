@@ -9,7 +9,7 @@ const OccupancyHeatmap: React.FC = () => {
 
   return (
     <BaseOccupancyHeatmap
-      data={hourlySummary}
+      hourlyData={hourlySummary}
       tooltipTranslationKey="heatmaps:occupancy.tooltip"
       legendTitleTranslationKey="heatmaps:common.legend.title"
       loading={loading}
