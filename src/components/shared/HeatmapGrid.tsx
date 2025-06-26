@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { BaseHeatmapGridProps } from '@/utils/types/heatmapTypes';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
 import HolidayWarning from './HolidayWarning';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
+import { getBarHeight } from '@/utils/heatmaps/heatmapUtils';
 
 const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({ 
   days, 
@@ -11,6 +13,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
   dayLabels
 }) => {
   const { t } = useTranslation('common');
+  const { uniformHeatmapBarHeight } = usePoolSelector();
 
   return (
     <div className="overflow-x-auto">
@@ -19,7 +22,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
         <div className="flex">
           <div className="w-24 flex-shrink-0" />
           {hours.map(hour => (
-            <div key={hour} className="w-12 text-center text-xs font-medium text-gray-600">
+            <div key={hour} className="w-14 text-center text-xs font-medium text-gray-600">
               {hour}:00
             </div>
           ))}
@@ -41,14 +44,21 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
               )}
             </div>
             {hours.map(hour => {
-              const { color, displayText, title } = getCellData(day, hour);
+              const { color, colorFillRatio, displayText, title } = getCellData(day, hour);
               return (
-                <div key={`${day}-${hour}`} className="w-12">
+                <div key={`${day}-${hour}`} className="w-14">
                   <div
-                    className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
+                    className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
                   >
-                    <span className="text-xs font-medium text-gray-700">{displayText}</span>
+                    <div 
+                      className={`absolute bottom-0 ${color}`}
+                      style={{ 
+                        height: getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
+                        width: '100%'
+                      }}
+                    />
+                    <span className="text-xs font-medium text-center text-gray-700 z-10">{displayText}</span>
                   </div>
                 </div>
               );

@@ -2,14 +2,9 @@
   "common": {
     "legend": {
       "title": "Occupancy Rate",
-      "labels": {
-        "empty": "0%",
-        "veryLow": "<25%",
-        "low": "<33%",
-        "medium": "<42%",
-        "high": "<52%",
-        "veryHigh": "52%+"
-      }
+      "uniformHeightToggle": "Show Uniform Bar Height",
+      "heightExplanation": "The height of the colored bar represents relative occupancy within that day - a taller bar indicates higher occupancy compared to other hours of the same day.",
+      "colorExplanation": "The color represents absolute occupancy rate compared to maximum pool capacity - darker colors indicate higher occupancy."
     },
     "holidayWarning": "This day is a public holiday. Occupancy may differ from a regular day."
   },
@@ -50,19 +45,11 @@
     "title": "Weekly Raw Occupancy",
     "description": {
       "inside": "This heatmap shows the actual (min-max) number of people in the pool for each hour, helping you visualize the raw occupancy numbers throughout the week with varying lane capacity.",
-      "outside": "This heatmap shows the actual (min-max) number of people in the pool for each hour, helping you visualize the raw occupancy numbers throughout the week."
+      "outside": "This heatmap shows the actual (min-max) number of people in the pool for each hour."
     },
     "tooltip": "{{day}} at {{hour}}:00 - {{min}} to {{max}} people",
     "legend": {
-      "title": "Number of Visitors",
-      "labels": {
-        "empty": "0",
-        "veryLow": "<25",
-        "low": "<33",
-        "medium": "<42",
-        "high": "<52",
-        "veryHigh": "52+"
-      }
+      "title": "Number of Visitors"
     }
   }
 }

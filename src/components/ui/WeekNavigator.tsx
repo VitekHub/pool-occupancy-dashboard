@@ -64,7 +64,7 @@ const WeekNavigator: React.FC = () => {
         </button>
       </Tooltip>
       
-      <span className="font-medium">{dateRangeText}</span>
+      <span className="font-medium text-center min-w-[210px]">{dateRangeText}</span>
       
       <Tooltip text={t('nextWeek')}>
         <button

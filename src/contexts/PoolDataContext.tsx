@@ -37,9 +37,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [hourlySummary, setHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [overallHourlySummary, setOverallHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [weeklySummaries, setWeeklySummaries] = useState<Record<string, HourlyOccupancySummary[]>>({});
-  const [availableWeeks, setAvailableWeeks] = useState<WeekInfo[]>([]);
   const [currentOccupancy, setCurrentOccupancy] = useState<OccupancyRecord | null>(null);
-  const [isProcessingData, setIsProcessingData] = useState<boolean>(true);
 
   const { 
     insideOccupancyData,
@@ -50,89 +48,77 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     error 
   } = usePoolData();
 
-  const { selectedPool } = usePoolSelector();
+  const { selectedPoolType, selectedPool } = usePoolSelector();
+  const prevPoolType = React.useRef(selectedPoolType);
 
-  const processWithTimeout = React.useCallback((callback: () => void) => {
-    if (loading) {
-      callback();
-    } else {
-      setIsProcessingData(true);
-      setTimeout(() => {
-        callback();
-        setIsProcessingData(false);
-      }, 200);
-    }
-  }, [loading]);
+  const occupancyData = isInsidePool(selectedPoolType) ? insideOccupancyData : outsideOccupancyData;
 
-  // Combine occupancy data based on selected pool
-  const getPoolDataProcessor = React.useCallback(() => {
-    const occupancyData = isInsidePool(selectedPool) ? insideOccupancyData : outsideOccupancyData;
-    const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPool);
-    return { dataProcessor, occupancyData };
-  }, [selectedPool, insideOccupancyData, outsideOccupancyData, capacityData]);
+  const availableWeeks = React.useMemo(() => {
+    if (!occupancyData) return [];
+    return getAvailableWeeks(occupancyData.map(record => record.date));
+  }, [occupancyData]);
 
-  // Set initial week when available
+  // Set initial week when available weeks change or pool type changes
   useEffect(() => {
-    if (availableWeeks.length > 0 && !selectedWeekId) {
+    const poolTypeChanged = prevPoolType.current !== selectedPoolType;
+    const weekInvalid = !selectedWeekId || !availableWeeks.some(week => week.id === selectedWeekId);
+
+    if (availableWeeks.length > 0 && (weekInvalid || poolTypeChanged)) {
       setSelectedWeekId(availableWeeks[0].id);
     }
-  }, [availableWeeks, selectedWeekId]);
 
-  // Reset selected week when pool changes
-  useEffect(() => {
-    if (availableWeeks.length > 0) {
-      setSelectedWeekId(availableWeeks[0].id);
-    }
-  }, [availableWeeks, selectedPool]);
+    prevPoolType.current = selectedPoolType;
+  }, [availableWeeks, selectedWeekId, selectedPoolType]);
 
-  // Process weekly data when selectedWeekId or selectedPool changes
+  // Process weekly data when selectedWeekId or selectedPoolType changes
   useEffect(() => {
-    const { dataProcessor, occupancyData } = getPoolDataProcessor();
+    const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPool, selectedPoolType);
     if (occupancyData && capacityData && selectedWeekId) {
       const summary = dataProcessor.processOccupancyData(selectedWeekId);
       setHourlySummary(summary);
     }
-  }, [selectedWeekId, insideOccupancyData, outsideOccupancyData, capacityData, selectedPool, getPoolDataProcessor]);
+  }, [selectedWeekId, occupancyData, capacityData, selectedPool, selectedPoolType]);
 
-  // Process overall data when raw data or selectedPool changes
+  // Process overall data and weekly summaries using memoized availableWeeks
   useEffect(() => {
-    processWithTimeout(() => {
-      const { dataProcessor, occupancyData } = getPoolDataProcessor();
+    if (!loading) {
+      const dataProcessor = new PoolDataProcessor(occupancyData || [], capacityData || [], selectedPool, selectedPoolType);
       if (occupancyData && capacityData) {
-
         const summary = dataProcessor.processOverallOccupancyData();
         setOverallHourlySummary(summary);
 
         // Update current occupancy
-        setCurrentOccupancy(
-          occupancyData.length > 0 ? occupancyData[occupancyData.length - 1] : null
-        );
+        if (occupancyData.length > 0) {
+          const lastOccupancyData= occupancyData[occupancyData.length - 1];
+          if (new Date(lastOccupancyData.date).toDateString() === new Date().toDateString()) {
+            setCurrentOccupancy(lastOccupancyData);
+          } else {
+            setCurrentOccupancy(null);
+          }
+        }
 
-        // Process data for all available weeks
+        // Process data for all available weeks using memoized availableWeeks
         const summaries: Record<string, HourlyOccupancySummary[]> = {};
-        const weeks = getAvailableWeeks(occupancyData.map(record => record.date));
-        setAvailableWeeks(weeks);
-        
-        weeks.forEach(week => {
+        availableWeeks.forEach(week => {
           const weeklySummary = dataProcessor.processOccupancyData(week.id);
           summaries[week.id] = weeklySummary;
         });
         setWeeklySummaries(summaries);
       }
-    });
-  }, [insideOccupancyData, outsideOccupancyData, capacityData, selectedPool, processWithTimeout, getPoolDataProcessor]);
+    };
+  }, [occupancyData, capacityData, selectedPool, selectedPoolType, availableWeeks, loading]);
 
   return (
     <PoolDataContext.Provider value={{
-      occupancyData: isInsidePool(selectedPool) ? insideOccupancyData : outsideOccupancyData,
-      capacityData: isInsidePool(selectedPool) ? capacityData : undefined,
-      weekCapacityData: isInsidePool(selectedPool) ? weekCapacityData : undefined,
+      occupancyData,
+      capacityData: isInsidePool(selectedPoolType) ? capacityData : undefined,
+      weekCapacityData: isInsidePool(selectedPoolType) ? weekCapacityData : undefined,
       hourlySummary,
       overallHourlySummary,
       weeklySummaries,
       availableWeeks,
       currentOccupancy,
-      loading: loading || isProcessingData,
+      loading,
       error,
       selectedWeekId,
       setSelectedWeekId

@@ -10,6 +10,7 @@ import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
 import type { ChartDataItem } from '@/utils/types/poolData';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import { isInsidePool } from '@/utils/types/poolTypes';
+import { getBarHeight } from '@/utils/heatmaps/heatmapUtils';
 
 const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({ 
   days, 
@@ -20,7 +21,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
 }) => {
   const { t, i18n } = useTranslation('common');
   const { availableWeeks, weeklySummaries, capacityData } = usePoolDataContext();
-  const { selectedPool } = usePoolSelector();
+  const { selectedPoolType, selectedPool, uniformHeatmapBarHeight } = usePoolSelector();
   
   // Hover state
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
@@ -55,7 +56,8 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
       relevantWeeks,
       weeklySummaries,
       capacityData,
-      i18n.language
+      i18n.language,
+      selectedPool
     );
     
     setHoveredChartData([chartData]);
@@ -78,7 +80,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
         <div className="flex">
           <div className="w-24 flex-shrink-0" />
           {hours.map(hour => (
-            <div key={hour} className="w-12 text-center text-xs font-medium text-gray-600">
+            <div key={hour} className="w-14 text-center text-xs font-medium text-gray-600">
               {hour}:00
             </div>
           ))}
@@ -102,7 +104,16 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
             </div>
             {hours.map(hour => {
               const cellData: ExtendedCellData = getCellData(day, hour);
-              const { color, displayText, title, openedLanes, rawOccupancyDisplayText } = cellData;
+              const { 
+                color, 
+                colorFillRatio, 
+                displayText, 
+                title, 
+                openedLanes, 
+                rawOccupancyDisplayText, 
+                rawOccupancyColor, 
+                rawOccupancyColorFillRatio 
+              } = cellData;
               
               const handleMouseEnter = (event: React.MouseEvent<HTMLDivElement>) => {
                 const rect = event.currentTarget.getBoundingClientRect();
@@ -110,24 +121,31 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
               };
               
               return (
-                <div key={`${day}-${hour}`} className="w-12">
+                <div key={`${day}-${hour}`} className="w-14">
                   { days.indexOf(day) > 0 && 
-                    (<div className="w-12 text-center text-xs font-medium text-gray-600">
+                    (<div className="w-14 text-center text-xs font-medium text-gray-600">
                       {hour}:00
                     </div>
                   )}
                   <div
-                    className={`h-12 border border-gray-200 ${color} hover:opacity-80 transition-opacity flex items-center justify-center`}
+                    className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleCellLeave}
                   >
-                    <span className="text-xs font-medium text-gray-700">{displayText}</span>
+                    <div 
+                      className={`absolute bottom-0 ${color}`}
+                      style={{ 
+                        height: getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
+                        width: '100%'
+                      }}
+                    />
+                    <span className="text-xs font-medium text-gray-700 z-10">{displayText}</span>
                   </div>
-                  {isInsidePool(selectedPool) && openedLanes && (
-                    <div className="h-12 border border-gray-200 relative flex items-center justify-center">
+                  {isInsidePool(selectedPoolType) && openedLanes && (
+                    <div className="h-12 border bg-blue-200 red-dotted-background border-gray-200 relative flex items-center justify-center">
                       <div 
-                        className="absolute bottom-0 bg-blue-400"
+                        className="absolute top-0 bg-blue-300"
                         style={{ 
                           height: `${openedLanes.fillRatio * 100}%`,
                           width: '100%'
@@ -138,18 +156,25 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   )}
                   {days.indexOf(day) === 0 && (
                     <div
-                      className={`h-12 border border-gray-200 hover:opacity-80 transition-opacity flex items-center justify-center`}
+                      className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     >
-                      <span className="text-xs font-medium text-gray-700">{rawOccupancyDisplayText}</span>
+                    <div 
+                      className={`absolute bottom-0 ${rawOccupancyColor}`}
+                      style={{ 
+                        height: getBarHeight(rawOccupancyColorFillRatio, uniformHeatmapBarHeight),
+                        width: '100%'
+                      }}
+                    />
+                      <span className="text-xs font-medium text-center text-gray-700 z-10">{rawOccupancyDisplayText}</span>
                     </div>
                   )}
-                  <div className="mb-8"></div>
+                  <div className="mb-6"></div>
                 </div>
               );
             })}
             <div className="w-58 flex-shrink-0 font-normal text-gray-500 pl-4 mt-2">
               <div className="h-12 flex items-center">{subtitles[0]}</div>
-              {isInsidePool(selectedPool) && <div className="h-12 flex items-center">{subtitles[1]}</div>}
+              {isInsidePool(selectedPoolType) && <div className="h-12 flex items-center">{subtitles[1]}</div>}
               {days.indexOf(day) === 0 && (
                 <div className="h-12 flex items-center">{subtitles[2]}</div>
               )}

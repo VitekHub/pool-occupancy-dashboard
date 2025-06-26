@@ -2,6 +2,7 @@ import { HourlyDataWithRatio } from './poolData';
 
 export interface BaseCellData {
   color: string;
+  colorFillRatio: number;
   displayText: string;
   title: string;
 }
@@ -9,6 +10,7 @@ export interface BaseCellData {
 export interface ProcessedHeatmapData {
   utilizationMap: Record<string, Record<number, number>>;
   ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>;
+  maxUtilizationPerDayMap: Record<string, number>;
 }
 
 export interface BaseHeatmapGridProps {
@@ -24,6 +26,7 @@ export interface ExtendedCellData extends BaseCellData {
     fillRatio: number;
   };
   rawOccupancyColor: string;
+  rawOccupancyColorFillRatio: number;
   rawOccupancyDisplayText: string;
 }
 

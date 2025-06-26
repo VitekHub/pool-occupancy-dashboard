@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { cs, enUS } from 'date-fns/locale';
-import { INSIDE_MAX_CAPACITY, INSIDE_TOTAL_LANES } from '@/constants/pool';
 import type { ChartDataItem, WeekInfo, HourlyOccupancySummary, CapacityRecord } from '@/utils/types/poolData';
+import { PoolConfig } from '@/utils/types/poolConfig';
 
 export const prepareChartDataForHour = (
   day: string,
@@ -9,7 +9,8 @@ export const prepareChartDataForHour = (
   relevantWeeks: WeekInfo[],
   weeklySummaries: Record<string, HourlyOccupancySummary[]>,
   capacityData: CapacityRecord[] | undefined,
-  language: string
+  language: string,
+  selectedPool: PoolConfig
 ): ChartDataItem => {
   const dateLocale = language === 'cs' ? cs : enUS;
   const hourData: Partial<ChartDataItem> = {
@@ -36,12 +37,14 @@ export const prepareChartDataForHour = (
 
     const weekLabel = format(dayDate, 'd.M.', { locale: dateLocale });
     const dayLabel = weekLabel;
+    const maxCapacity = selectedPool.insidePool?.maximumCapacity || 0;
+    const totalLanes = selectedPool.insidePool?.totalLanes || 0;
 
     hourData[`week${index}`] = weekData?.utilizationRate || 0;
     hourData[`minOccupancy${index}`] = weekData?.minOccupancy || 0;
     hourData[`maxOccupancy${index}`] = weekData?.maxOccupancy || 0;
     hourData[`openedLanes${index}`] = foundHourlyCapacity ?
-      Math.round(foundHourlyCapacity.maximumCapacity / (INSIDE_MAX_CAPACITY / INSIDE_TOTAL_LANES)) :
+      Math.round(foundHourlyCapacity.maximumCapacity / (maxCapacity / totalLanes)) :
       0;
     hourData[`dayLabel${index}`] = dayLabel;
   });

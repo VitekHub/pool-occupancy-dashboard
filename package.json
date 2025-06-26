@@ -1,8 +1,8 @@
 {
   "name": "vite-react-typescript-starter",
   "private": true,
-  "homepage": "https://vitekbrno.github.io/kravihora-brno-capacity",
-  "version": "0.0.0",
+  "homepage": "https://jade-lollipop-12d577.netlify.app/",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

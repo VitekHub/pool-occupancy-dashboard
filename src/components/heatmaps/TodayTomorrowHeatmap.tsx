@@ -9,8 +9,8 @@ import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
 import type { HourlyDataWithRatio } from '@/utils/types/poolData';
 import { processHeatmapData, getTodayTomorrowCellData, getLegendItems } from '@/utils/heatmaps/heatmapUtils';
-import { INSIDE_MAX_CAPACITY, INSIDE_TOTAL_LANES } from '@/constants/pool';
-import FloatingTooltipToggle from '../ui/FloatingTooltipToggle';
+import Toggle from '@/components/ui/Toggle';
+import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
@@ -20,6 +20,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
     loading,
     error
   } = usePoolDataContext();
+  const { selectedPool, heatmapHighThreshold } = usePoolSelector();
   const [showFullWeek, setShowFullWeek] = useState(false);
   const [showTooltips, setShowTooltips] = useState(true);
 
@@ -54,10 +55,10 @@ const TodayTomorrowHeatmap: React.FC = () => {
     // Create new item with ratio data
     const newItem: HourlyDataWithRatio = {
       ...item,
-      ratio: capacity ? {
-        current: Math.round(capacity.maximumCapacity / (INSIDE_MAX_CAPACITY / INSIDE_TOTAL_LANES)),
-        total: INSIDE_TOTAL_LANES,
-        fillRatio: capacity.maximumCapacity / INSIDE_MAX_CAPACITY
+      ratio: selectedPool.insidePool && capacity ? {
+        current: selectedPool.insidePool.totalLanes ? Math.round(capacity.maximumCapacity / (selectedPool.insidePool.maximumCapacity / selectedPool.insidePool.totalLanes)) : 0, 
+        total: selectedPool.insidePool.totalLanes || 0,
+        fillRatio: capacity.maximumCapacity / selectedPool.insidePool.maximumCapacity
       } : undefined
     };
 
@@ -91,15 +92,17 @@ const TodayTomorrowHeatmap: React.FC = () => {
     return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
-  const { utilizationMap, ratioMap } = processHeatmapData(filteredData, displayDays);
-  
-  const getCellDataWithTranslation = (day: string, hour: number) => 
+  const { utilizationMap, maxUtilizationPerDayMap, ratioMap } = processHeatmapData(filteredData, displayDays);
+
+  const getCellDataWithTranslation = (day: string, hour: number) =>
     getTodayTomorrowCellData(
-      day, 
-      hour, 
-      utilizationMap, 
-      ratioMap, 
+      day,
+      hour,
+      utilizationMap,
+      maxUtilizationPerDayMap,
+      ratioMap,
       filteredData,
+      heatmapHighThreshold,
       'heatmaps:todayTomorrow.tooltip',
       t,
       dayLabels
@@ -107,9 +110,10 @@ const TodayTomorrowHeatmap: React.FC = () => {
 
   return (
     <div>
-      <FloatingTooltipToggle
-        showTooltips={showTooltips}
-        setShowTooltips={setShowTooltips}
+      <Toggle
+        value={showTooltips}
+        setValue={setShowTooltips}
+        label={t('heatmaps:todayTomorrow.showTooltips')}
       />
 
       {showMoreButton}
@@ -125,7 +129,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
         
         <HeatmapLegend
           title={t('heatmaps:common.legend.title')}
-          items={getLegendItems(t)}
+          items={getLegendItems(heatmapHighThreshold)}
         />
       </div>
 

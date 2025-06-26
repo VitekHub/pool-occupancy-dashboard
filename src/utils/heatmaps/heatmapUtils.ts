@@ -19,21 +19,37 @@ const isClosedHour = (hour: number, day: string, date: string | undefined): bool
 
 type TranslationFunction = (key: string, options?: { [key: string]: string | number }) => string;
 
-export const getLegendItems = (t: TranslationFunction) => [
-  { color: `${UTILIZATION_COLORS.EMPTY} border border-gray-300`, label: t('heatmaps:common.legend.labels.empty') },
-  { color: UTILIZATION_COLORS.VERY_LOW, label: t('heatmaps:common.legend.labels.veryLow') },
-  { color: UTILIZATION_COLORS.LOW, label: t('heatmaps:common.legend.labels.low') },
-  { color: UTILIZATION_COLORS.MEDIUM, label: t('heatmaps:common.legend.labels.medium') },
-  { color: UTILIZATION_COLORS.HIGH, label: t('heatmaps:common.legend.labels.high') },
-  { color: UTILIZATION_COLORS.VERY_HIGH, label: t('heatmaps:common.legend.labels.veryHigh') }
+const adjustHeatmapThreshold = (threshold: number, heatmapHighThreshold: number) => {
+  return Math.round(heatmapHighThreshold * (threshold / 100))
+}
+
+const getLegendLabel = (threshold: number, heatmapHighThreshold: number) => {
+  return `<${adjustHeatmapThreshold(threshold, heatmapHighThreshold )}%`
+}
+
+export const getBarHeight = (colorFillRatio: number, uniformHeatmapBarHeight: boolean) => {
+  return `${colorFillRatio > 0 ? (uniformHeatmapBarHeight ? 100 : colorFillRatio * 100) : 0}%`
+}
+
+export const getLegendItems = (heatmapHighThreshold: number) => [
+  { color: `${UTILIZATION_COLORS.EMPTY} border border-gray-300`, label: '0%' },
+  { color: UTILIZATION_COLORS.VERY_LOW, label: getLegendLabel(UTILIZATION_THRESHOLDS.VERY_LOW, heatmapHighThreshold) },
+  { color: UTILIZATION_COLORS.LOW, label: getLegendLabel(UTILIZATION_THRESHOLDS.LOW, heatmapHighThreshold) },
+  { color: UTILIZATION_COLORS.MEDIUM, label: getLegendLabel(UTILIZATION_THRESHOLDS.MEDIUM, heatmapHighThreshold) },
+  { color: UTILIZATION_COLORS.HIGH, label: `<${heatmapHighThreshold}%` },
+  { color: UTILIZATION_COLORS.VERY_HIGH, label: `<${100}%` }
 ];
 
-export const getColorForUtilization = (rate: number): string => {
+export const getColorForUtilization = (rate: number, highThreshold: number): string => {
+  const veryLowThreshold = adjustHeatmapThreshold(UTILIZATION_THRESHOLDS.VERY_LOW, highThreshold);
+  const lowThreshold = adjustHeatmapThreshold(UTILIZATION_THRESHOLDS.LOW, highThreshold);
+  const mediumThreshold = adjustHeatmapThreshold(UTILIZATION_THRESHOLDS.MEDIUM, highThreshold);
+
   if (rate === 0) return UTILIZATION_COLORS.EMPTY;
-  if (rate < UTILIZATION_THRESHOLDS.VERY_LOW) return UTILIZATION_COLORS.VERY_LOW;
-  if (rate < UTILIZATION_THRESHOLDS.LOW) return UTILIZATION_COLORS.LOW;
-  if (rate < UTILIZATION_THRESHOLDS.MEDIUM) return UTILIZATION_COLORS.MEDIUM;
-  if (rate < UTILIZATION_THRESHOLDS.HIGH) return UTILIZATION_COLORS.HIGH;
+  if (rate < veryLowThreshold) return UTILIZATION_COLORS.VERY_LOW;
+  if (rate < lowThreshold) return UTILIZATION_COLORS.LOW;
+  if (rate < mediumThreshold) return UTILIZATION_COLORS.MEDIUM;
+  if (rate < highThreshold) return UTILIZATION_COLORS.HIGH;
   return UTILIZATION_COLORS.VERY_HIGH;
 };
 
@@ -64,20 +80,31 @@ export const processHeatmapData = (
     }
   });
 
-  return { utilizationMap, ratioMap };
+  const maxUtilizationPerDayMap: Record<string, number> = data.reduce((acc, item) => {
+    if (!acc[item.day]) {
+      acc[item.day] = 0;
+    }
+    acc[item.day] = Math.max(acc[item.day], item.utilizationRate);
+    return acc;
+  }, {} as Record<string, number>);
+
+  return { utilizationMap, ratioMap, maxUtilizationPerDayMap };
 };
 
 export const getCellData = (
   day: string,
   hour: number,
   utilizationMap: Record<string, Record<number, number>>,
+  maxUtilizationPerDayMap: Record<string, number>,
+  heatmapHighThreshold: number,
   tooltipTranslationKey: string,
   t: TranslationFunction
 ): BaseCellData => {
   const utilization = utilizationMap[day][hour];
   
   return {
-    color: getColorForUtilization(utilization),
+    color: getColorForUtilization(utilization, heatmapHighThreshold),
+    colorFillRatio: maxUtilizationPerDayMap[day] > 0 ? utilization / maxUtilizationPerDayMap[day] : 0, // Fill ratio based on max utilization of the day
     displayText: utilization > 0 ? `${utilization}%` : '',
     title: t(tooltipTranslationKey, {
       day: t(`common:days.${day.toLowerCase()}`),
@@ -91,8 +118,10 @@ export const getTodayTomorrowCellData = (
   day: string,
   hour: number,
   utilizationMap: Record<string, Record<number, number>>,
+  maxUtilizationPerDayMap: Record<string, number>,
   ratioMap: Record<string, Record<number, HourlyDataWithRatio['ratio']>>,
   data: HourlyDataWithRatio[],
+  heatmapHighThreshold: number,
   tooltipTranslationKey: string,
   t: TranslationFunction,
   dayLabels: Record<string, string>
@@ -100,22 +129,32 @@ export const getTodayTomorrowCellData = (
   const utilization = utilizationMap[day][hour];
   const date = dayLabels[day];
   const ratio = isClosedHour(hour, day, date) ? undefined : ratioMap[day][hour];
-  const hourData = data.find(item => item.day === day && item.hour === hour);
-  const rawOccupancyColor = getColorForUtilization(hourData?.maxOccupancy || 0);
+  const dayData = data.filter(item => item.day === day);
+  const hourData = dayData.find(item => item.hour === hour);
   
+  // get max number out of raw data for 'maxOccupancy'
+  const maxDayOccupancy = Math.max(...dayData.map(item => item.maxOccupancy), 0);
+
   let rawOccupancyDisplayText = '';
-  if (hourData) {
+  let rawUtilizationInPercentage = 0
+  let rawOccupancyColorFillRatio = 0;
+  if (hourData?.date && new Date(hourData.date).toDateString() === new Date().toDateString()) {
     if (hourData.minOccupancy === hourData.maxOccupancy) {
       rawOccupancyDisplayText = hourData.minOccupancy > 0 ? `${hourData.minOccupancy}` : '';
     } else if (hourData.minOccupancy > 0 || hourData.maxOccupancy > 0) {
       rawOccupancyDisplayText = `${hourData.minOccupancy}-${hourData.maxOccupancy}`;
     }
+    const average = (hourData.minOccupancy + hourData.maxOccupancy) / 2;
+    rawUtilizationInPercentage = average / hourData.maximumCapacity * 100;
+    rawOccupancyColorFillRatio = hourData.maxOccupancy === maxDayOccupancy ? 1 : average / maxDayOccupancy; // Fill ratio based on max raw utilization of the day
   }
   
   return {
-    color: getColorForUtilization(utilization),
+    color: getColorForUtilization(utilization, heatmapHighThreshold),
+    colorFillRatio: maxUtilizationPerDayMap[day] > 0 ? utilization / maxUtilizationPerDayMap[day] : 0, // Fill ratio based on max historical utilization of the day
     displayText: utilization > 0 ? `${utilization}%` : '',
-    rawOccupancyColor,
+    rawOccupancyColor: getColorForUtilization(rawUtilizationInPercentage, heatmapHighThreshold),
+    rawOccupancyColorFillRatio,
     rawOccupancyDisplayText,
     title: t(tooltipTranslationKey, {
       day: t(`common:days.${day.toLowerCase()}`),

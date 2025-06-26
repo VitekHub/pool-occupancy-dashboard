@@ -4,14 +4,15 @@ import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary } from '@/
 import { getAvailableWeeks } from '@/utils/date/dateUtils';
 import { getHourFromTime } from '@/utils/data/csvParser';
 import { PoolType, isInsidePool } from '@/utils/types/poolTypes';
-import { OUTSIDE_MAX_CAPACITY, INSIDE_MAX_CAPACITY } from '@/constants/pool';
+import { PoolConfig } from '@/utils/types/poolConfig';
 
 
 export class PoolDataProcessor {
   constructor(
     private occupancyData: OccupancyRecord[],
     private capacityData: CapacityRecord[],
-    private selectedPool: PoolType
+    private selectedPool: PoolConfig,
+    private selectedPoolType: PoolType
   ) {}
 
   private formatNumber(value: number) : number {
@@ -169,7 +170,7 @@ export class PoolDataProcessor {
   };
 
   private getMaxCapacityByPoolType(): number {
-    return isInsidePool(this.selectedPool) ? INSIDE_MAX_CAPACITY : OUTSIDE_MAX_CAPACITY;
+    return isInsidePool(this.selectedPoolType) ? this.selectedPool.insidePool?.maximumCapacity || 0 : this.selectedPool.outsidePool?.maximumCapacity || 0;
   }
 
   // Process the occupancy data to group by day and hour
@@ -177,7 +178,7 @@ export class PoolDataProcessor {
     selectedWeekId: string
   ): HourlyOccupancySummary[] {
     const occupancyMap = this.createOccupancyMap(selectedWeekId);
-    const insideCapacityMap = isInsidePool(this.selectedPool) ? this.createCapacityMap(selectedWeekId) : {};
+    const insideCapacityMap = isInsidePool(this.selectedPoolType) ? this.createCapacityMap(selectedWeekId) : {};
     
     const summary: HourlyOccupancySummary[] = [];
     Object.entries(occupancyMap).forEach(([day, hourData]) => {
@@ -185,7 +186,9 @@ export class PoolDataProcessor {
         const hour = parseInt(hourStr);
         
         if (values.length > 0) {
-          const maximumCapacity = isInsidePool(this.selectedPool) ? (insideCapacityMap[day]?.[hour] || INSIDE_MAX_CAPACITY) : OUTSIDE_MAX_CAPACITY;
+      const maximumCapacity = isInsidePool(this.selectedPoolType) 
+          ? (insideCapacityMap[day]?.[hour] || this.selectedPool.insidePool?.maximumCapacity || 0) 
+          : (this.selectedPool.outsidePool?.maximumCapacity || 0);
           const stats = this.calculateTimeSlotStats(values, maximumCapacity, day, hour, date);
           summary.push(stats);
         }
@@ -206,7 +209,7 @@ export class PoolDataProcessor {
     DAYS.forEach(day => {
       HOURS.forEach(hour => {
         const averageUtilization = this.calculateAverageUtilization(day, hour, weeklyUtilization, weeks);
-        const recentWeekData = this.processOccupancyData(weeks[0].id).find(data => data.day === day && data.hour === hour);
+        const recentWeekData = weeks?.length > 0 && this.processOccupancyData(weeks[0].id).find(data => data.day === day && data.hour === hour);
         const maximumCapacity = this.getMaxCapacityByPoolType();
         
         // Create a summary entry even if we don't have recent week data

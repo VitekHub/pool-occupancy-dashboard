@@ -32,7 +32,7 @@ const FloatingTooltip: React.FC<FloatingTooltipProps> = ({
     }
   }, [targetRect, isVisible]);
 
-  if (!isVisible || !targetRect) {
+  if (!isVisible || !targetRect || position.x === 0 || position.y === 0) {
     return null;
   }
 
