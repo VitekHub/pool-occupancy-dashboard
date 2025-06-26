@@ -129,10 +129,11 @@ export const getTodayTomorrowCellData = (
   const utilization = utilizationMap[day][hour];
   const date = dayLabels[day];
   const ratio = isClosedHour(hour, day, date) ? undefined : ratioMap[day][hour];
-  const hourData = data.find(item => item.day === day && item.hour === hour);
+  const dayData = data.filter(item => item.day === day);
+  const hourData = dayData.find(item => item.hour === hour);
   
   // get max number out of raw data for 'maxOccupancy'
-  const maxDayOccupancy = Math.max(...data.map(item => item.maxOccupancy), 0);
+  const maxDayOccupancy = Math.max(...dayData.map(item => item.maxOccupancy), 0);
 
   let rawOccupancyDisplayText = '';
   let rawUtilizationInPercentage = 0
