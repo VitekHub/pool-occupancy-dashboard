@@ -39,9 +39,9 @@ export default class PoolDataProcessor {
     selectedWeekId: string
   ): Record<string, Record<number, { values: number[], date: Date }>> {
     const occupancyMap: Record<string, Record<number, { values: number[], date: Date }>> = {};
-    const filteredOccupancyData = this.filterDataForWeek(this.occupancyData, selectedWeekId) as OccupancyRecord[];
+    const occupancyDataForWeek = this.filterDataForWeek(this.occupancyData, selectedWeekId) as OccupancyRecord[];
 
-    filteredOccupancyData.forEach((record) => {
+    occupancyDataForWeek.forEach((record) => {
       const hour = getHourFromTime(record.time);
       
       if (!occupancyMap[record.day]) {
@@ -62,9 +62,9 @@ export default class PoolDataProcessor {
     selectedWeekId: string
   ): Record<string, Record<number, number>> {
     const capacityMap: Record<string, Record<number, number>> = {};
-    const filteredCapacityData = this.filterDataForWeek(this.capacityData, selectedWeekId) as CapacityRecord[];
+    const capacityDataForWeek = this.filterDataForWeek(this.capacityData, selectedWeekId) as CapacityRecord[];
 
-    filteredCapacityData.forEach((record) => {
+    capacityDataForWeek.forEach((record) => {
       if (!capacityMap[record.day]) {
         capacityMap[record.day] = {};
       }
@@ -186,9 +186,9 @@ export default class PoolDataProcessor {
         const hour = parseInt(hourStr);
         
         if (values.length > 0) {
-      const maximumCapacity = isInsidePool(this.selectedPoolType) 
-          ? (insideCapacityMap[day]?.[hour] || this.selectedPool.insidePool?.maximumCapacity || 0) 
-          : (this.selectedPool.outsidePool?.maximumCapacity || 0);
+          const maximumCapacity = isInsidePool(this.selectedPoolType)
+            ? (insideCapacityMap[day]?.[hour] || this.selectedPool.insidePool?.maximumCapacity || 0)
+            : (this.selectedPool.outsidePool?.maximumCapacity || 0);
           const stats = this.calculateTimeSlotStats(values, maximumCapacity, day, hour, date);
           summary.push(stats);
         }
