@@ -4,8 +4,9 @@ import { usePoolData } from '@/utils/hooks/usePoolData';
 import PoolDataProcessor from '@/utils/data/poolDataProcessor';
 import { getAvailableWeeks } from '@/utils/date/dateUtils';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
-import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo } from '@/utils/types/poolData';
+import type { OccupancyRecord, CapacityRecord, HourlyOccupancySummary, WeekInfo, WeeklyOccupancyMap, WeeklyMaxValuesPerDayMap } from '@/utils/types/poolData';
 import { isInsidePool } from '@/utils/types/poolTypes';
+import CoolDataProcessor from '@/utils/data/coolDataProcessor';
 
 interface PoolDataContextType {
   occupancyData: OccupancyRecord[] | undefined;
@@ -13,6 +14,8 @@ interface PoolDataContextType {
   weekCapacityData: CapacityRecord[] | undefined;
   hourlySummary: HourlyOccupancySummary[];
   overallHourlySummary: HourlyOccupancySummary[];
+  weeklyOccupancyMap: WeeklyOccupancyMap;
+  weeklyMaxValuesPerDayMap: WeeklyMaxValuesPerDayMap;
   weeklySummaries: Record<string, HourlyOccupancySummary[]>;
   availableWeeks: WeekInfo[];
   currentOccupancy: OccupancyRecord | null;
@@ -36,6 +39,8 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [selectedWeekId, setSelectedWeekId] = useState<string>('');
   const [hourlySummary, setHourlySummary] = useState<HourlyOccupancySummary[]>([]);
   const [overallHourlySummary, setOverallHourlySummary] = useState<HourlyOccupancySummary[]>([]);
+  const [weeklyOccupancyMap, setWeeklyOccupancyMap] = useState<WeeklyOccupancyMap>({});
+  const [weeklyMaxValuesPerDayMap, setWeeklyMaxValuesPerDayMap] = useState<WeeklyMaxValuesPerDayMap>({});
   const [weeklySummaries, setWeeklySummaries] = useState<Record<string, HourlyOccupancySummary[]>>({});
   const [currentOccupancy, setCurrentOccupancy] = useState<OccupancyRecord | null>(null);
 
@@ -79,6 +84,19 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [selectedWeekId, occupancyData, capacityData, selectedPool, selectedPoolType]);
 
+  // Process all data when the data or selected pool changes
+  useEffect(() => {
+    const coolDataProcessor = new CoolDataProcessor(
+      capacityData || [],
+      occupancyData || [],
+      selectedPool,
+      selectedPoolType
+    );
+    const { weeklyOccupancyMap, weeklyMaxValuesPerDayMap } = coolDataProcessor.preProcessAllOccupancyData();
+    setWeeklyOccupancyMap(weeklyOccupancyMap);
+    setWeeklyMaxValuesPerDayMap(weeklyMaxValuesPerDayMap);
+  }, [occupancyData, capacityData, selectedPool, selectedPoolType]);
+
   // Process overall data and weekly summaries using memoized availableWeeks
   useEffect(() => {
     if (!loading) {
@@ -89,7 +107,7 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
         // Update current occupancy
         if (occupancyData.length > 0) {
-          const lastOccupancyData= occupancyData[occupancyData.length - 1];
+          const lastOccupancyData = occupancyData[occupancyData.length - 1];
           if (new Date(lastOccupancyData.date).toDateString() === new Date().toDateString()) {
             setCurrentOccupancy(lastOccupancyData);
           } else {
@@ -115,6 +133,8 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       weekCapacityData: isInsidePool(selectedPoolType) ? weekCapacityData : undefined,
       hourlySummary,
       overallHourlySummary,
+      weeklyOccupancyMap,
+      weeklyMaxValuesPerDayMap,
       weeklySummaries,
       availableWeeks,
       currentOccupancy,

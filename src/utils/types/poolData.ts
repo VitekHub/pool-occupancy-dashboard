@@ -53,3 +53,29 @@ export interface HourlyOccupancySummaryWithLanes extends HourlyOccupancySummary 
     colorFillRatio: number;
   };
 }
+
+
+export interface WeeklyCapacityMap {
+  [weekId: string]: {
+    [day: string]: {
+      [hour: number]: number;
+    };
+  };
+}
+
+export interface WeeklyOccupancyMap {
+  [weekId: string]: {
+    [day: string]: {
+      [hour: number]: HourlyOccupancySummaryWithLanes;
+    };
+  };
+}
+
+export interface WeeklyMaxValuesPerDayMap {
+  [weekId: string]: {
+    [day: string]: {
+      utilizationRate: number;
+      maxOccupancy: number;
+    };
+  };
+}
