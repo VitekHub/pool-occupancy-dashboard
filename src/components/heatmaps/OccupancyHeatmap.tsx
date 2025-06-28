@@ -4,16 +4,16 @@ import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 import { getDayLabels } from '@/utils/date/dateUtils';
 
 const OccupancyHeatmap: React.FC = () => {
-  const { hourlySummary, loading, error, selectedWeekId } = usePoolDataContext();
+  const { selectedWeekId } = usePoolDataContext();
   const dayLabels = getDayLabels(selectedWeekId);
 
   return (
     <BaseOccupancyHeatmap
-      hourlyData={hourlySummary}
+      getCellData={(coolHeatmapDataProcessor, day, hour) =>
+        coolHeatmapDataProcessor.getCellData(selectedWeekId, day, hour)
+      }
       tooltipTranslationKey="heatmaps:occupancy.tooltip"
       legendTitleTranslationKey="heatmaps:common.legend.title"
-      loading={loading}
-      error={error?.message || null}
       dayLabels={dayLabels}
     />
   );

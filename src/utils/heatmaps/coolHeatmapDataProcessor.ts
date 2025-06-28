@@ -1,4 +1,4 @@
-import { WeeklyMaxValuesPerDayMap, WeeklyOccupancyMap } from '@/utils/types/poolData';
+import { OverallOccupancyMap, WeeklyOccupancyMap } from '@/utils/types/poolData';
 import { BaseCellData } from '@/utils/types/heatmapTypes';
 import { UTILIZATION_THRESHOLDS } from '@/constants/pool';
 import { UTILIZATION_COLORS } from '@/constants/colors';
@@ -8,7 +8,7 @@ type TranslationFunction = (key: string, options?: { [key: string]: string | num
 export default class CoolHeatmapDataProcessor {
   constructor(
     private weeklyOccupancyMap: WeeklyOccupancyMap,
-    private weeklyMaxValuesPerDayMap: WeeklyMaxValuesPerDayMap,
+    private overallOccupancyMap: OverallOccupancyMap,
     private heatmapHighThreshold: number,
     private tooltipTranslationKey: string,
     private t: TranslationFunction
@@ -46,9 +46,11 @@ export default class CoolHeatmapDataProcessor {
     return UTILIZATION_COLORS.VERY_HIGH;
   }
 
-  public getCellData(selectedWeekId: string, day: string, hour: number): BaseCellData {
-    const utilizationRate = this.weeklyOccupancyMap[selectedWeekId]?.[day]?.[hour]?.utilizationRate || 0;
-    const maxDayUtilizationRate = this.weeklyMaxValuesPerDayMap[selectedWeekId]?.[day]?.utilizationRate || 0;
+  private getBaseCellData({
+    utilizationRate, maxDayUtilizationRate, day, hour
+  }: {
+    utilizationRate: number, maxDayUtilizationRate: number, day: string, hour: number
+  }): BaseCellData {
     return {
       color: this.getColorForUtilization(utilizationRate),
       colorFillRatio: maxDayUtilizationRate > 0 ? utilizationRate / maxDayUtilizationRate : 0,
@@ -59,6 +61,30 @@ export default class CoolHeatmapDataProcessor {
         utilization: utilizationRate
       })
     };
+  }
+
+  public getCellData(selectedWeekId: string, day: string, hour: number): BaseCellData {
+    const utilizationRate = this.weeklyOccupancyMap[selectedWeekId]?.[day]?.[hour]?.utilizationRate || 0;
+    const maxDayUtilizationRate = this.weeklyOccupancyMap[selectedWeekId]?.[day]?.maxDayValues.utilizationRate || 0;
+
+    return this.getBaseCellData({
+      utilizationRate,
+      maxDayUtilizationRate,
+      day,
+      hour
+    });
+  }
+
+  public getOverallCellData(day: string, hour: number): BaseCellData {
+    const averageUtilizationRate = this.overallOccupancyMap[day]?.[hour]?.averageUtilizationRate || 0;
+    const maxDayAverageUtilizationRate = this.overallOccupancyMap[day]?.maxDayValues.averageUtilizationRate || 0;
+
+    return this.getBaseCellData({
+      utilizationRate: averageUtilizationRate,
+      maxDayUtilizationRate: maxDayAverageUtilizationRate,
+      day,
+      hour
+    });
   }
   
   public getRawCellData (selectedWeekId: string, day: string, hour: number): BaseCellData {
@@ -75,7 +101,7 @@ export default class CoolHeatmapDataProcessor {
     const displayText = hourlyData.minOccupancy === hourlyData.maxOccupancy ? 
       (hourlyData.minOccupancy > 0 ? `${hourlyData.minOccupancy}` : '') : 
       `${hourlyData.minOccupancy}-${hourlyData.maxOccupancy}`;
-    const maxDayOccupancy = this.weeklyMaxValuesPerDayMap[selectedWeekId]?.[day]?.maxOccupancy || 0;
+    const maxDayOccupancy = this.weeklyOccupancyMap[selectedWeekId]?.[day]?.maxDayValues.maxOccupancy || 0;
 
     return {
       color: this.getColorForUtilization(hourlyData.utilizationRate),

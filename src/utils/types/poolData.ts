@@ -67,15 +67,21 @@ export interface WeeklyOccupancyMap {
   [weekId: string]: {
     [day: string]: {
       [hour: number]: HourlyOccupancySummaryWithLanes;
+      maxDayValues: {
+        utilizationRate: number;
+        maxOccupancy: number;
+      };
     };
   };
 }
 
-export interface WeeklyMaxValuesPerDayMap {
-  [weekId: string]: {
-    [day: string]: {
-      utilizationRate: number;
-      maxOccupancy: number;
+export interface OverallOccupancyMap {
+  [day: string]: {
+    [hour: number]: {
+      averageUtilizationRate: number;
+    };
+    maxDayValues: {
+      averageUtilizationRate: number;
     };
   };
 }

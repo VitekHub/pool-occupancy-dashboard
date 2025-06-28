@@ -1,48 +1,46 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { HourlyOccupancySummaryWithLanes } from '@/utils/types/poolData';
 import HeatmapGrid from '@/components/shared/HeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
 import { DAYS, HOURS } from '@/constants/time';
-import HeatmapDataProcessor from '@/utils/heatmaps/heatmapDataProcessor';
+import CoolHeatmapDataProcessor from '@/utils/heatmaps/coolHeatmapDataProcessor';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
+import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { BaseCellData } from '@/utils/types/heatmapTypes';
 
 interface BaseOccupancyHeatmapProps {
-  hourlyData: HourlyOccupancySummaryWithLanes[];
+  getCellData: (coolHeatmapDataProcessor: CoolHeatmapDataProcessor, day: string, hour: number) => BaseCellData;
   tooltipTranslationKey: string;
   legendTitleTranslationKey?: string;
-  loading: boolean;
-  error: string | null;
   dayLabels: Record<string, string>;
   days?: string[];
 }
 
 const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
-  hourlyData,
+  getCellData,
   tooltipTranslationKey,
   legendTitleTranslationKey = 'heatmaps:occupancy.legend.title',
-  loading,
-  error,
   dayLabels,
   days = DAYS
 }) => {
   const { t } = useTranslation(['heatmaps', 'common']);
   const { heatmapHighThreshold } = usePoolSelector();
+  const { weeklyOccupancyMap, overallOccupancyMap, loading, error } = usePoolDataContext();
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
   }
 
-  if (error) {
-    return <div className="text-red-500">{t('common:error', { message: error })}</div>;
+  if (error?.message) {
+    return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
-  const heatmapDataProcessor = new HeatmapDataProcessor(
-    hourlyData,
+  const coolHeatmapDataProcessor = new CoolHeatmapDataProcessor(
+    weeklyOccupancyMap,
+    overallOccupancyMap,
     heatmapHighThreshold,
     tooltipTranslationKey,
-    t,
-    dayLabels
+    t
   );
 
   return (
@@ -50,13 +48,13 @@ const BaseOccupancyHeatmap: React.FC<BaseOccupancyHeatmapProps> = ({
       <HeatmapGrid
         days={days}
         hours={HOURS}
-        getCellData={(day, hour) => heatmapDataProcessor.getCellData(day, hour)}
+        getCellData={(day, hour) => getCellData(coolHeatmapDataProcessor, day, hour)}
         dayLabels={dayLabels}
       />
       
       <HeatmapLegend
         title={t(legendTitleTranslationKey)}
-        items={heatmapDataProcessor.getLegendItems()}
+        items={coolHeatmapDataProcessor.getLegendItems()}
       />
     </div>
   );
