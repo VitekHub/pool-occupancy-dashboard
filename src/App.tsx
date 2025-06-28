@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import { isInsidePool } from '@/utils/types/poolTypes';
 import ContentCard from '@/components/ui/ContentCard';
@@ -15,7 +15,7 @@ import type { TabType } from '@/utils/types/tabs';
 function App() {
   const { t } = useTranslation(['dashboard', 'common']);
   const [activeTab, setActiveTab] = useState<TabType>(TAB_CONFIG[0].id);
-  const { loading } = usePoolDataContext();
+  const { loading } = useDataPipeline();
   const { selectedPoolType } = usePoolSelector();
   
   const activeConfig = TAB_CONFIG.find(tab => tab.id === activeTab)!;

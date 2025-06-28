@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
-import type { HourlyOccupancySummary } from '@/utils/types/poolData';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import DaySelector from '@/components/ui/DaySelector';
-import { getValidHours } from '@/constants/time';
 
 const PoolOccupancyChart: React.FC = () => {
   const { t } = useTranslation(['charts', 'common']);
-  const { hourlySummary, loading, error } = usePoolDataContext();
+  const { pipeline, loading, error, selectedWeekId } = useDataPipeline();
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
-  const validHours = getValidHours(selectedDay);
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
@@ -20,28 +17,8 @@ const PoolOccupancyChart: React.FC = () => {
     return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
-  // Create a map of all hours with their data
-  const hourlyData: HourlyOccupancySummary[] = validHours.map(hour => {
-    const data = hourlySummary.find(item => item.day === selectedDay && item.hour === hour);
-    return data || {
-      day: selectedDay,
-      hour,
-      minOccupancy: 0,
-      maxOccupancy: 0,
-      averageOccupancy: 0,
-      maximumCapacity: 0,
-      utilizationRate: 0,
-      remainingCapacity: 0,
-      date: new Date()
-    };
-  });
-
-  // Format data for Recharts
-  const chartData = hourlyData.map(item => ({
-    hour: `${item.hour}:00`,
-    average: item.averageOccupancy,
-    maximum: item.maximumCapacity
-  }));
+  const chartData = pipeline?.getChartData(selectedWeekId, selectedDay);
+  const hourlyData = chartData?.hourlyData || [];
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -55,7 +32,7 @@ const PoolOccupancyChart: React.FC = () => {
       {/* Chart */}
       <div className="mt-8 h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+          <BarChart data={hourlyData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="hour" 
@@ -76,12 +53,12 @@ const PoolOccupancyChart: React.FC = () => {
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {hourlyData.map((item, index) => (
           <div key={index} className="p-4 border rounded-lg shadow-sm">
-            <h3 className="font-semibold text-lg">{item.hour}:00</h3>
+            <h3 className="font-semibold text-lg">{item.hour}</h3>
             <div className="mt-2 space-y-1">
-              <p className="text-sm">{t('charts:stats.averageOccupancy')}: <span className="font-medium">{item.averageOccupancy}</span></p>
-              <p className="text-sm">{t('charts:stats.maximumCapacity')}: <span className="font-medium">{item.maximumCapacity}</span></p>
-              <p className="text-sm">{t('charts:stats.utilizationRate')}: <span className="font-medium">{item.utilizationRate}%</span></p>
-              <p className="text-sm">{t('charts:stats.availableSpots')}: <span className="font-medium">{item.remainingCapacity}</span></p>
+              <p className="text-sm">{t('charts:stats.averageOccupancy')}: <span className="font-medium">{item.average}</span></p>
+              <p className="text-sm">{t('charts:stats.maximumCapacity')}: <span className="font-medium">{item.maximum}</span></p>
+              <p className="text-sm">{t('charts:stats.utilizationRate')}: <span className="font-medium">{item.utilization}%</span></p>
+              <p className="text-sm">{t('charts:stats.availableSpots')}: <span className="font-medium">{item.remaining}</span></p>
             </div>
           </div>
         ))}

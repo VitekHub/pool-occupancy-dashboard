@@ -1,50 +1,33 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
-import HeatmapDataProcessor from '@/utils/heatmaps/heatmapDataProcessor';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import { getDayLabels } from '@/utils/date/dateUtils';
-import HeatmapGrid from '@/components/shared/HeatmapGrid';
-import HeatmapLegend from '@/components/shared/HeatmapLegend';
-import { DAYS, HOURS } from '@/constants/time';
-import { usePoolSelector } from '@/contexts/PoolSelectorContext';
+import BaseOccupancyHeatmap from './BaseOccupancyHeatmap';
 
 const RawHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
-  const { hourlySummary, loading, error, selectedWeekId } = usePoolDataContext();
-  const { heatmapHighThreshold } = usePoolSelector();
+  const { pipeline, loading, error, selectedWeekId } = useDataPipeline();
   const dayLabels = getDayLabels(selectedWeekId);
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
-  }
+  const tooltipTemplate = (day: string, hour: number, utilization: number) =>
+    t('heatmaps:raw.tooltip', { 
+      day: t(`common:days.${day.toLowerCase()}`), 
+      hour, 
+      min: utilization, // For raw data, we'll need to pass actual occupancy values
+      max: utilization 
+    });
 
-  if (error?.message) {
-    return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
-  }
+  const heatmapData = pipeline?.getHeatmapData(selectedWeekId, tooltipTemplate);
 
-  const heatmapDataProcessor = new HeatmapDataProcessor(
-    hourlySummary,
-    heatmapHighThreshold,
-    'heatmaps:raw.tooltip',
-    t,
-    dayLabels
-  );
-  
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      
-      <HeatmapGrid
-        days={DAYS}
-        hours={HOURS}
-        getCellData={(day, hour) => heatmapDataProcessor.getRawCellData(day, hour)}
-        dayLabels={dayLabels}
-      />
-      
-      <HeatmapLegend
-        title={t('heatmaps:raw.legend.title')}
-        items={heatmapDataProcessor.getLegendItems()}
-      />
-    </div>
+    <BaseOccupancyHeatmap
+      heatmapData={heatmapData!}
+      legendTitleTranslationKey="heatmaps:raw.legend.title"
+      loading={loading}
+      error={error?.message || null}
+      dayLabels={dayLabels}
+      isRawData={true}
+    />
   );
 };
 

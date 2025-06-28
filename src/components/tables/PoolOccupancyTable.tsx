@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download } from 'lucide-react';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import Table from '@/components/ui/Table';
 import DaySelector from '@/components/ui/DaySelector';
-import { getValidHours } from '@/constants/time';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const PoolOccupancyTable: React.FC = () => {
   const { t } = useTranslation(['tables', 'common']);
-  const { hourlySummary, loading, error } = usePoolDataContext();
+  const { pipeline, loading, error, selectedWeekId } = useDataPipeline();
   const { selectedPool } = usePoolSelector();
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
-  const validHours = getValidHours(selectedDay);
 
   if (loading) {
     return <div className="flex justify-center items-center h-32">{t('common:loading')}</div>;
@@ -25,13 +23,8 @@ const PoolOccupancyTable: React.FC = () => {
   const insidePoolCsvUrl = selectedPool.insidePool ? new URL(selectedPool.insidePool.csvFile, import.meta.env.VITE_BASE_OCCUPANCY_CSV_URL).href : null;
   const outsidePoolCsvUrl = selectedPool.outsidePool ? new URL(selectedPool.outsidePool.csvFile, import.meta.env.VITE_BASE_OCCUPANCY_CSV_URL).href : null;
 
-  // Filter data for the selected day
-  const filteredData = hourlySummary.filter(item =>
-    item.day === selectedDay && validHours.includes(item.hour)
-  );
-
-  // Sort by hour for proper display
-  const sortedData = [...filteredData].sort((a, b) => a.hour - b.hour);
+  const tableData = pipeline?.getTableData(selectedWeekId, selectedDay);
+  const sortedData = tableData?.rows || [];
 
   const columns = [
     {
@@ -49,7 +42,7 @@ const PoolOccupancyTable: React.FC = () => {
     },
     {
       header: t('tables:columns.utilizationRate'),
-      accessor: (item: typeof sortedData[0]) => (
+      accessor: (item: any) => (
         <div className="flex items-center">
           <div className="w-16 bg-gray-200 rounded-full h-2.5 mr-2">
             <div

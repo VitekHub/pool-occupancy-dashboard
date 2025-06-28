@@ -3,24 +3,23 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import TodayTomorrowHeatmapGrid from '@/components/shared/TodayTomorrowHeatmapGrid';
 import HeatmapLegend from '@/components/shared/HeatmapLegend';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import { format } from 'date-fns';
 import { DAYS, HOURS } from '@/constants/time';
 import { getDayLabels } from '@/utils/date/dateUtils';
-import type { HourlyOccupancySummaryWithLanes } from '@/utils/types/poolData';
-import HeatmapDataProcessor from '@/utils/heatmaps/heatmapDataProcessor';
 import Toggle from '@/components/ui/Toggle';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
+import { UTILIZATION_COLORS } from '@/constants/colors';
+import { UTILIZATION_THRESHOLDS } from '@/constants/pool';
 
 const TodayTomorrowHeatmap: React.FC = () => {
   const { t } = useTranslation(['heatmaps', 'common']);
   const {
-    overallHourlySummary,
-    weekCapacityData,
+    pipeline,
     loading,
     error
-  } = usePoolDataContext();
-  const { selectedPool, heatmapHighThreshold } = usePoolSelector();
+  } = useDataPipeline();
+  const { heatmapHighThreshold } = usePoolSelector();
   const [showFullWeek, setShowFullWeek] = useState(false);
   const [showTooltips, setShowTooltips] = useState(true);
 
@@ -38,36 +37,6 @@ const TodayTomorrowHeatmap: React.FC = () => {
 
   // Get day labels starting from today
   const dayLabels = getDayLabels(today, orderedDays);
-
-  // Filter data for today and tomorrow only
-  const filteredOverallHourlyData = overallHourlySummary.map(item => {
-    const dayIndex = DAYS.indexOf(item.day);
-    const todayIndex = DAYS.indexOf(todayName);
-    const tomorrowIndex = (todayIndex + 1) % DAYS.length;
-    
-    // Find matching capacity data
-    const capacity = weekCapacityData?.find(
-      cap => 
-        cap.day === item.day && 
-        parseInt(cap.hour) === item.hour
-    );
-    
-    // Create new item with lanes data
-    const newItem: HourlyOccupancySummaryWithLanes = {
-      ...item,
-      lanes: selectedPool.insidePool && capacity ? {
-        current: selectedPool.insidePool.totalLanes ? Math.round(capacity.maximumCapacity / (selectedPool.insidePool.maximumCapacity / selectedPool.insidePool.totalLanes)) : 0, 
-        total: selectedPool.insidePool.totalLanes || 0,
-        colorFillRatio: capacity.maximumCapacity / selectedPool.insidePool.maximumCapacity
-      } : undefined
-    };
-
-    if (!showFullWeek && dayIndex !== todayIndex && dayIndex !== tomorrowIndex) {
-      return null;
-    }
-
-    return newItem;
-  }).filter((item): item is HourlyOccupancySummaryWithLanes => item !== null);
 
   // Get the days to display
   const displayDays = showFullWeek
@@ -92,13 +61,22 @@ const TodayTomorrowHeatmap: React.FC = () => {
     return <div className="text-red-500">{t('common:error', { message: error.message })}</div>;
   }
 
-  const heatmapDataProcessor = new HeatmapDataProcessor(
-    filteredOverallHourlyData,
-    heatmapHighThreshold,
-    'heatmaps:todayTomorrow.tooltip',
-    t,
-    dayLabels
-  );
+  const tooltipTemplate = (day: string, hour: number, utilization: number) =>
+    t('heatmaps:todayTomorrow.tooltip', { day: t(`common:days.${day.toLowerCase()}`), hour, utilization });
+
+  const heatmapData = pipeline?.getOverallHeatmapData(tooltipTemplate);
+
+  const adjustHeatmapThreshold = (threshold: number) => Math.round(heatmapHighThreshold * (threshold / 100));
+  const getLegendLabel = (threshold: number) => `<${adjustHeatmapThreshold(threshold)}%`;
+
+  const legendItems = [
+    { color: `${UTILIZATION_COLORS.EMPTY} border border-gray-300`, label: '0%' },
+    { color: UTILIZATION_COLORS.VERY_LOW, label: getLegendLabel(UTILIZATION_THRESHOLDS.VERY_LOW) },
+    { color: UTILIZATION_COLORS.LOW, label: getLegendLabel(UTILIZATION_THRESHOLDS.LOW) },
+    { color: UTILIZATION_COLORS.MEDIUM, label: getLegendLabel(UTILIZATION_THRESHOLDS.MEDIUM) },
+    { color: UTILIZATION_COLORS.HIGH, label: `<${heatmapHighThreshold}%` },
+    { color: UTILIZATION_COLORS.VERY_HIGH, label: `<${100}%` }
+  ];
 
   return (
     <div>
@@ -114,14 +92,14 @@ const TodayTomorrowHeatmap: React.FC = () => {
         <TodayTomorrowHeatmapGrid
           days={displayDays}
           hours={HOURS}
-          getCellData={(day, hour) => heatmapDataProcessor.getTodayTomorrowCellData(day, hour)}
+          getCellData={(day, hour) => heatmapData?.getCellData(day, hour) || { utilization: 0, occupancy: { min: 0, max: 0, average: 0 }, capacity: 0, color: '', fillRatio: 0, tooltip: '' }}
           dayLabels={dayLabels}
           showTooltips={showTooltips}
         />
         
         <HeatmapLegend
           title={t('heatmaps:common.legend.title')}
-          items={heatmapDataProcessor.getLegendItems()}
+          items={legendItems}
         />
       </div>
 

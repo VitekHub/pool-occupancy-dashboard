@@ -2,30 +2,26 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import GroupedBarChart from './GroupedBarChart';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import DaySelector from '@/components/ui/DaySelector';
 import { getValidHours } from '@/constants/time';
-import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
 import type { ChartDataItem } from '@/utils/types/poolData';
-import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const WeeklyComparisonChart: React.FC = () => {
-  const { t, i18n } = useTranslation(['charts', 'common']);
+  const { t } = useTranslation(['charts', 'common']);
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
   const [startHourIndex, setStartHourIndex] = useState(0);
   const {
-    availableWeeks,
-    weeklySummaries,
-    capacityData,
+    pipeline,
+    availableWeeks, 
     loading,
     error,
     selectedWeekId
-  } = usePoolDataContext();
-  const { selectedPool } = usePoolSelector();
+  } = useDataPipeline();
 
   // Get the last 4 weeks including the selected week
   const selectedWeekIndex = availableWeeks.findIndex(week => week.id === selectedWeekId);
-  const relevantWeeks = availableWeeks.slice(selectedWeekIndex, selectedWeekIndex + 4);
+  const relevantWeeks = availableWeeks.slice(Math.max(0, selectedWeekIndex), selectedWeekIndex + 4);
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">{t('common:loading')}</div>;
@@ -40,18 +36,27 @@ const WeeklyComparisonChart: React.FC = () => {
   // Get the visible hours (3 at a time)
   const visibleHours = validHours.slice(startHourIndex, startHourIndex + 3);
 
-  // Prepare data for the chart
-  const chartData: ChartDataItem[] = visibleHours.map(hour =>
-    prepareChartDataForHour(
-      selectedDay,
-      hour,
-      relevantWeeks,
-      weeklySummaries,
-      capacityData,
-      i18n.language,
-      selectedPool
-    )
-  );
+  // Get comparison data from pipeline
+  const weekComparisonData = pipeline?.getWeekComparisonData(
+    relevantWeeks.map(w => w.id), 
+    selectedDay, 
+    visibleHours
+  ) || [];
+
+  // Convert to format expected by GroupedBarChart
+  const chartData: ChartDataItem[] = weekComparisonData.map((hourData, hourIndex) => {
+    const item: any = { hour: hourData.hour };
+    
+    hourData.weeks.forEach((week, weekIndex) => {
+      item[`week${weekIndex}`] = week.utilization;
+      item[`minOccupancy${weekIndex}`] = week.occupancy.min;
+      item[`maxOccupancy${weekIndex}`] = week.occupancy.max;
+      item[`openedLanes${weekIndex}`] = week.lanes || 0;
+      item[`dayLabel${weekIndex}`] = week.weekLabel;
+    });
+    
+    return item as ChartDataItem;
+  });
 
   const handlePrevious = () => {
     setStartHourIndex(Math.max(0, startHourIndex - 1));

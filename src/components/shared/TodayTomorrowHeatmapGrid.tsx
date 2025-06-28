@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExtendedHeatmapGridProps, ExtendedCellData } from '@/utils/types/heatmapTypes';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
 import HolidayWarning from './HolidayWarning';
 import FloatingTooltip from '@/components/ui/FloatingTooltip';
 import GroupedBarChart from '@/components/charts/GroupedBarChart';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
-import { prepareChartDataForHour } from '@/utils/charts/chartDataUtils';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import type { ChartDataItem } from '@/utils/types/poolData';
 import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 import { isInsidePool } from '@/utils/types/poolTypes';
-import HeatmapDataProcessor from '@/utils/heatmaps/heatmapDataProcessor';
+
+interface ExtendedHeatmapGridProps {
+  days: string[];
+  hours: number[];
+  getCellData: (day: string, hour: number) => any;
+  dayLabels?: Record<string, string>;
+  showTooltips?: boolean;
+}
 
 const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({ 
   days, 
@@ -20,8 +25,8 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
   showTooltips = true
 }) => {
   const { t, i18n } = useTranslation('common');
-  const { availableWeeks, weeklySummaries, capacityData } = usePoolDataContext();
-  const { selectedPoolType, selectedPool, uniformHeatmapBarHeight } = usePoolSelector();
+  const { pipeline, availableWeeks } = useDataPipeline();
+  const { selectedPoolType } = usePoolSelector();
   
   // Hover state
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
@@ -50,15 +55,23 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
     setHoveredCellPosition(rect);
     
     // Prepare chart data for the hovered hour
-    const chartData = prepareChartDataForHour(
-      day,
-      hour,
-      relevantWeeks,
-      weeklySummaries,
-      capacityData,
-      i18n.language,
-      selectedPool
-    );
+    const weekComparisonData = pipeline?.getWeekComparisonData(
+      relevantWeeks.map(w => w.id), 
+      day, 
+      [hour]
+    ) || [];
+
+    const chartData: ChartDataItem[] = weekComparisonData.map(hourData => {
+      const item: any = { hour: hourData.hour };
+      hourData.weeks.forEach((week, weekIndex) => {
+        item[`week${weekIndex}`] = week.utilization;
+        item[`minOccupancy${weekIndex}`] = week.occupancy.min;
+        item[`maxOccupancy${weekIndex}`] = week.occupancy.max;
+        item[`openedLanes${weekIndex}`] = week.lanes || 0;
+        item[`dayLabel${weekIndex}`] = week.weekLabel;
+      });
+      return item as ChartDataItem;
+    });
     
     setHoveredChartData([chartData]);
     setIsHoverChartVisible(true);
@@ -103,9 +116,9 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
               )}
             </div>
             {hours.map(hour => {
-              const cellData: ExtendedCellData = getCellData(day, hour);
-              const { 
-                color, 
+              const cellData = getCellData(day, hour);
+              const {
+                color,
                 colorFillRatio, 
                 displayText, 
                 title, 
@@ -133,10 +146,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   >
                     <div 
                       className={`absolute bottom-0 ${color}`}
-                      style={{ 
-                        height: HeatmapDataProcessor.getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
-                        width: '100%'
-                      }}
+                      style={{ height: `${colorFillRatio}%`, width: '100%' }}
                     />
                     <span className="text-xs font-medium text-gray-700 z-10">{displayText}</span>
                   </div>
@@ -160,10 +170,7 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                     >
                       <div 
                         className={`absolute bottom-0 ${rawOccupancy.color}`}
-                        style={{ 
-                          height: HeatmapDataProcessor.getBarHeight(rawOccupancy.colorFillRatio, uniformHeatmapBarHeight),
-                          width: '100%'
-                        }}
+                        style={{ height: `${rawOccupancy.colorFillRatio}%`, width: '100%' }}
                       />
                       <span className="text-xs font-medium text-center text-gray-700 z-10">{rawOccupancy.displayText}</span>
                     </div>

@@ -1,19 +1,27 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { BaseHeatmapGridProps } from '@/utils/types/heatmapTypes';
 import { isCzechHoliday } from '@/utils/date/czechHolidays';
 import HolidayWarning from './HolidayWarning';
-import { usePoolSelector } from '@/contexts/PoolSelectorContext';
-import HeatmapDataProcessor from '@/utils/heatmaps/heatmapDataProcessor';
 
-const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({ 
+interface HeatmapGridProps {
+  days: string[];
+  hours: number[];
+  getCellData: (day: string, hour: number) => {
+    color: string;
+    colorFillRatio: number;
+    displayText: string;
+    title: string;
+  };
+  dayLabels?: Record<string, string>;
+}
+
+const HeatmapGrid: React.FC<HeatmapGridProps> = ({ 
   days, 
   hours, 
   getCellData, 
   dayLabels
 }) => {
   const { t } = useTranslation('common');
-  const { uniformHeatmapBarHeight } = usePoolSelector();
 
   return (
     <div className="overflow-x-auto">
@@ -53,10 +61,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
                   >
                     <div 
                       className={`absolute bottom-0 ${color}`}
-                      style={{ 
-                        height: HeatmapDataProcessor.getBarHeight(colorFillRatio, uniformHeatmapBarHeight),
-                        width: '100%'
-                      }}
+                      style={{ height: `${colorFillRatio}%`, width: '100%' }}
                     />
                     <span className="text-xs font-medium text-center text-gray-700 z-10">{displayText}</span>
                   </div>

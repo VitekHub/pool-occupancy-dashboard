@@ -2,12 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, CalendarClock } from 'lucide-react';
 import Tooltip from './Tooltip';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import { formatWeekRange } from '@/utils/date/dateUtils';
 
 const WeekNavigator: React.FC = () => {
   const { t, i18n } = useTranslation('common');
-  const { availableWeeks, selectedWeekId, setSelectedWeekId } = usePoolDataContext();
+  const { availableWeeks, selectedWeekId, setSelectedWeekId } = useDataPipeline();
   
   // Find the current week index
   const currentWeekIndex = availableWeeks.findIndex(week => {

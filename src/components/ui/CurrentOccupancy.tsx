@@ -1,11 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
-import { usePoolDataContext } from '@/contexts/PoolDataContext';
+import { useDataPipeline } from '@/contexts/DataPipelineContext';
 import { UTILIZATION_THRESHOLDS } from '@/constants/pool';
 import { PROGRESS_COLORS } from '@/constants/colors';
-import { isInsidePool } from '@/utils/types/poolTypes';
-import { usePoolSelector } from '@/contexts/PoolSelectorContext';
 
 const getUtilizationColor = (rate: number) => {
   if (rate < UTILIZATION_THRESHOLDS.LOW) return PROGRESS_COLORS.LOW;
@@ -15,28 +13,9 @@ const getUtilizationColor = (rate: number) => {
 
 const CurrentOccupancy: React.FC = () => {
   const { t } = useTranslation(['common']);
-  const { currentOccupancy, capacityData } = usePoolDataContext();
-  const { selectedPoolType, selectedPool } = usePoolSelector();
-  let currentMaxCapacity = 0;
-  let utilizationRate = 0;
-  let utilizationColor = '';
-
-  if (currentOccupancy) {
-    if (isInsidePool(selectedPoolType) && capacityData?.length) {
-      // Find the maximum capacity for the current hour
-      currentMaxCapacity = capacityData.find(
-        record =>
-          record.date.getTime() === currentOccupancy.date.getTime() &&
-          record.day === currentOccupancy.day &&
-          parseInt(record.hour) === currentOccupancy.hour
-      )?.maximumCapacity || selectedPool.insidePool?.maximumCapacity || 0;
-    } else {
-      currentMaxCapacity = selectedPool.outsidePool?.maximumCapacity || 0;
-    }
-    // Calculate utilization percentage
-    utilizationRate = Math.round((currentOccupancy.occupancy / currentMaxCapacity) * 100);
-    utilizationColor = getUtilizationColor(utilizationRate);
-  }
+  const { currentOccupancy } = useDataPipeline();
+  
+  const utilizationColor = currentOccupancy ? getUtilizationColor(currentOccupancy.utilization) : '';
 
   return (
     <div className="flex items-center bg-purple-700 px-4 py-2 rounded-lg">
@@ -50,16 +29,16 @@ const CurrentOccupancy: React.FC = () => {
           {currentOccupancy && (
             <div className="flex items-center gap-2">
               <span className="font-bold">
-                {currentOccupancy.time} • {currentOccupancy.occupancy}/{currentMaxCapacity} {t('people')}
+                {currentOccupancy.time} • {currentOccupancy.occupancy}/{currentOccupancy.capacity} {t('people')}
               </span>
               <div className="flex items-center gap-1">
                 <div className={`w-16 bg-purple-800 rounded-full h-2`}>
                   <div
                     className={`${utilizationColor} h-2 rounded-full transition-all duration-300`}
-                    style={{ width: `${utilizationRate}%` }}
+                    style={{ width: `${currentOccupancy.utilization}%` }}
                   />
                 </div>
-                <span className="font-bold">{utilizationRate}%</span>
+                <span className="font-bold">{currentOccupancy.utilization}%</span>
               </div>
             </div>
           )}

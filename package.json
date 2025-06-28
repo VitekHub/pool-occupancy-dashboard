@@ -2,7 +2,7 @@
   "name": "vite-react-typescript-starter",
   "private": true,
   "homepage": "https://jade-lollipop-12d577.netlify.app/",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
