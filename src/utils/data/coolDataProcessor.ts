@@ -10,6 +10,15 @@ import { getWeekId } from '@/utils/date/dateUtils';
 import { PoolConfig } from '@/utils/types/poolConfig';
 import { isInsidePool, PoolType } from '@/utils/types/poolTypes';
 
+interface OverallOccupancyAccumulator {
+  [day: string]: {
+    [hour: number]: {
+      sum: number;
+      count: number;
+    };
+  };
+}
+
 export default class CoolDataProcessor {
   constructor(
     private capacityData: CapacityRecord[],
@@ -51,17 +60,26 @@ export default class CoolDataProcessor {
     overallOccupancyMap: OverallOccupancyMap;
   } {
     const weeklyOccupancyMap: WeeklyOccupancyMap = {};
-    const overallMap: Record<string, Record<number, { sum: number; count: number }>> = {};
+    const overallOccupancyMap: OverallOccupancyMap = {};
+    const overallOccupancyAccumulator: OverallOccupancyAccumulator = {};
     let weeklyCapacityMap: WeeklyCapacityMap = {};
 
     if (isInsidePool(this.selectedPoolType)) {
       weeklyCapacityMap = this.preProcessAllCapacityData();
     }
 
+    const occupancyAccumulator = { prevHour: 0, sum: 0, count: 0 };
     this.occupancyData.forEach(occupancyRecord => {
-      const { date, day, hour, occupancy } = occupancyRecord;
+      const { date, day, hour, occupancy: recordOccupancy } = occupancyRecord;
       const weekId = getWeekId(date);
-      const maximumCapacity = this.getMaxCapacityByPoolType(weeklyCapacityMap[weekId]?.[day]?.[hour]) || 0;
+      const hourlyMaxCapacity = this.getMaxCapacityByPoolType(weeklyCapacityMap[weekId]?.[day]?.[hour]) || 0;
+
+      if (hour !== occupancyAccumulator.prevHour) {
+        occupancyAccumulator.sum = 0;
+        occupancyAccumulator.count = 0;
+      }
+      occupancyAccumulator.prevHour = hour;
+
       if (!weeklyOccupancyMap[weekId]) {
         weeklyOccupancyMap[weekId] = {};
       }
@@ -77,18 +95,23 @@ export default class CoolDataProcessor {
       }
 
       const hourlyOccupancySummary = weeklyOccupancyMap[weekId][day][hour];
-      const minOccupancy = Math.min(occupancy, hourlyOccupancySummary.minOccupancy || occupancy);
-      const maxOccupancy = Math.max(occupancy, hourlyOccupancySummary.maxOccupancy || occupancy);
-      const averageOccupancy = this.formatNumber((minOccupancy + maxOccupancy) / 2);
-      const utilizationRate = this.formatNumber((averageOccupancy / maximumCapacity) * 100);
-      const remainingCapacity = maximumCapacity - averageOccupancy;
+      const minOccupancy = Math.min(recordOccupancy, hourlyOccupancySummary.minOccupancy || recordOccupancy);
+      const maxOccupancy = Math.max(recordOccupancy, hourlyOccupancySummary.maxOccupancy || recordOccupancy);
+      if (recordOccupancy > 0) {
+        occupancyAccumulator.sum += recordOccupancy;
+        occupancyAccumulator.count += 1;
+      }
+
+      const averageOccupancy = this.formatNumber(occupancyAccumulator.count > 0 ? occupancyAccumulator.sum / occupancyAccumulator.count : 0);
+      const utilizationRate = this.formatNumber((averageOccupancy / hourlyMaxCapacity) * 100);
+      const remainingCapacity = hourlyMaxCapacity - averageOccupancy;
 
       weeklyOccupancyMap[weekId][day][hour] = {
         ...hourlyOccupancySummary,
         minOccupancy,
         maxOccupancy,
         averageOccupancy,
-        maximumCapacity,
+        maximumCapacity: hourlyMaxCapacity,
         utilizationRate,
         remainingCapacity,
       } as HourlyOccupancySummaryWithLanes;
@@ -97,32 +120,28 @@ export default class CoolDataProcessor {
       weeklyMaxDayValues.utilizationRate = Math.max(weeklyMaxDayValues.utilizationRate, utilizationRate);
       weeklyMaxDayValues.maxOccupancy = Math.max(weeklyMaxDayValues.maxOccupancy, maxOccupancy);
 
-      if (utilizationRate > 0) {
-        if (!overallMap[day]) {
-          overallMap[day] = {};
+      // skip further processing if occupancy is zero
+      if (recordOccupancy > 0 && hourlyMaxCapacity > 0) {
+        if (!overallOccupancyMap[day]) {
+          overallOccupancyMap[day] = { maxDayValues: { averageUtilizationRate: 0 } };
+          overallOccupancyAccumulator[day] = {};
         }
-        if (!overallMap[day][hour]) {
-          overallMap[day][hour] = { sum: 0, count: 0 };
+        if (!overallOccupancyMap[day][hour]) {
+          overallOccupancyMap[day][hour] = { averageUtilizationRate: 0 };
+          overallOccupancyAccumulator[day][hour] = { sum: 0, count: 0 };
         }
-        overallMap[day][hour].sum += utilizationRate;
-        overallMap[day][hour].count += 1;
+
+        const recordUtilizationRate = recordOccupancy / hourlyMaxCapacity;
+        const hourlyOverallOccupancy = overallOccupancyMap[day][hour];
+        const hourlyOverallOccupancyAcc = overallOccupancyAccumulator[day][hour];
+        hourlyOverallOccupancyAcc.sum += recordUtilizationRate;
+        hourlyOverallOccupancyAcc.count += 1;
+        hourlyOverallOccupancy.averageUtilizationRate = this.formatNumber((hourlyOverallOccupancyAcc.sum / hourlyOverallOccupancyAcc.count) * 100);
+
+        const overallMaxDayValues = overallOccupancyMap[day].maxDayValues;
+        overallMaxDayValues.averageUtilizationRate = Math.max(overallMaxDayValues.averageUtilizationRate, hourlyOverallOccupancy.averageUtilizationRate);
       }
     });
-
-    const overallOccupancyMap: OverallOccupancyMap = {};
-    for (const day in overallMap) {
-      overallOccupancyMap[day] = { maxDayValues: { averageUtilizationRate: 0 } };
-      for (const hour in overallMap[day]) {
-        const { sum, count } = overallMap[day][hour];
-        const averageUtilizationRate = this.formatNumber(count > 0 ? sum / count : 0);
-        overallOccupancyMap[day][hour] = {
-          averageUtilizationRate
-        };
-        const overallMaxDayValues = overallOccupancyMap[day].maxDayValues;
-        overallMaxDayValues.averageUtilizationRate = Math.max(overallMaxDayValues.averageUtilizationRate, averageUtilizationRate);
-      }
-      
-    }
 
     return { weeklyOccupancyMap, overallOccupancyMap };
   }
