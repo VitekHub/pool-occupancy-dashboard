@@ -60,4 +60,33 @@ export default class CoolHeatmapDataProcessor {
       })
     };
   }
+  
+  public getRawCellData (selectedWeekId: string, day: string, hour: number): BaseCellData {
+    const hourlyData = this.weeklyOccupancyMap[selectedWeekId]?.[day]?.[hour];
+    if (!hourlyData) {
+      return {
+        color: UTILIZATION_COLORS.EMPTY,
+        colorFillRatio: 0,
+        displayText: '',
+        title: ''
+      };
+    }
+
+    const displayText = hourlyData.minOccupancy === hourlyData.maxOccupancy ? 
+      (hourlyData.minOccupancy > 0 ? `${hourlyData.minOccupancy}` : '') : 
+      `${hourlyData.minOccupancy}-${hourlyData.maxOccupancy}`;
+    const maxDayOccupancy = this.weeklyMaxValuesPerDayMap[selectedWeekId]?.[day]?.maxOccupancy || 0;
+
+    return {
+      color: this.getColorForUtilization(hourlyData.utilizationRate),
+      colorFillRatio: hourlyData.maxOccupancy === maxDayOccupancy ? 1 : (maxDayOccupancy > 0 ? hourlyData.averageOccupancy / maxDayOccupancy : 0), // Fill ratio based on max occupancy of the day
+      displayText,
+      title: this.t(this.tooltipTranslationKey, {
+        day: this.t(`common:days.${day.toLowerCase()}`),
+        hour,
+        min: hourlyData.minOccupancy,
+        max: hourlyData.maxOccupancy
+      })
+    };
+  };
 }

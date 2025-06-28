@@ -48,7 +48,7 @@ const HeatmapGrid: React.FC<BaseHeatmapGridProps> = ({
               return (
                 <div key={`${day}-${hour}`} className="w-14">
                   <div
-                    className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
+                    className={`h-12 p-1 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
                   >
                     <div 
