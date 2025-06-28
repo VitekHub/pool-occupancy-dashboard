@@ -53,7 +53,7 @@ const PoolOccupancyTable: React.FC = () => {
         <div className="flex items-center">
           <div className="w-16 bg-gray-200 rounded-full h-2.5 mr-2">
             <div
-              className="bg-blue-600 h-2.5 rounded-full"
+              className="bg-purple-600 h-2.5 rounded-full"
               style={{ width: `${item.utilizationRate}%` }}
             ></div>
           </div>
@@ -70,7 +70,7 @@ const PoolOccupancyTable: React.FC = () => {
   const DownloadButton = ({ url, label }: { url: string, label: string }) => (
     <button
       onClick={() => window.open(url, '_blank')}
-      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
     >
       <Download className="w-4 h-4 mr-2" />
       {label}

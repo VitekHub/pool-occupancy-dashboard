@@ -106,7 +106,7 @@ const CustomBar: React.FC<CustomBarProps> = ({
           x={x + width / 2}
           y={y + 20}
           textAnchor="middle"
-          fill="#3b82f6"
+          fill="#9333ea"
           fontSize="13"
           fontWeight="500"
         >

@@ -67,7 +67,7 @@ const PoolOccupancyChart: React.FC = () => {
             <Tooltip />
             <Legend />
             <Bar dataKey="maximum" name={t('charts:legend.maximum')} fill="#9CA3AF" />
-            <Bar dataKey="average" name={t('charts:legend.average')} fill="#3B82F6" />
+            <Bar dataKey="average" name={t('charts:legend.average')} fill="#9333EA" />
           </BarChart>
         </ResponsiveContainer>
       </div>

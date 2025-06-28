@@ -48,7 +48,7 @@ const WeekNavigator: React.FC = () => {
   );
 
   return (
-    <div className="flex items-center space-x-2 bg-blue-500 text-white py-2 px-3 rounded-lg relative">
+    <div className="flex items-center space-x-2 bg-purple-500 text-white py-2 px-3 rounded-lg relative">
       <Tooltip text={t('previousWeek')}>
         <button
           onClick={handlePreviousWeek}
@@ -56,7 +56,7 @@ const WeekNavigator: React.FC = () => {
           className={`p-1 rounded-full ${
             selectedIndex === availableWeeks.length - 1
               ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-blue-600'
+              : 'hover:bg-purple-600'
           }`}
           aria-label={t('previousWeek')}
         >
@@ -73,7 +73,7 @@ const WeekNavigator: React.FC = () => {
           className={`p-1 rounded-full ${
             selectedIndex === 0
               ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-blue-600'
+              : 'hover:bg-purple-600'
           }`}
           aria-label={t('nextWeek')}
         >
@@ -88,7 +88,7 @@ const WeekNavigator: React.FC = () => {
           className={`p-1 rounded-full ml-2 ${
             currentWeekIndex === selectedIndex || currentWeekIndex === -1
               ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-blue-600'
+              : 'hover:bg-purple-600'
           }`}
           aria-label={t('currentWeek')}
         >

@@ -13,6 +13,6 @@ export const PROGRESS_COLORS = {
   LOW: 'bg-green-500',
   MEDIUM: 'bg-yellow-500',
   HIGH: 'bg-red-500',
-  BACKGROUND: 'bg-blue-800',
-  FILL: 'bg-blue-400'
+  BACKGROUND: 'bg-purple-800',
+  FILL: 'bg-purple-400'
 } as const;

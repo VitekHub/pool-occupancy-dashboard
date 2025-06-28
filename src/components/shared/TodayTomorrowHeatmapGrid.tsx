@@ -123,8 +123,8 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   { days.indexOf(day) > 0 && 
                     (<div className="w-14 text-center text-xs font-medium text-gray-600">
                       {hour}:00
-                    </div>
-                  )}
+                    </div>)
+                  }
                   <div
                     className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     title={title}
@@ -142,27 +142,29 @@ const TodayTomorrowHeatmapGrid: React.FC<ExtendedHeatmapGridProps> = ({
                   </div>
                   {isInsidePool(selectedPoolType) && openedLanes && (
                     <div className="h-12 border bg-blue-200 red-dotted-background border-gray-200 relative flex items-center justify-center">
-                      <div 
-                        className={`absolute top-0 ${openedLanes.color}`}
-                        style={{ 
-                          height: `${openedLanes.colorFillRatio * 100}%`,
-                          width: '100%'
-                        }}
-                      />
-                      <span className="text-xs font-medium text-gray-700 z-10">{openedLanes.displayText}</span>
+                      <div className="h-12 border bg-purple-200 red-dotted-background border-gray-200 relative flex items-center justify-center">
+                        <div 
+                          className={`absolute top-0 ${openedLanes.color}`}
+                          style={{ 
+                            height: `${openedLanes.colorFillRatio * 100}%`,
+                            width: '100%'
+                          }}
+                        />
+                        <span className="text-xs font-medium text-gray-700 z-10">{openedLanes.displayText}</span>
+                      </div>
                     </div>
                   )}
                   {days.indexOf(day) === 0 && rawOccupancy && (
                     <div
                       className={`h-12 border border-gray-200 relative hover:opacity-80 transition-opacity flex items-center justify-center`}
                     >
-                    <div 
-                      className={`absolute bottom-0 ${rawOccupancy.color}`}
-                      style={{ 
-                        height: HeatmapDataProcessor.getBarHeight(rawOccupancy.colorFillRatio, uniformHeatmapBarHeight),
-                        width: '100%'
-                      }}
-                    />
+                      <div 
+                        className={`absolute bottom-0 ${rawOccupancy.color}`}
+                        style={{ 
+                          height: HeatmapDataProcessor.getBarHeight(rawOccupancy.colorFillRatio, uniformHeatmapBarHeight),
+                          width: '100%'
+                        }}
+                      />
                       <span className="text-xs font-medium text-center text-gray-700 z-10">{rawOccupancy.displayText}</span>
                     </div>
                   )}

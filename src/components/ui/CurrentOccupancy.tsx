@@ -39,7 +39,7 @@ const CurrentOccupancy: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center bg-blue-700 px-4 py-2 rounded-lg">
+    <div className="flex items-center bg-purple-700 px-4 py-2 rounded-lg">
       <div className="flex items-center gap-4">
         <Users className="w-5 h-5" />
         <div>
@@ -53,7 +53,7 @@ const CurrentOccupancy: React.FC = () => {
                 {currentOccupancy.time} • {currentOccupancy.occupancy}/{currentMaxCapacity} {t('people')}
               </span>
               <div className="flex items-center gap-1">
-                <div className={`w-16 ${PROGRESS_COLORS.BACKGROUND} rounded-full h-2`}>
+                <div className={`w-16 bg-purple-800 rounded-full h-2`}>
                   <div
                     className={`${utilizationColor} h-2 rounded-full transition-all duration-300`}
                     style={{ width: `${utilizationRate}%` }}

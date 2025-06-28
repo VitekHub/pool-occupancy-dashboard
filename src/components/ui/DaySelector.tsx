@@ -22,7 +22,7 @@ const DaySelector: React.FC<DaySelectorProps> = ({ selectedDay, onChange }) => {
             onClick={() => onChange(day)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               selectedDay === day
-                ? 'bg-blue-600 text-white'
+                ? 'bg-purple-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
             }`}
           >

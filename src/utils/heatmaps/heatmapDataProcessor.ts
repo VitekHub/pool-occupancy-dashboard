@@ -17,7 +17,7 @@ export default class HeatmapDataProcessor {
   private dayLabels: Record<string, string>;
   private data: HourlyOccupancySummaryWithLanes[];
   private days: string[] = DAYS;
-  private static readonly OPENED_LANES_COLOR = 'bg-blue-300';
+  private static readonly OPENED_LANES_COLOR = 'bg-purple-300';
 
   constructor(
     data: HourlyOccupancySummaryWithLanes[],

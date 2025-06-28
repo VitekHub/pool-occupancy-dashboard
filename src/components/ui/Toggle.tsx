@@ -18,7 +18,7 @@ const Toggle: React.FC<ToggleProps> = ({ value, setValue, label }) => {
             onChange={(e) => setValue(e.target.checked)}
             className="sr-only"
         />
-        <div className={`block w-11 h-6 rounded-full ${value ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
+        <div className={`block w-11 h-6 rounded-full ${value ? 'bg-purple-600' : 'bg-gray-300'}`}></div>
         <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition ${value ? 'transform translate-x-5' : ''}`}></div>
         </div>
     </label>

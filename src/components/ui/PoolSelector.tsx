@@ -26,12 +26,12 @@ const PoolSelector: React.FC = () => {
   const getButtonClass = (pool: PoolType) =>
     `flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors sm:w-auto ${
       selectedPoolType === pool
-        ? 'bg-white text-blue-600'
-        : 'text-blue-100 hover:text-white hover:bg-blue-500'
+        ? 'bg-white text-purple-600'
+        : 'text-purple-100 hover:text-white hover:bg-purple-500'
     }`;
 
   return (
-    <div className="flex flex-col sm:flex-row items-center bg-blue-700 rounded-lg overflow-hidden">
+    <div className="flex flex-col sm:flex-row items-center bg-purple-700 rounded-lg overflow-hidden">
       {hasOutsidePool && (
         <button
           onClick={() => handlePoolChange(POOL_TYPES.OUTSIDE)}

@@ -43,7 +43,7 @@ const LeftSidebar: React.FC = () => {
   const visiblePools = poolConfig.filter((pool: PoolConfig) => pool.insidePool?.viewStats || pool.outsidePool?.viewStats);
   return (
     <div
-      className={`fixed left-0 top-0 h-full bg-blue-600 text-white shadow-lg transition-all duration-300 z-50 ${
+      className={`fixed left-0 top-0 h-full bg-purple-600 text-white shadow-lg transition-all duration-300 z-50 ${
         isExpanded ? 'w-64' : 'w-16'
       }`}
       onMouseEnter={() => setIsExpanded(true)}
@@ -51,9 +51,9 @@ const LeftSidebar: React.FC = () => {
     >
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="p-4 border-b border-blue-500">
+        <div className="p-4 border-b border-purple-500">
           <div className="flex items-center">
-            <Waves className="w-8 h-8 text-blue-200 flex-shrink-0" />
+            <Waves className="w-8 h-8 text-purple-200 flex-shrink-0" />
           </div>
         </div>
 
@@ -66,8 +66,8 @@ const LeftSidebar: React.FC = () => {
               <button
                 key={index}
                 onClick={() => handlePoolSelect(pool)}
-                className={`w-full flex items-center px-4 py-3 text-left transition-colors hover:bg-blue-500 ${
-                  isSelected ? 'bg-blue-700 border-r-4 border-blue-200' : ''
+                className={`w-full flex items-center px-4 py-3 text-left transition-colors hover:bg-purple-500 ${
+                  isSelected ? 'bg-purple-700 border-r-4 border-purple-200' : ''
                 }`}
                 title={!isExpanded ? pool.name : undefined}
               >
@@ -84,8 +84,8 @@ const LeftSidebar: React.FC = () => {
 
         {/* Footer */}
         {isExpanded && (
-          <div className="p-4 border-t border-blue-500">
-            <p className="text-xs text-blue-200">
+          <div className="p-4 border-t border-purple-500">
+            <p className="text-xs text-purple-200">
             </p>
           </div>
         )}

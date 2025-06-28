@@ -54,8 +54,8 @@ const HeatmapLegend: React.FC<HeatmapLegendProps> = ({ title, items }) => {
       {/* Color and height explanations */}
       <div className="mt-4 space-y-3">
         {explanations.map((explanation, index) => (
-          <div key={index} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
+          <div key={index} className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+            <p className="text-sm text-purple-800">
               <strong className="font-medium">{explanation}</strong>
             </p>
           </div>

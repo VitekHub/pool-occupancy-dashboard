@@ -22,7 +22,7 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className="bg-blue-600 text-white shadow-lg">
+    <header className="bg-purple-600 text-white shadow-lg">
       <div className="container mx-auto px-4 py-3">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div className="mb-4 ml-2 md:mb-0">
@@ -53,7 +53,7 @@ const Header: React.FC = () => {
                 href={websiteLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-100 hover:text-white transition-colors text-sm mt-1 block underline"
+                className="text-purple-100 hover:text-white transition-colors text-sm mt-1 block underline"
               >
                 {t('dashboard:website')}
               </a>

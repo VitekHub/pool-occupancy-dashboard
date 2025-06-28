@@ -77,7 +77,7 @@ const TodayTomorrowHeatmap: React.FC = () => {
   const showMoreButton = displayDays.length > 1 && (
     <button
       onClick={() => setShowFullWeek(!showFullWeek)}
-      className="mt-2 flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+      className="mt-2 flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors"
     >
       {showFullWeek ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       {t(showFullWeek ? 'todayTomorrow.showLess' : 'todayTomorrow.showMore')}
