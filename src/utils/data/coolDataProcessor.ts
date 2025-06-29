@@ -154,16 +154,19 @@ class OccupancyDataProcessor {
     this.occupancyAccumulator = { sum: 0, count: 0, min: Infinity, max: -Infinity };
   }
 
-  private updateAccumulator(
-    hourlyOccupancy: number,
-    hourlyOccupancySummary: HourlyOccupancySummaryWithLanes,
-  ): void {
-    if (hourlyOccupancy > 0) {  
-      this.occupancyAccumulator.sum += hourlyOccupancy;
-      this.occupancyAccumulator.count += 1;
-      this.occupancyAccumulator.min = Math.min(hourlyOccupancy, hourlyOccupancySummary.minOccupancy || hourlyOccupancy);
-      this.occupancyAccumulator.max = Math.max(hourlyOccupancy, hourlyOccupancySummary.maxOccupancy || hourlyOccupancy);
+  private updateAccumulator(hourlyOccupancy: number): void {
+    if (hourlyOccupancy > 0) {
+      this.occupancyAccumulator.sum += hourlyOccupancy
+      this.occupancyAccumulator.count += 1
     }
+    this.occupancyAccumulator.min = Math.min(
+      hourlyOccupancy,
+      this.occupancyAccumulator.min
+    )
+    this.occupancyAccumulator.max = Math.max(
+      hourlyOccupancy,
+      this.occupancyAccumulator.max
+    )
   }
 
   private processPreviousHour(): void {
@@ -204,7 +207,7 @@ class OccupancyDataProcessor {
       maximumCapacity: hourlyMaxCapacity,
     } as HourlyOccupancySummaryWithLanes;
 
-    this.updateWeeklyMaxDayValues(weekId, day, utilizationRate, hourlyOccupancySummary.maxOccupancy);
+    this.updateWeeklyMaxDayValues(weekId, day, utilizationRate, maxOccupancy);
   }
 
   private updateWeeklyMaxDayValues(
