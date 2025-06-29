@@ -13,7 +13,7 @@ import type {
     OverallOccupancyMap 
 } from '@/utils/types/poolData';
 import { isInsidePool } from '@/utils/types/poolTypes';
-import CoolDataProcessor from '@/utils/data/coolDataProcessor';
+import { processAllOccupancyData } from '@/utils/data/coolDataProcessor';
 
 interface PoolDataContextType {
   occupancyData: OccupancyRecord[] | undefined;
@@ -93,16 +93,15 @@ export const PoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Process all data when the data or selected pool changes
   useEffect(() => {
-    const coolDataProcessor = new CoolDataProcessor(
+    const {
+      weeklyOccupancyMap,
+      overallOccupancyMap
+    } = processAllOccupancyData(
       capacityData || [],
       occupancyData || [],
       selectedPool,
       selectedPoolType
     );
-    const {
-      weeklyOccupancyMap,
-      overallOccupancyMap
-    } = coolDataProcessor.preProcessAllOccupancyData();
     setWeeklyOccupancyMap(weeklyOccupancyMap);
     setOverallOccupancyMap(overallOccupancyMap);
   }, [occupancyData, capacityData, selectedPool, selectedPoolType]);
