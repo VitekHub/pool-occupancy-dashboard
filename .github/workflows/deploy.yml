@@ -36,7 +36,7 @@ jobs:
       - name: Set environment variables
         run: |
           echo "VITE_POOL_OCCUPANCY_CONFIG_URL=${{ secrets.VITE_POOL_OCCUPANCY_CONFIG_URL }}" >> $GITHUB_ENV
-          echo "VITE_CSV_BASE_URL=${{ secrets.VITE_CSV_BASE_URL }}" >> $GITHUB_ENV
+          echo "VITE_BASE_OCCUPANCY_CSV_URL=${{ secrets.VITE_BASE_OCCUPANCY_CSV_URL }}" >> $GITHUB_ENV
           echo "VITE_MAX_CAPACITY_CSV_URL=${{ secrets.VITE_MAX_CAPACITY_CSV_URL }}" >> $GITHUB_ENV
           echo "VITE_WEEK_CAPACITY_CSV_URL=${{ secrets.VITE_WEEK_CAPACITY_CSV_URL }}" >> $GITHUB_ENV
 
