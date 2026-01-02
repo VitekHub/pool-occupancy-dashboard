@@ -32,7 +32,7 @@ export const usePoolSelector = () => {
 };
 
 export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedPoolType, setSelectedPoolType] = useState<PoolType>(POOL_TYPES.OUTSIDE);
+  const [selectedPoolType, setSelectedPoolType] = useState<PoolType>(POOL_TYPES.INSIDE);
   const [selectedPool, setSelectedPool] = useState<PoolConfig>({} as PoolConfig);
   const [heatmapHighThreshold, setHeatmapHighThreshold] = useState<number>(DEFAULT_HEATMAP_HIGH_THRESHOLD);
   const [uniformHeatmapBarHeight, setUniformHeatmapBarHeight] = useState<boolean>(false);
@@ -50,7 +50,7 @@ export const PoolSelectorProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     if (poolConfig && poolConfig.length > 0) {
       setSelectedPool(poolConfig[0]);
-      setSelectedPoolType(poolConfig[0].outsidePool?.viewStats ? POOL_TYPES.OUTSIDE : POOL_TYPES.INSIDE);
+      setSelectedPoolType(poolConfig[0].outsidePool?.viewStats ? POOL_TYPES.INSIDE : POOL_TYPES.OUTSIDE);
     }
   }, [poolConfig]);
 
